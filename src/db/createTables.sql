@@ -191,24 +191,27 @@ CREATE TABLE Gradebook.AttendanceRecord
 CREATE TABLE Gradebook.Section_AssessmentComponent
 (
    Section INT NOT NULL REFERENCES Gradebook.Section,
-   Type VARCHAR(20) NOT NULL, --"Assignment", "Quiz", "Exam",...
+   ID INT NOT NULL,
+   Type VARCHAR(20) NOT NULL UNIQUE, --"Assignment", "Quiz", "Exam",...
    Weight NUMERIC(3,2) NOT NULL CHECK (Weight >= 0), --a percentage value: 0.25, 0.5,...
+   Description VARCHAR NULL,
    NumItems INT NOT NULL DEFAULT 1,
-   PRIMARY KEY (Section, Type)
+   PRIMARY KEY (Section, ID)
 );
 
 
 CREATE TABLE Gradebook.Section_AssessmentItem
 (
    Section INT NOT NULL,
-   Component VARCHAR(20) NOT NULL,
+   Component_ID VARCHAR(20) NOT NULL,
    SequenceInComponent INT NOT NULL  NOT NULL CHECK (SequenceInComponent > 0),
    BasePoints NUMERIC(5,2) NOT NULL CHECK (BasePoints >= 0),
    ExtraCreditPoints NUMERIC(5,2) NOT NULL DEFAULT 0 CHECK (ExtraCreditPoints >= 0),
    AssignedDate Date,
    DueDate Date,
-   PRIMARY KEY(Section, Component, SequenceInComponent),
-   FOREIGN KEY (Section, Component) REFERENCES Gradebook.Section_AssessmentComponent
+   Curve NUMERIC(5,2) NULL CHECK(Curve > 0),
+   PRIMARY KEY(Section, Component_ID, SequenceInComponent),
+   FOREIGN KEY (Section, Component_ID) REFERENCES Gradebook.Section_AssessmentComponent
 );
 
 
