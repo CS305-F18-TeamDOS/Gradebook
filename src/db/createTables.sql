@@ -3,6 +3,10 @@
 --Zaid Bhujwala, Zach Boylan, Steven Rollo, Sean Murthy
 --Data Science & Systems Lab (DASSL), Western Connecticut State University (WCSU)
 
+--Edited by Team DOS: Kyle Bella, Kenneth Kozlowski, Joe Tether
+--Edited for CS305-71
+--Date of Revision: 10/18/2018
+
 --(C) 2017- DASSL. ALL RIGHTS RESERVED.
 --Licensed to others under CC 4.0 BY-SA-NC
 --https://creativecommons.org/licenses/by-nc-sa/4.0/
