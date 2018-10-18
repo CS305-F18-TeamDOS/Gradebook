@@ -208,7 +208,7 @@ CREATE TABLE Gradebook.Section_AssessmentItem
    ExtraCreditPoints NUMERIC(5,2) NOT NULL DEFAULT 0 CHECK (ExtraCreditPoints >= 0),
    AssignedDate Date,
    DueDate Date,
-   Curve NUMERIC(5,2) NULL CHECK(Curve >= 0),
+   Curve NUMERIC(5,2) NULL CHECK(Curve > 0),
    PRIMARY KEY(Section, Component, SequenceInComponent),
    FOREIGN KEY (Section, Component) REFERENCES Gradebook.Section_AssessmentComponent
 );
