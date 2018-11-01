@@ -195,12 +195,12 @@ CREATE TABLE Gradebook.AttendanceRecord
 CREATE TABLE Gradebook.Section_AssessmentComponent
 (
    Section INT NOT NULL REFERENCES Gradebook.Section,
-   ID INT NOT NULL,
+   --ID INT NOT NULL,
    Type VARCHAR(20) NOT NULL UNIQUE, --"Assignment", "Quiz", "Exam",...
    Weight NUMERIC(3,2) NOT NULL CHECK (Weight >= 0), --a percentage value: 0.25, 0.5,...
    Description VARCHAR NULL,
    NumItems INT NOT NULL DEFAULT 1,
-   PRIMARY KEY (Section, ID)
+   PRIMARY KEY (Section, Type)
 );
 
 

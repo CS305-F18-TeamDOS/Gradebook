@@ -42,6 +42,10 @@ const monthNames = [
 var pg = require('pg'); //Postgres client module   | https://github.com/brianc/node-postgres
 var sjcl = require('sjcl'); //Encryption module    | https://github.com/bitwiseshiftleft/sjcl
 var express = require('express'); //Express module | https://github.com/expressjs/express
+var passport = require('passport'); //Passport module | https://github.com/jaredhanson/passport
+var LocalStrategy = require('passport-local').Strategy; //
+var session = require('express-session');
+var bodyParser = require('body-parser');
 
 var app = express();
 
@@ -61,6 +65,44 @@ function createConnectionParams(user, database, password, host, port) {
 }
 
 /*
+This function creates configures passport module.
+It configures the local strategy, middleware, and sessions to the gradebook server
+*/
+function configPassport() {
+    passport.use(new LocalStrategy(
+        function(username, password, done) {
+            User.findOne({ username: username }, function (err, user) {
+                if (err) {
+                  return done(err);
+                }
+                if (!user) {
+                  return done(null, false, {message: 'Incorrect username.'});
+                }
+                if (!user.verifyPassword(password)) {
+                  return done(null, false, {message: 'Incorrect password'});
+                }
+                return done(null, user);
+            });
+        }
+    ));
+    app.use(express.static("public"));
+    app.use(session({ secret: "cats" }));
+    app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(passport.initialize());
+    app.use(passport.session());
+
+    passport.serializeUser(function(user, done) {
+    done(null, user.id);
+    });
+
+    passport.deserializeUser(function(id, done) {
+        User.findById(id, function(err, user) {
+            done(err, user);
+        });
+    });
+}
+
+/*
 This function creates a new connection to a Postgres instance using the
 supplied connection params (var config), and executes queryText with queryParams.
 Then, it calls queryCallback with the response recieved from the database.
@@ -70,8 +112,24 @@ function executeQuery(response, config, queryText, queryParams, queryCallback) {
    var client = new pg.Client(config); //Connect to pg instance
    client.connect(function(err) {
       if(err) { //If a connection error happens, 500
-         response.status(500).send('500 - Database connection error');
+         switch (err.code) {
+            case '28P01': //Authentiaction failed
+            response.status(500).send('500 - Authentiaction failed');
+            break;
+            case '3D000': //Database does not exist
+            response.status(500).send('500 - Database does not exist');
+            break;
+            case 'ECONNREFUSED': //Refused Connnection (likely an incorrect port)
+            response.status(500).send('500 - Connnection Refused');
+            break;
+            case 'ENOTFOUND': //Invalid host
+            response.status(500).send('500 - Host not found');
+            break;
+         default:
+            response.status(500).send('500 - Database connection error');
+         }
          console.log(err);
+         //Currently does not work in index.html
       }
       else { //Try and execute the query
          client.query(queryText, queryParams, function (err, result) {
