@@ -232,8 +232,8 @@ CREATE TABLE AssessmentComponent
         --e.g. graded feedback on practice
         --weight can also not be > 100
         CHECK ((Weight >= 0) AND (Weight <= 100)),
-   Description VARCHAR NULL,
-   NumItems INT NOT NULL DEFAULT 1
+   Description VARCHAR,
+   NumItems INT NOT NULL DEFAULT 1 CHECK(NumItems >= 0)
 );
 
 --Table mapping assessment items to parent component items
@@ -241,11 +241,11 @@ CREATE TABLE AssessmentItem
 (
   Component INT NOT NULL REFERENCES AssessmentComponent(ID),
   SequenceInComponent INT NOT NULL NOT NULL CHECK (SequenceInComponent > 0),
-  BasePoints NUMERIC(10,2) NOT NULL CHECK (BasePoints > 0), --Item cannot be worth 0 points
-  ExtraCreditPoints NUMERIC(10,2) NOT NULL DEFAULT 0 CHECK (ExtraCreditPoints >= 0),
+  BasePoints NUMERIC(6,2) NOT NULL CHECK (BasePoints > 0), --Item cannot be worth 0 points
+  ExtraCreditPoints NUMERIC(6,2) CHECK (ExtraCreditPoints >= 0),
   AssignedDate Date,
   DueDate Date CHECK (DueDate >= AssignedDate), --item can not be due before it's assigned
-  Curve NUMERIC(5,2) NULL CHECK(Curve > 0),
+  Curve NUMERIC(5,2) CHECK(Curve > 0),
 
   CONSTRAINT DateVailidty --confirm that section startdate <= item duedate <= section enddate
           CHECK(DueDateValidityCheck(DueDate, Component)),
@@ -260,10 +260,10 @@ CREATE TABLE Submission
    Section INT NOT NULL,
    Component INT NOT NULL,
    SequenceInComponent INT NOT NULL,
-   BasePointsEarned NUMERIC(5,2) CHECK (BasePointsEarned >= 0), --points earned cannot be negative
-   ExtraCreditPointsEarned NUMERIC(5,2) CHECK (ExtraCreditPointsEarned >= 0), --extra credit cannot be negative
+   BasePointsEarned NUMERIC(6,2) CHECK (BasePointsEarned >= 0), --points earned cannot be negative
+   ExtraCreditPointsEarned NUMERIC(6,2) CHECK (ExtraCreditPointsEarned >= 0), --extra credit cannot be negative
    SubmissionDate DATE,
-   Penalty NUMERIC(5,2) CHECK (Penalty >= 0), --penalty cannot be negative
+   Penalty NUMERIC(6,2) CHECK (Penalty >= 0), --penalty cannot be negative
    InstructorNote VARCHAR,
    PRIMARY KEY(Student, Section, Component, SequenceInComponent),
    FOREIGN KEY (Student, Section) REFERENCES Enrollee,
