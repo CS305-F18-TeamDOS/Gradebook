@@ -13,7 +13,7 @@ ALL ARTIFACTS PROVIDED AS IS. NO WARRANTIES EXPRESSED OR IMPLIED. USE AT YOUR OW
 This JavaScript file provides the client-side JS code that is used by the index.html
 page. The functionality provided includes accessing the REST API provided by the web
 server component of the Gradebook webapp, along with providing interactivity for the
-index.html webpage. 
+index.html webpage.
 */
 
 /*
@@ -27,8 +27,8 @@ var dbInfo = {
 };
 var instInfo = { "fname":null, "mname":null, "lname": null, "dept":null };
 
-/* 
-Each instance of connInfo as a parameter in a function definition refers to an 
+/*
+Each instance of connInfo as a parameter in a function definition refers to an
  object with the following keys, which are used as part of the REST API calls to
  the Gradebook server:
 	"host":String, "port":Number, "database":String, "user":String,
@@ -38,7 +38,7 @@ Each instance of connInfo as a parameter in a function definition refers to an
 
 $(document).ready(function() {
 	$('select').material_select(); //load dropdown boxes
-	
+
 	$('#dbInfoBox').collapsible({
 		onOpen: function() {
 			$('#dbInfoArrow').html('keyboard_arrow_up');
@@ -47,7 +47,7 @@ $(document).ready(function() {
 			$('#dbInfoArrow').html('keyboard_arrow_down');
 		}
 	});
-	
+
 	$('#attnOptionsBox').collapsible({
 		onOpen: function() {
 			$('#optionsArrow').html('keyboard_arrow_up');
@@ -56,7 +56,7 @@ $(document).ready(function() {
 			$('#optionsArrow').html('keyboard_arrow_down');
 		}
 	});
-	
+
 	$('#btnLogin').click(function() {
 		dbInfo = getDBFields();
 		var email = $('#email').val().trim();
@@ -67,7 +67,7 @@ $(document).ready(function() {
 				$('#passwordBox').val('');
 				$('#dbInfoBox').collapsible('close', 0);
 				$('#dbInfoArrow').html('keyboard_arrow_down');
-				
+
 				popYears(dbInfo);
 			});
 		}
@@ -77,48 +77,58 @@ $(document).ready(function() {
 			 'DB Info.</p>');
 		}
 	});
-	
+
 	$('#yearSelect').change(function() {
 		var year = $('#yearSelect').val();
 		popSeasons(dbInfo, year);
 	});
-	
+
 	$('#seasonSelect').change(function() {
 		var year = $('#yearSelect').val();
 		var season = $('#seasonSelect').val();
 		popCourses(dbInfo, year, season);
 	});
-	
+
 	$('#courseSelect').change(function() {
 		var year = $('#yearSelect').val();
 		var season = $('#seasonSelect').val();
 		var course = $('#courseSelect').val();
 		popSections(dbInfo, year, season, course);
 	});
-	
+
 	$('#sectionSelect').change(function() {
+		var sectionID = $('#sectionSelect').val();
+		$('#rosterTab, #attnTab, #assessTab, #gradesTab, #reportsTab').css('display', 'inline');
+	});
+
+	$('#attnTab').click(function() {
 		var sectionID = $('#sectionSelect').val();
 		popAttendance(dbInfo, sectionID);
 	});
-	
+
 	$('#opt-showPresent, #opt-compactTab').change(function() {
 		//reload attendance table since options were modified
 		var sectionID = $('#sectionSelect').val();
 		popAttendance(dbInfo, sectionID);
 	});
-	
+
+	$('#assessTab').click(function() {
+		var sectionID = $('#sectionSelect').val();
+		popAssessmentTypes(dbInfo, sectionID);
+	})
+
 	$('#logout').click(function() {
 		dbInfo = null;
 		instInfo = null;
 		setYears(null); //reset Attendance dropdowns
-		
+
 		//hide and reset profile
 		$('#profile').css('display', 'none');
 		$('#instName').html('');
-		
+
 		//show Login tab, hide Roster, Attendance, Grades, and Reports tabs
 		$('#loginTab').css('display', 'inline');
-		$('#rosterTab, #attnTab, #gradesTab, #reportsTab').css('display', 'none');
+		$('#rosterTab, #attnTab, #assessTab, #gradesTab, #reportsTab').css('display', 'none');
 		$('ul.tabs').tabs('select_tab', 'login');
 	});
 });
@@ -134,13 +144,13 @@ function getDBFields() {
 	var db = $('#database').val().trim();
 	var uname = $('#user').val().trim();
 	var pw =  $('#passwordBox').val().trim();
-	
+
 	if (host === "" || port === "" || db === "" || uname === "" || pw === "") {
 		return null;
 	}
-	
+
 	pw = JSON.stringify(sjcl.encrypt('dassl2017', pw));
-	
+
 	var connInfo = { 'host':host, 'port':parseInt(port, 10), 'database':db,
 	 'user':uname, 'password':pw };
 	return connInfo;
@@ -155,27 +165,46 @@ function serverLogin(connInfo, email, callback) {
 		success: function(result) {
 			//populate dbInfo and instInfo with info from response
 			dbInfo.instructorid = result.instructor.id;
-			instInfo = { fname:result.instructor.fname, 
+			instInfo = { fname:result.instructor.fname,
 			mname:result.instructor.mname, lname:result.instructor.lname,
 			dept:result.instructor.department };
-			
+
 			//hide Login tab, show Roster, Attendance, Grades, and Reports tabs
 			$('#loginTab').css('display', 'none');
 			$('#rosterTab, #attnTab, #gradesTab, #reportsTab').css('display', 'inline');
 			$('ul.tabs').tabs('select_tab', 'attendance');
-			
+
 			//populate instructor name and display profile (including logout menu)
 			//Array.prototype.join is used because in JS: '' + null = 'null'
 			var instName = [instInfo.fname, instInfo.mname, instInfo.lname].join(' ');
 			$('#instName').html(instName);
 			$('#profile').css('display', 'inline');
-			
+
 			callback();
 		},
 		error: function(result) {
 			//currently does not distinguish between credential and connection errors
-			showAlert('<h5>Could not login</h5><p>Login failed - ensure ' +
-			 'all fields are correct</p>');
+			switch (result.responseText) {
+				case '500 - Authentiaction failed'://Authentiaction failed
+					showAlert('<h5>Could not login</h5><p>Login failed - credentials ' +
+					'incorrect</p><p>Please re-enter credentials</p>');
+					break;
+				case '500 - Database does not exist'://Database does not exist
+					showAlert('<h5>Could not connect</h5><p> Connnection failed - unknown ' +
+					'database, ensure the database name is correct');
+					break;
+				case '500 - Connnection Refused'://Refused Connnection (likely an incorrect port)
+					showAlert('<h5>Could not connect</h5><p> Connnection refused - ' +
+					'ensure that the correct port is being used');
+					break;
+				case '500 - Host not found'://Invalid host
+					showAlert('<h5>Could not connect</h5><p> Connnection failed - ' +
+					'ensure the hostname is correct');
+					break;
+				default:
+					showAlert('<h5>Could not login</h5><p>Unknown error - Please contact ' +
+				  'your administrator');
+			}
 			console.log(result);
 		}
 	});
@@ -228,7 +257,7 @@ function popCourses(connInfo, year, seasonorder) {
 		success: function(result) {
 			var courses = '';
 			for (var i = 0; i < result.courses.length; i++) {
-				courses += '<option value="' + result.courses[i] + '">' + 
+				courses += '<option value="' + result.courses[i] + '">' +
 				 result.courses[i] + '</option>';
 			}
 			setCourses(courses);
@@ -282,13 +311,32 @@ function popAttendance(connInfo, sectionid) {
 	});
 };
 
+function popAssessmentTypes(connInfo, sectionid) {
+	var urlParams = $.extend({}, connInfo, {sectionid:sectionid});
+	$.ajax('assessmentTypes', {
+		dataType: 'html',
+		data: urlParams,
+		success: function(result) {
+			var assessTypes = '';
+			for (var i = 0; i < result.assessTypes.length; i++) {
+				assessTypes += '<option value="' + result.assessTypes[i].type +
+				 '">' + result.assessTypes[i].type + '</option>';
+			}
+			setAssessmentTypes(assessTypes);
+		},
+		error: function(result) {
+
+		}
+	});
+};
+
 function setYears(htmlText) {
 	var content = '<option value="" disabled="true" selected="true">' +
 	 'Choose year</option>' + htmlText;
 	$('#yearSelect').html(content);
 	$('#yearSelect').prop('disabled', htmlText == null);
 	$('#yearSelect').material_select(); //reload dropdown
-	
+
 	setSeasons(null); //reset dependent fields
 };
 
@@ -298,7 +346,7 @@ function setSeasons(htmlText) {
 	$('#seasonSelect').html(content);
 	$('#seasonSelect').prop('disabled', htmlText == null);
 	$('#seasonSelect').material_select(); //reload dropdown
-	
+
 	setCourses(null); //reset dependent fields
 };
 
@@ -308,7 +356,7 @@ function setCourses(htmlText) {
 	$('#courseSelect').html(content);
 	$('#courseSelect').prop('disabled', htmlText == null);
 	$('#courseSelect').material_select(); //reload dropdown
-	
+
 	setSections(null); //reset dependent fields
 };
 
@@ -318,14 +366,14 @@ function setSections(htmlText) {
 	$('#sectionSelect').html(content);
 	$('#sectionSelect').prop('disabled', htmlText == null);
 	$('#sectionSelect').material_select(); //reload dropdown
-	
+
 	setAttendance(null);
 };
 
 function setAttendance(htmlText) {
 	var showPs = $('#opt-showPresent').is(':checked');
 	var isCompact = $('#opt-compactTab').is(':checked');
-	
+
 	if (htmlText == null) {
 		$('#attendanceData').html('');
 		$('#attnOptionsBox').css('display', 'none');
@@ -344,7 +392,7 @@ function setAttendance(htmlText) {
 				//add attibutes to <table> tag to use compact framework styling
 				htmlText = '<table class="striped" style="line-height:1.1;">' +
 				 htmlText.substring(7);
-				 
+
 				//give all td tags the "compact" class
 				htmlText = htmlText.replace(/<td /g, '<td class="compact" ');
 			}

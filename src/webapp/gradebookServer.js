@@ -129,7 +129,7 @@ app.get('/login', function(request, response) {
    var instructorEmail = request.query.instructoremail.trim();
 
    //Set the query text
-   var queryText = 'SELECT ID, FName, MName, LName, Department FROM gradebook.getInstructor($1);';
+   var queryText = 'SELECT ID, FName, MName, LName, Department FROM getInstructor($1);';
    var queryParams = [instructorEmail];
 
    //Execute the query
@@ -158,7 +158,7 @@ app.get('/years', function(request, response) {
    var instructorID = request.query.instructorid;
 
    //Set the query text
-   var queryText = 'SELECT Year FROM gradebook.getInstructorYears($1);';
+   var queryText = 'SELECT Year FROM getInstructorYears($1);';
    var queryParams = [instructorID];
 
    //Execute the query
@@ -389,6 +389,34 @@ app.get('/attendance', function(request, response) {
    });
 });
 
+app.get('/assessmentTypes', function(request, response) {
+   //Connnection parameters for the Postgres client recieved in the request
+   var config = createConnectionParams(request.query.user, request.query.database,
+      request.query.password, request.query.host, request.query.port);
+
+   var sectionID = request.query.sectionid;
+
+   // the query will call a function in the future
+   var queryText = 'SELECT Type FROM AssessmentComponent WHERE Section = $1;';
+   var queryParams = [sectionID];
+
+   executeQuery(response, config, queryText, queryParams, function(result) {
+      var assessTypes = [];
+      for(row in result.rows) {
+         assessTypes.push(
+            {
+               "type": result.rows[row].type
+            }
+         );
+      }
+      var jsonReturn = {
+         "assessTypes": assessTypes
+      };
+      response.send(JSON.stringify(jsonReturn));
+   });
+});
+
+//need to be restructured
 app.get('/assessments', function(request, response){
   //Connnection parameters for the Postgres client recieved in the request
   var config = createConnectionParams(request.query.user, request.query.database,

@@ -41,7 +41,7 @@ Currently, only attendance information is served
 	</style>
 	</head>
 	<body>
-	
+
 	<!--Top of screen banner (navbar) - Includes logo, profile, and tabs-->
 	<nav class="nav-extended">
 		<div class="nav-wrapper">
@@ -64,6 +64,7 @@ Currently, only attendance information is served
 				<li id="loginTab" class="tab"><a href="#login">Login</a></li>
 				<li id="rosterTab" class="tab" style="display: none"><a href="#roster">Roster</a></li>
 				<li id="attnTab" class="tab" style="display: none"><a href="#attendance">Attendance</a></li>
+				<li id="assessTab" class="tab" style="display: none"><a href="#assessments">Assessments</a></li>
 				<li id="gradesTab" class="tab" style="display: none"><a href="#grades">Grades</a></li>
 				<li id="reportsTab" class="tab" style="display: none"><a href="#reports">Reports</a></li>
 				<li id="aboutTab" class="tab"><a href="#about">About</a></li>
@@ -72,12 +73,12 @@ Currently, only attendance information is served
 			</ul>
 		</div>
 	</nav>
-	
-	
+
+
 	<div class="container"> <!--Adds left and right spacing for content-->
 	<div class="section"> <!--Adds spacing between navbar and content-->
-	
-	<div id="login">		
+
+	<div id="login">
 		<div class="row">
 			<h5>Login</h5>
 		</div>
@@ -94,9 +95,9 @@ Currently, only attendance information is served
 			</div>
 			<a id="btnLogin" class="waves-effect waves-light btn">Login</a>
 		</div>
-		
+
 		<div class="divider"></div><br/>
-		
+
 		<ul id="dbInfoBox" class="collapsible" data-collapsible="expandable"><li>
 		<div class="collapsible-header">
 			<i id="dbInfoArrow" class="material-icons">keyboard_arrow_down</i>DB Info
@@ -123,11 +124,11 @@ Currently, only attendance information is served
 		</div>
 		</li></ul>
 	</div>
-	
+
 	<div id="roster">
 		<p class="center-align">The Roster page is not yet implemented</p>
 	</div>
-	
+
 	<div id="attendance">
 	<div class="row">
 		<div class="input-field col s12 m6 l3">
@@ -155,9 +156,9 @@ Currently, only attendance information is served
 			<label>Section</label>
 		</div>
 	</div>
-	
+
 	<div class="divider"></div>
-	
+
 	<ul id="attnOptionsBox" class="collapsible" style="display: none" data-collapsible="expandable">
 	<li>
 		<div class="collapsible-header">
@@ -182,33 +183,39 @@ Currently, only attendance information is served
 		</div>
 	</li>
 	</ul>
-	
+
 	<br/>
 	<div id="attendanceData" class="col s12" style="overflow-x:auto">
 		<!--Populated dynamically-->
 	</div>
-	
+
 	</div>
-	
+
+	<div id="assessments">
+		<select id="assessmentSelect" disabled="true">
+			<option value="" disabled="true" selected="true">Choose Assessment Type</option>
+		</select>
+	</div>
+
 	<div id="grades">
 		<p class="center-align">The Grades page is not yet implemented</p>
 	</div>
-	
+
 	<div id="reports">
 		<p class="center-align">The Reports page is not yet implemented</p>
 	</div>
-	
+
 	<div id="about">
 		<h4>About Gradebook</h4>
 		<p>Gradebook is an open-source product for instructors to record student
 		 assessment and attendance. It is developed at the Data Science &amp;
 		 Systems Lab (<a href="https://dassl.github.io" target="_blank">DASSL</a>
-		 , read <em>dazzle</em>) at the Western Connecticut State University 
+		 , read <em>dazzle</em>) at the Western Connecticut State University
 		 (<a href="http://wcsu.edu/" target="_blank">WCSU</a>).</p>
 		<h5>Goals</h5>
 		<p>Gradebook is developed with the following goals:</p>
 		<ol>
-			<li>Provide instructors a free, open, and modern tool to record 
+			<li>Provide instructors a free, open, and modern tool to record
 			 student assessment and attendance</li>
 			<li>Provide instructors a framework to surface, analyze, and visualize
 			 patterns in student performance</li>
@@ -233,7 +240,7 @@ Currently, only attendance information is served
 		 its current state. There are no guarantees that future development
 		 releases will provide any kind of backward compatibility or portability.</p>
 		<h5>Contributors</h5>
-		<p>Gradebook was conceived by and is designed by 
+		<p>Gradebook was conceived by and is designed by
 		 <a href="http://sites.wcsu.edu/murthys/" target="_blank">Sean Murthy</a>,
 		 a member of the Computer Science faculty at WCSU.</p>
 		<p>The following undergraduate Computer Science students at WCSU
@@ -255,7 +262,7 @@ Currently, only attendance information is served
 			<p>PROVIDED AS IS. NO WARRANTIES EXPRESSED OR IMPLIED. USE AT YOUR OWN
 			 RISK.</p>
 	</div>
-	
+
 	<!--Generic alert used by showAlert() in index.js-->
 	<div id="msg-genericAlert" class="modal">
 		<div id="genericAlertBody" class="modal-content"></div>
@@ -263,10 +270,10 @@ Currently, only attendance information is served
 			<a href="#!" class="modal-action modal-close waves-effect waves-gray btn-flat">OK</a>
 		</div>
 	</div>
-	
+
 	</div>
 	</div>
-	
+
 	</body>
 
 	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
