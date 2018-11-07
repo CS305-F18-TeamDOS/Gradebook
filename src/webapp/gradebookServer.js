@@ -49,7 +49,10 @@ var app = express();
 This function creates and returns a config object for the pg module based on some
 supplied parameters.
 */
-function createConnectionParams(user, database, password, host, port) {
+function createConnectionParams(user, database, passwordText, host, port) {
+  //Decrypt the password recieved from the client.  This is a temporary development
+  //feature, since we don't have ssl set up yet
+  var password = sjcl.decrypt(superSecret, JSON.parse(passwordText));
    var config = {
       user: user.trim(),
       database: database.trim(),
@@ -118,13 +121,9 @@ app.get('/js/index.js', function(request, response) {
 
 //Returns instructor id and name from a provided email.
 app.get('/login', function(request, response) {
-   //Decrypt the password recieved from the client.  This is a temporary development
-   //feature, since we don't have ssl set up yet
-   var passwordText = sjcl.decrypt(superSecret, JSON.parse(request.query.password));
-
    //Connnection parameters for the Postgres client recieved in the request
    var config = createConnectionParams(request.query.user, request.query.database,
-      passwordText, request.query.host, request.query.port);
+      request.query.password, request.query.host, request.query.port);
 
    //Get the params from the url
    var instructorEmail = request.query.instructoremail.trim();
@@ -151,13 +150,9 @@ app.get('/login', function(request, response) {
 
 //Return a list of years a certain instructor has taught sections
 app.get('/years', function(request, response) {
-   //Decrypt the password recieved from the client.  This is a temporary development
-   //feature, since we don't have ssl set up yet
-   var passwordText = sjcl.decrypt(superSecret, JSON.parse(request.query.password));
-
    //Connnection parameters for the Postgres client recieved in the request
    var config = createConnectionParams(request.query.user, request.query.database,
-      passwordText, request.query.host, request.query.port);
+      request.query.password, request.query.host, request.query.port);
 
    //Get the params from the url
    var instructorID = request.query.instructorid;
@@ -181,13 +176,9 @@ app.get('/years', function(request, response) {
 
 //Return a list of seasons an instructor taught in during a certain year
 app.get('/seasons', function(request, response) {
-   //Decrypt the password recieved from the client.  This is a temporary development
-   //feature, since we don't have ssl set up yet
-   var passwordText = sjcl.decrypt(superSecret, JSON.parse(request.query.password));
-
    //Connnection parameters for the Postgres client recieved in the request
    var config = createConnectionParams(request.query.user, request.query.database,
-      passwordText, request.query.host, request.query.port);
+      request.query.password, request.query.host, request.query.port);
 
    //Get the params from the url
    var instructorID = request.query.instructorid;
@@ -217,13 +208,9 @@ app.get('/seasons', function(request, response) {
 
 //Returns a list of courses an instructor has taugh in a certain year
 app.get('/courses', function(request, response) {
-   //Decrypt the password recieved from the client.  This is a temporary development
-   //feature, since we don't have ssl set up yet
-   var passwordText = sjcl.decrypt(superSecret, JSON.parse(request.query.password));
-
    //Connnection parameters for the Postgres client recieved in the request
    var config = createConnectionParams(request.query.user, request.query.database,
-      passwordText, request.query.host, request.query.port);
+      request.query.password, request.query.host, request.query.port);
 
    var instructorID = request.query.instructorid;
    var year = request.query.year;
@@ -247,13 +234,9 @@ app.get('/courses', function(request, response) {
 
 //Returns a list of sesctions an instructor taught in a certain term
 app.get('/sections', function(request, response) {
-   //Decrypt the password recieved from the client.  This is a temporary development
-   //feature, since we don't have ssl set up yet
-   var passwordText = sjcl.decrypt(superSecret, JSON.parse(request.query.password));
-
    //Connnection parameters for the Postgres client recieved in the request
    var config = createConnectionParams(request.query.user, request.query.database,
-      passwordText, request.query.host, request.query.port);
+      request.query.password, request.query.host, request.query.port);
 
    var instructorID = request.query.instructorid;
    var year = request.query.year;
@@ -282,13 +265,9 @@ app.get('/sections', function(request, response) {
 
 //Return a table containing the attendance for a single section
 app.get('/attendance', function(request, response) {
-   //Decrypt the password recieved from the client.  This is a temporary development
-   //feature, since we don't have ssl set up yet
-   var passwordText = sjcl.decrypt(superSecret, JSON.parse(request.query.password));
-
    //Connnection parameters for the Postgres client recieved in the request
    var config = createConnectionParams(request.query.user, request.query.database,
-      passwordText, request.query.host, request.query.port);
+      request.query.password, request.query.host, request.query.port);
 
    //Get attendance param
    var sectionID = request.query.sectionid;
@@ -408,6 +387,65 @@ app.get('/attendance', function(request, response) {
          response.send(table);
       });
    });
+});
+
+app.get('/assessments', function(request, response){
+  //Connnection parameters for the Postgres client recieved in the request
+  var config = createConnectionParams(request.query.user, request.query.database,
+     request.query.password, request.query.host, request.query.port);
+
+  var sectionID = request.query.sectionid;
+  var compType = request.query.componenttype;
+
+  var queryText = "SELECT AC.Type, AC.Weight, AC.Description, " +
+  "AI.SequenceInComponent, AI.BasePoints, AI.ExtraCreditPoints, " +
+  "AI.AssignedDate, AI.DueDate, AI.Curve " +
+  "FROM AssessmentComponent AC LEFT OUTER JOIN " +
+  "AssessmentItem AI ON AC.ID = AI.Component " +
+  "WHERE AC.Section = $1 AND AC.Type = $2 ORDER BY AI.SequenceInComponent;";
+
+  var queryParams = [sectionID, compType];
+
+  executeQuery(response, config, queryText, queryParams, function(result){
+    if(result.rows.length < 1)
+    {
+      response.status(500).send('500 - No Assessments');
+      return;
+    }
+    else {
+      var div = '<div>';
+      div += '<label>Weight: </label><input type="text" value="' +
+        result.rows[0].Weight + '"/>';
+      div += '<label>Description: </label><input type="textarea" value="' +
+        result.rows[0].Description + '"/>';
+      div += '</div>';
+
+      response.send(div);
+      if(result.rows[0].SequenceInComponent == null)
+      {
+        response.send('No Assessment Items yet');
+        return;
+      }
+      else {
+        var table = '<table><tr><th>Number</th><th>BasePoints</th>' +
+          '<th>ExtraCreditPoints</th><th>AssignedDate</th><th>DueDate</th>' +
+          '<th>Curve</th></tr>';
+        for (var i = 0; i < result.rows.length; i++)
+        {
+          table += '<tr>';
+          table += '<td>' + result.rows[i].SequenceInComponent + '</td>';
+          table += '<td>' + result.rows[i].BasePoints + '</td>';
+          table += '<td>' + result.rows[i].ExtraCreditPoints + '</td>';
+          table += '<td>' + result.rows[i].AssignedDate + '</td>';
+          table += '<td>' + result.rows[i].DueDate + '</td>';
+          table += '<td>' + result.rows[i].Curve + '</td>';
+          table += '</tr>';
+        }
+        table += '</table>';
+        response.send(table);
+      }
+    }
+  });
 });
 
 app.use(function(err, req, res, next){
