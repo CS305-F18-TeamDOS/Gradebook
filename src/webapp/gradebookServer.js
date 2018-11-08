@@ -42,6 +42,10 @@ const monthNames = [
 var pg = require('pg'); //Postgres client module   | https://github.com/brianc/node-postgres
 var sjcl = require('sjcl'); //Encryption module    | https://github.com/bitwiseshiftleft/sjcl
 var express = require('express'); //Express module | https://github.com/expressjs/express
+var passport = require('passport'); //Passport module | https://github.com/jaredhanson/passport
+var LocalStrategy = require('passport-local').Strategy; //
+var session = require('express-session');
+var bodyParser = require('body-parser');
 
 var app = express();
 
@@ -50,10 +54,13 @@ This function creates and returns a config object for the pg module based on som
 supplied parameters.
 */
 function createConnectionParams(user, database, password, host, port) {
+   //Decrypt the password recieved from the client.  This is a temporary development
+   //feature, since we don't have ssl set up yet
+   var passwordText = sjcl.decrypt(superSecret, JSON.parse(request.query.password));
    var config = {
       user: user.trim(),
       database: database.trim(),
-      password: password.trim(),
+      password: passwordText.trim(),
       host: host.trim(),
       port: port.trim()
    };
@@ -70,8 +77,24 @@ function executeQuery(response, config, queryText, queryParams, queryCallback) {
    var client = new pg.Client(config); //Connect to pg instance
    client.connect(function(err) {
       if(err) { //If a connection error happens, 500
-         response.status(500).send('500 - Database connection error');
+         switch (err.code) {
+            case '28P01': //Authentiaction failed
+            response.status(500).send('500 - Authentiaction failed');
+            break;
+            case '3D000': //Database does not exist
+            response.status(500).send('500 - Database does not exist');
+            break;
+            case 'ECONNREFUSED': //Refused Connnection (likely an incorrect port)
+            response.status(500).send('500 - Connnection Refused');
+            break;
+            case 'ENOTFOUND': //Invalid host
+            response.status(500).send('500 - Host not found');
+            break;
+         default:
+            response.status(500).send('500 - Database connection error');
+         }
          console.log(err);
+         //Currently does not work in index.html
       }
       else { //Try and execute the query
          client.query(queryText, queryParams, function (err, result) {
@@ -118,19 +141,15 @@ app.get('/js/index.js', function(request, response) {
 
 //Returns instructor id and name from a provided email.
 app.get('/login', function(request, response) {
-   //Decrypt the password recieved from the client.  This is a temporary development
-   //feature, since we don't have ssl set up yet
-   var passwordText = sjcl.decrypt(superSecret, JSON.parse(request.query.password));
-
    //Connnection parameters for the Postgres client recieved in the request
    var config = createConnectionParams(request.query.user, request.query.database,
-      passwordText, request.query.host, request.query.port);
+      request.query.password, request.query.host, request.query.port);
 
    //Get the params from the url
    var instructorEmail = request.query.instructoremail.trim();
 
    //Set the query text
-   var queryText = 'SELECT ID, FName, MName, LName, Department FROM gradebook.getInstructor($1);';
+   var queryText = 'SELECT ID, FName, MName, LName, Department FROM getInstructor($1);';
    var queryParams = [instructorEmail];
 
    //Execute the query
@@ -151,19 +170,15 @@ app.get('/login', function(request, response) {
 
 //Return a list of years a certain instructor has taught sections
 app.get('/years', function(request, response) {
-   //Decrypt the password recieved from the client.  This is a temporary development
-   //feature, since we don't have ssl set up yet
-   var passwordText = sjcl.decrypt(superSecret, JSON.parse(request.query.password));
-
    //Connnection parameters for the Postgres client recieved in the request
    var config = createConnectionParams(request.query.user, request.query.database,
-      passwordText, request.query.host, request.query.port);
+      reguest.query.password, request.query.host, request.query.port);
 
    //Get the params from the url
    var instructorID = request.query.instructorid;
 
    //Set the query text
-   var queryText = 'SELECT Year FROM gradebook.getInstructorYears($1);';
+   var queryText = 'SELECT Year FROM getInstructorYears($1);';
    var queryParams = [instructorID];
 
    //Execute the query
@@ -181,20 +196,16 @@ app.get('/years', function(request, response) {
 
 //Return a list of seasons an instructor taught in during a certain year
 app.get('/seasons', function(request, response) {
-   //Decrypt the password recieved from the client.  This is a temporary development
-   //feature, since we don't have ssl set up yet
-   var passwordText = sjcl.decrypt(superSecret, JSON.parse(request.query.password));
-
    //Connnection parameters for the Postgres client recieved in the request
    var config = createConnectionParams(request.query.user, request.query.database,
-      passwordText, request.query.host, request.query.port);
+      request.query.password, request.query.host, request.query.port);
 
    //Get the params from the url
    var instructorID = request.query.instructorid;
    var year = request.query.year;
 
    //Set the query text
-   var queryText = 'SELECT SeasonOrder, SeasonName FROM gradebook.getInstructorSeasons($1, $2);';
+   var queryText = 'SELECT SeasonOrder, SeasonName FROM getInstructorSeasons($1, $2);';
    var queryParams = [instructorID, year];
 
    //Execute the query
@@ -217,19 +228,15 @@ app.get('/seasons', function(request, response) {
 
 //Returns a list of courses an instructor has taugh in a certain year
 app.get('/courses', function(request, response) {
-   //Decrypt the password recieved from the client.  This is a temporary development
-   //feature, since we don't have ssl set up yet
-   var passwordText = sjcl.decrypt(superSecret, JSON.parse(request.query.password));
-
    //Connnection parameters for the Postgres client recieved in the request
    var config = createConnectionParams(request.query.user, request.query.database,
-      passwordText, request.query.host, request.query.port);
+      request.query.password, request.query.host, request.query.port);
 
    var instructorID = request.query.instructorid;
    var year = request.query.year;
    var seasonOrder = request.query.seasonorder;
 
-   var queryText = 'SELECT Course FROM gradebook.getInstructorCourses($1, $2, $3);';
+   var queryText = 'SELECT Course FROM getInstructorCourses($1, $2, $3);';
    var queryParams = [instructorID, year, seasonOrder];
 
    executeQuery(response, config, queryText, queryParams, function(result) {
@@ -247,20 +254,16 @@ app.get('/courses', function(request, response) {
 
 //Returns a list of sesctions an instructor taught in a certain term
 app.get('/sections', function(request, response) {
-   //Decrypt the password recieved from the client.  This is a temporary development
-   //feature, since we don't have ssl set up yet
-   var passwordText = sjcl.decrypt(superSecret, JSON.parse(request.query.password));
-
    //Connnection parameters for the Postgres client recieved in the request
    var config = createConnectionParams(request.query.user, request.query.database,
-      passwordText, request.query.host, request.query.port);
+      request.query.password, request.query.host, request.query.port);
 
    var instructorID = request.query.instructorid;
    var year = request.query.year;
    var seasonOrder = request.query.seasonorder;
    var courseNumber = request.query.coursenumber;
 
-   var queryText = 'SELECT SectionID, SectionNumber FROM gradebook.getInstructorSections($1, $2, $3, $4);';
+   var queryText = 'SELECT SectionID, SectionNumber FROM getInstructorSections($1, $2, $3, $4);';
    var queryParams = [instructorID, year, seasonOrder, courseNumber];
 
    executeQuery(response, config, queryText, queryParams, function(result) {
@@ -282,23 +285,19 @@ app.get('/sections', function(request, response) {
 
 //Return a table containing the attendance for a single section
 app.get('/attendance', function(request, response) {
-   //Decrypt the password recieved from the client.  This is a temporary development
-   //feature, since we don't have ssl set up yet
-   var passwordText = sjcl.decrypt(superSecret, JSON.parse(request.query.password));
-
    //Connnection parameters for the Postgres client recieved in the request
    var config = createConnectionParams(request.query.user, request.query.database,
-      passwordText, request.query.host, request.query.port);
+      request.query.password, request.query.host, request.query.port);
 
    //Get attendance param
    var sectionID = request.query.sectionid;
 
    //Set the query text and package the parameters in an array
-   var queryText = 'SELECT AttendanceCSVWithHeader FROM gradebook.getAttendance($1);';
+   var queryText = 'SELECT AttendanceCSVWithHeader FROM getAttendance($1);';
    var queryParams = [sectionID];
 
    //Setup the second query, to get the attendance code description table
-   var queryTextAttnDesc = 'SELECT Status, Description FROM gradebook.AttendanceStatus';
+   var queryTextAttnDesc = 'SELECT Status, Description FROM AttendanceStatus';
 
    //Execute the attendance description query first
    //attnStatusRes will hold the table containg the code descriptions
