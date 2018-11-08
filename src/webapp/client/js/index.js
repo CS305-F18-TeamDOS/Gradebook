@@ -115,7 +115,13 @@ $(document).ready(function() {
 	$('#assessTab').click(function() {
 		var sectionID = $('#sectionSelect').val();
 		popAssessmentTypes(dbInfo, sectionID);
-	})
+	});
+
+	$('#assessmentTypeSelect').change(function(){
+		var sectionID = $('#sectionSelect').val();
+		var assessType = $('#assessmentTypeSelect').val();
+		popAssessmentItems(dbInfo, sectionID, assessType)
+	});
 
 	$('#logout').click(function() {
 		dbInfo = null;
@@ -330,6 +336,20 @@ function popAssessmentTypes(connInfo, sectionid) {
 	});
 };
 
+function popAssessmentItems(connInfo, sectionid, assessType) {
+	var urlParams = $.extend({}, connInfo, {sectionid:sectionid, assessType:assessType});
+	$.ajax('assessmentItems' {
+		dataType: 'html',
+		data: urlParams,
+		success: function(result) {
+			setAssessmentItems(result);
+		},
+		error: function(result) {
+
+		}
+	});
+};
+
 function setYears(htmlText) {
 	var content = '<option value="" disabled="true" selected="true">' +
 	 'Choose year</option>' + htmlText;
@@ -404,4 +424,18 @@ function setAttendance(htmlText) {
 		$('#attnOptionsBox').css('display', 'block');
 		$('#attendanceData').html(htmlText);
 	}
+};
+
+function setAssessmentTypes(htmlText) {
+	var content = '<option value="" disabled="true" selected="true">' +
+	 'Choose an assessment type</option>' + htmlText;
+	$('#assessmentTypeSelect').html(content);
+	$('#assessmentTypeSelect').prop('disabled', htmlText == null);
+	$('#assessmentTypeSelect').material_select(); //reload dropdown
+
+	setAssessmentItems(null); //reset dependent fields
+};
+
+function setAssessmentItems(htmlText) {
+	
 };

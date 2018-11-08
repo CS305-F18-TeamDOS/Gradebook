@@ -417,7 +417,7 @@ app.get('/assessmentTypes', function(request, response) {
 });
 
 //need to be restructured
-app.get('/assessments', function(request, response){
+app.get('/assessmentItems', function(request, response){
   //Connnection parameters for the Postgres client recieved in the request
   var config = createConnectionParams(request.query.user, request.query.database,
      request.query.password, request.query.host, request.query.port);
@@ -448,14 +448,14 @@ app.get('/assessments', function(request, response){
         result.rows[0].Description + '"/>';
       div += '</div>';
 
-      response.send(div);
+      var table = '';
       if(result.rows[0].SequenceInComponent == null)
       {
         response.send('No Assessment Items yet');
         return;
       }
       else {
-        var table = '<table><tr><th>Number</th><th>BasePoints</th>' +
+        table = '<table><tr><th>Number</th><th>BasePoints</th>' +
           '<th>ExtraCreditPoints</th><th>AssignedDate</th><th>DueDate</th>' +
           '<th>Curve</th></tr>';
         for (var i = 0; i < result.rows.length; i++)
@@ -470,8 +470,8 @@ app.get('/assessments', function(request, response){
           table += '</tr>';
         }
         table += '</table>';
-        response.send(table);
       }
+      response.send(div + table);
     }
   });
 });
