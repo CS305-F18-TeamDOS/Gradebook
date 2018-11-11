@@ -437,5 +437,11 @@ function setAssessmentTypes(htmlText) {
 };
 
 function setAssessmentItems(htmlText) {
-	
+	if (htmlText == null) {
+		$('#attendanceData').html('');
+		$('#attnOptionsBox').css('display', 'none');
+	}
+	else {
+
+	}
 };
