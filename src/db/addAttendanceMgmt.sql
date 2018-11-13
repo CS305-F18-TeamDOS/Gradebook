@@ -21,7 +21,7 @@ SET LOCAL client_min_messages TO WARNING;
 
 --Drop function from M1 that has since been renamed or removed
 -- remove the DROP statement after M2
-DROP FUNCTION IF EXISTS Gradebook.datesFromSchedule(DATE, DATE, VARCHAR(7));
+DROP FUNCTION IF EXISTS datesFromSchedule(DATE, DATE, VARCHAR(7));
 
 
 --Function to generate a list of dates for a class schedule, within a date range
@@ -38,11 +38,11 @@ DROP FUNCTION IF EXISTS Gradebook.datesFromSchedule(DATE, DATE, VARCHAR(7));
 --S = Saturday
 
 --Example usage: get dates of Tuesdays and Thursdays b/w 2017-01-01 and 2017-05-01:
--- SELECT * FROM Gradebook.getScheduleDates('2017-01-01', '2017-05-01', 'TR');
+-- SELECT * FROM getScheduleDates('2017-01-01', '2017-05-01', 'TR');
 
-DROP FUNCTION IF EXISTS Gradebook.getScheduleDates(DATE, DATE, VARCHAR(7));
+DROP FUNCTION IF EXISTS getScheduleDates(DATE, DATE, VARCHAR(7));
 
-CREATE FUNCTION Gradebook.getScheduleDates(startDate DATE, endDate DATE,
+CREATE FUNCTION getScheduleDates(startDate DATE, endDate DATE,
                                            schedule VARCHAR(7)
                                           )
 RETURNS TABLE (ScheduleDate DATE)
