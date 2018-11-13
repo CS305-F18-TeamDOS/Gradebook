@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<!--
+login.html - Gradebook (DOS Implementation)
+
+This is the implementation of the Gradebook Desktop application Log in Page.
+This page will have the imput boxes to accept a username and password from the end user and then check with the server to verify that the username and password provided were correct. Then the application will load the main page of Gradebook.
+
+The page will have 3 tabs at the top of the page:
+	1. A tab that will keep you on the current log in page.
+	2. The About tab that will contain the information that the existing Gradebook About tab contains 
+	3. A changes page that will describe the changes made from the existing implementation of Gradebook to the DOS implementation
+
+NOTES: 
+* The main page of Gradebook used in this implementation will be the default page from the published Gradebook version.
+
+* The institution name can be changed as needed for the institution that will be using this product
+
+*There is an issue when trying to process the login with the file index.js - errors are being returned and further research is needed to resolve the issue.
+    *There is an issue created on Github for the bug in index.js
+    *All of these HTML files will be uploaded to Github once the issue is resolved.
+
+Team Members: Kyle Bella, Kenneth Kozlowski, Joseph Tether
+CS 305-71
+TEAM DOS
+
+Author: Kenneth Kozlowski
+Date of Last Revision: November 5, 2018
+-->
+	<html>
+		<head>
+			<title>Login | Gradebook</title>
+			<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+		<!--Import Materialize framework - Learn more: http://materializecss.com/-->
+		<link type="text/css" rel="stylesheet" href="../css/materialize.min.css"  media="screen,projection"/>
+		</head>
+		<body>
+			 <nav>
+				<div class="nav-wrapper">
+					<a href="#" class="brand-logo"> Gradebook - Sample Institution</a>
+				
+					<!--This list will be the pre-login navigation bar. These will change once the user is logged into the system.-->
+					<ul id="nav-mobile" class="right hide-on-med-and-down">
+						<li><a href="login.html">Login</a></li>
+						<li><a href="about.html">About</a></li>
+						<li><a href="changeLog.html">Change Log</a></li>
+					</ul>
+			
+				</div>
+			</nav>
+	
+	
+			<div class="container"> <!--Adds left and right spacing for content-->
+				<div class="section"> <!--Adds spacing between navbar and content-->
+	
+					<div id="login" class="center-align">		
+						<div class="row">
+							<h5>Login</h5>
+						</div>
+						<div class="row">
+							<div class="input-field col s12">
+								<i class="material-icons prefix">mail</i>
+								<input id="email" type="email"/>
+								<label for="email">Email</label>
+							</div>
+						</div>
+						<div class="row">
+							<div class="center-align">
+								<div class="input-field col s12">
+									<i class="material-icons prefix">lock</i>
+									<input id="passwordBox" type="password"/>
+									<label for="passwordBox">Password</label>
+								</div>
+							</div>
+						</div>
+					<a id="btnLogin" class="waves-effect waves-light btn">Login</a>
+					</div><!--End Login div-->
+					
+					<br><hr><br>
+					<div>
+						<p> <strong><u>NOTICE</u></strong>: This system is only accessible to users that have been allowed access. Any unauthorized use of this system will result in prosecution.
+					<br><br>
+					If you are having difficulty logging into the system please contact the system administrator.
+					<br><br>
+					<strong><u>Other Note</u></strong>: This can be changed for each institution.
+						</p>
+					</div><!--End of paragraph div-->
+				
+					<!--Generic alert used by showAlert() in index.js-->
+					<div id="msg-genericAlert" class="modal">
+						<div id="genericAlertBody" class="modal-content"></div>
+							<div class="modal-footer">
+								<a href="#!" class="modal-action modal-close waves-effect waves-gray btn-flat">OK</a>
+								
+
+								
+							</div>
+						</div>
+					</div><!--End alert box div-->
+				
+				</div><!--End section div-->
+			</div><!--End container div-->
+		</body>
+	
+	
+	
+		<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+		<script type="text/javascript" src="../js/materialize.min.js"></script>
+		<script type="text/javascript" src="../js/index.js"></script>
+		<script src="https://bitwiseshiftleft.github.io/sjcl/sjcl.js"></script>
+	</html>
