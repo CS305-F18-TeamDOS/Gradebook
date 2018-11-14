@@ -38,7 +38,7 @@ IF "%6"=="" (
 IF "%port%"=="" SET port=5432
 
 psql -h %hostname% -p %port% -d %database% -U %username% --single-transaction^
- -f "prepareCourseScheduleImport.sql" -c "\COPY CourseScheduleStaging FROM '%~1' WITH csv HEADER"^
+ -f "..\..\..\Git\Gradebook\src\db\importCourseSchedule\prepareCourseScheduleImport.sql" -c "\COPY CourseScheduleStaging FROM '%~1' WITH csv HEADER"^
  -c "SELECT pg_temp.importCourseSchedule(%2, '%3', false);"
 GOTO end
 

@@ -99,11 +99,9 @@ $(document).ready(function() {
 	$('#sectionSelect').change(function() {
 		var sectionID = $('#sectionSelect').val();
 		$('#rosterTab, #attnTab, #assessTab, #gradesTab, #reportsTab').css('display', 'inline');
-	});
-
-	$('#attnTab').click(function() {
-		var sectionID = $('#sectionSelect').val();
+		setAssessmentTypes(null);
 		popAttendance(dbInfo, sectionID);
+		popAssessmentTypes(dbInfo, sectionID);
 	});
 
 	$('#opt-showPresent, #opt-compactTab').change(function() {
@@ -112,8 +110,13 @@ $(document).ready(function() {
 		popAttendance(dbInfo, sectionID);
 	});
 
-	$('#assessTab').click(function() {
+	$('#btnAddAssessType').click(function() {
 		var sectionID = $('#sectionSelect').val();
+		var assessType = $('#typeInput').val();
+		var assessWeight = $('#weightInput').val();
+		var assessDescription = $('#descriptionInput').val();
+		insertNewAssessType(dbInfo, sectionID, assessType, assessWeight, assessDescription);
+		// repopulate Assessment Types
 		popAssessmentTypes(dbInfo, sectionID);
 	});
 
@@ -177,8 +180,8 @@ function serverLogin(connInfo, email, callback) {
 
 			//hide Login tab, show Roster, Attendance, Grades, and Reports tabs
 			$('#loginTab').css('display', 'none');
-			$('#rosterTab, #attnTab, #gradesTab, #reportsTab').css('display', 'inline');
-			$('ul.tabs').tabs('select_tab', 'attendance');
+			$('#sectionTab').css('display', 'inline');
+			$('ul.tabs').tabs('select_tab', 'sections');
 
 			//populate instructor name and display profile (including logout menu)
 			//Array.prototype.join is used because in JS: '' + null = 'null'
@@ -320,32 +323,44 @@ function popAttendance(connInfo, sectionid) {
 function popAssessmentTypes(connInfo, sectionid) {
 	var urlParams = $.extend({}, connInfo, {sectionid:sectionid});
 	$.ajax('assessmentTypes', {
-		dataType: 'html',
+		dataType: 'json',
 		data: urlParams,
 		success: function(result) {
 			var assessTypes = '';
 			for (var i = 0; i < result.assessTypes.length; i++) {
-				assessTypes += '<option value="' + result.assessTypes[i].type +
-				 '">' + result.assessTypes[i].type + '</option>';
+				assessTypes += '<option value="' + result.assessTypes[i].componenttype +
+				 '">' + result.assessTypes[i].componenttype + '</option>';
 			}
 			setAssessmentTypes(assessTypes);
 		},
 		error: function(result) {
-
+			if (result.responseText == '500 - No Assessment Types')
+			{
+				showAlert('<p>No assessment types exist for this section</p>');
+			}
+			else
+			{
+				showAlert('<p>Error while retrieving assessment types</p>');
+			}
+			console.log(result);
 		}
 	});
 };
 
 function popAssessmentItems(connInfo, sectionid, assessType) {
 	var urlParams = $.extend({}, connInfo, {sectionid:sectionid, assessType:assessType});
-	$.ajax('assessmentItems' {
-		dataType: 'html',
+	$.ajax('assessmentItems', {
+		dataType: 'json',
 		data: urlParams,
 		success: function(result) {
-			setAssessmentItems(result);
+			$('#typeInput').val(result.assessType);
+			$('#weightInput').val(result.assessWeight);
+			$('#descriptionInput').val(result.assessDescription);
+			setAssessmentItems(result.assessItemTable);
 		},
 		error: function(result) {
-
+			showAlert('<p>Error while retrieving assessment items</p>');
+			console.log(result);
 		}
 	});
 };
@@ -388,6 +403,7 @@ function setSections(htmlText) {
 	$('#sectionSelect').material_select(); //reload dropdown
 
 	setAttendance(null);
+	setAssessmentTypes(null);
 };
 
 function setAttendance(htmlText) {
@@ -438,10 +454,32 @@ function setAssessmentTypes(htmlText) {
 
 function setAssessmentItems(htmlText) {
 	if (htmlText == null) {
-		$('#attendanceData').html('');
-		$('#attnOptionsBox').css('display', 'none');
+		$('#assessmentItemTable').html('');
 	}
 	else {
-
+		if (htmlText.substring(0, 7) !== '<table>') {
+			console.log('WARN: setAssessmentItems(): Unable to style assessment item table;' +
+			 ' first 7 chars did not match "<table>"');
+		}
+		else {
+			//add attibutes to <table> tag to use non-compact framework styling
+			htmlText = '<table class="striped">' + htmlText.substring(7);
+		}
+		$('#assessmentItemTable').html(htmlText);
 	}
 };
+
+function insertNewAssessType(connInfo, sectionid, type, weight, description) {
+	var urlParams = $.extend({}, connInfo, {sectionid:sectionid, type:type, weight:weight, description:description});
+	$.ajax('assessmentTypesInsert', {
+		dataType: 'json',
+		data: urlParams,
+		success: function(result) {
+
+		},
+		error: function(result) {
+			showAlert('<p>Error while inserting assessment items</p>');
+			console.log(result);
+		}
+	});
+}

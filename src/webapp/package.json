@@ -6,19 +6,19 @@
     "start": "node gradebookServer.js"
   },
   "dependencies": {
-    "pg": ">=7.2.0",
-    "sjcl": ">=1.0.7",
-    "express": ">=4.15.3"
+    "express": "^4.16.4",
+    "pg": "^7.6.1",
+    "sjcl": "^1.0.8"
   },
   "engines": {
     "node": ">=6.11.2"
   },
   "files": [
-   "README.md",
-   "package.json",
-   "gradebookServer.js",
-   "client"
- ],
+    "README.md",
+    "package.json",
+    "gradebookServer.js",
+    "client"
+  ],
   "repository": {
     "type": "git",
     "url": "git@github.com:DASSL/Gradebook.git"

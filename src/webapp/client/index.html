@@ -62,6 +62,7 @@ Currently, only attendance information is served
 		<div class="nav-content">
 			<ul class="tabs tabs-transparent">
 				<li id="loginTab" class="tab"><a href="#login">Login</a></li>
+				<li id="sectionTab" class="tab" style="display: none"><a href="#sections">Section</a></li>
 				<li id="rosterTab" class="tab" style="display: none"><a href="#roster">Roster</a></li>
 				<li id="attnTab" class="tab" style="display: none"><a href="#attendance">Attendance</a></li>
 				<li id="assessTab" class="tab" style="display: none"><a href="#assessments">Assessments</a></li>
@@ -125,12 +126,7 @@ Currently, only attendance information is served
 		</li></ul>
 	</div>
 
-	<div id="roster">
-		<p class="center-align">The Roster page is not yet implemented</p>
-	</div>
-
-	<div id="attendance">
-	<div class="row">
+	<div id="sections" class="row">
 		<div class="input-field col s12 m6 l3">
 			<select id="yearSelect" disabled="true">
 				<option value="" disabled="true" selected="true">Choose year</option>
@@ -157,7 +153,39 @@ Currently, only attendance information is served
 		</div>
 	</div>
 
-	<div class="divider"></div>
+	<div id="roster">
+		<p class="center-align">The Roster page is not yet implemented</p>
+	</div>
+
+	<div id="attendance">
+	<!--<div class="row">
+		<div class="input-field col s12 m6 l3">
+			<select id="yearSelect" disabled="true">
+				<option value="" disabled="true" selected="true">Choose year</option>
+			</select>
+			<label>Year</label>
+		</div>
+		<div class="input-field col s12 m6 l3">
+			<select id="seasonSelect" disabled="true">
+				<option value="" disabled="true" selected="true">Choose season</option>
+			</select>
+			<label>Season</label>
+		</div>
+		<div class="input-field col s12 m6 l3">
+			<select id="courseSelect" disabled="true">
+				<option value="" disabled="true" selected="true">Choose course</option>
+			</select>
+			<label>Course</label>
+		</div>
+		<div class="input-field col s12 m6 l3">
+			<select id="sectionSelect" disabled="true">
+				<option value="" disabled="true" selected="true">Choose section</option>
+			</select>
+			<label>Section</label>
+		</div>
+	</div>
+
+	<div class="divider"></div>-->
 
 	<ul id="attnOptionsBox" class="collapsible" style="display: none" data-collapsible="expandable">
 	<li>
@@ -192,14 +220,64 @@ Currently, only attendance information is served
 	</div>
 
 	<div id="assessments">
-		<select id="assessmentTypeSelect" disabled="true">
-			<option value="" disabled="true" selected="true">Choose Assessment Type</option>
-		</select>
-	</div>
+	<!--<div class="row">
+		<div class="input-field col s12 m6 l3">
+			<select id="yearSelect" disabled="true">
+				<option value="" disabled="true" selected="true">Choose year</option>
+			</select>
+			<label>Year</label>
+		</div>
+		<div class="input-field col s12 m6 l3">
+			<select id="seasonSelect" disabled="true">
+				<option value="" disabled="true" selected="true">Choose season</option>
+			</select>
+			<label>Season</label>
+		</div>
+		<div class="input-field col s12 m6 l3">
+			<select id="courseSelect" disabled="true">
+				<option value="" disabled="true" selected="true">Choose course</option>
+			</select>
+			<label>Course</label>
+		</div>
+		<div class="input-field col s12 m6 l3">
+			<select id="sectionSelect" disabled="true">
+				<option value="" disabled="true" selected="true">Choose section</option>
+			</select>
+			<label>Section</label>
+		</div>-->
+		<div class="input-field col s12 m6 l3">
+			<select id="assessmentTypeSelect" disabled="true">
+				<option value="" disabled="true" selected="true">Choose Assessment Type</option>
+			</select>
+		</div>
+		<div class="row">
+			<div class="input-field col s12 m6 l3">
+				<i class="material-icons prefix">mode_edit</i>
+				<input id="typeInput" type="text"/>
+				<label for="typeInput">Type</label>
+			</div>
+			<div class="input-field col s12 m6 l3">
+				<i class="material-icons prefix">mode_edit</i>
+				<input id="weightInput" type="text"/>
+				<label for="weightInput">Weight</label>
+			</div>
+			<div class="input-field col s12 m6 l3">
+				<!--<i class="material-icons prefix">mode_edit</i>-->
+				<textarea id="descriptionInput" class="materialize-textarea"></textarea>
+				<label for="descriptionInput">Description</label>
+			</div>
+		</div>
+		<a id="btnAddAssessType" class="waves-effect waves-light btn">Add Assessment Type</a>
 
+	<div class="divider"></div>
 	<div id="assessmentItemTable">
+
 		<!--Populated dynamically-->
 	</div>
+
+	</div>
+
+
 
 	<div id="grades">
 		<p class="center-align">The Grades page is not yet implemented</p>

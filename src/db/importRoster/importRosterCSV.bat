@@ -70,7 +70,7 @@ REM This allows the use of a temporary table without it being automatically drop
 REM  due to the session being closed between statements
 
 psql %1 %2 %3 %4 %5 %6 %7 %8 %9 -h %hostname% -p %port% -d %database% -U %username%^
- --single-transaction -f "prepareRosterImport.sql"^
+ --single-transaction -f "..\..\..\Git\Gradebook\src\db\importRoster\prepareRosterImport.sql"^
  -c "\COPY rosterStaging FROM '%filename%' WITH csv HEADER"^
  -c "SELECT pg_temp.importRoster(%year%, '%season%', '%courseNumber%', '%sectionNumber%');"
 GOTO end

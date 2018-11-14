@@ -185,7 +185,7 @@ app.get('/seasons', function(request, response) {
    var year = request.query.year;
 
    //Set the query text
-   var queryText = 'SELECT SeasonOrder, SeasonName FROM gradebook.getInstructorSeasons($1, $2);';
+   var queryText = 'SELECT SeasonOrder, SeasonName FROM getInstructorSeasons($1, $2);';
    var queryParams = [instructorID, year];
 
    //Execute the query
@@ -216,7 +216,7 @@ app.get('/courses', function(request, response) {
    var year = request.query.year;
    var seasonOrder = request.query.seasonorder;
 
-   var queryText = 'SELECT Course FROM gradebook.getInstructorCourses($1, $2, $3);';
+   var queryText = 'SELECT Course FROM getInstructorCourses($1, $2, $3);';
    var queryParams = [instructorID, year, seasonOrder];
 
    executeQuery(response, config, queryText, queryParams, function(result) {
@@ -243,7 +243,7 @@ app.get('/sections', function(request, response) {
    var seasonOrder = request.query.seasonorder;
    var courseNumber = request.query.coursenumber;
 
-   var queryText = 'SELECT SectionID, SectionNumber FROM gradebook.getInstructorSections($1, $2, $3, $4);';
+   var queryText = 'SELECT SectionID, SectionNumber FROM getInstructorSections($1, $2, $3, $4);';
    var queryParams = [instructorID, year, seasonOrder, courseNumber];
 
    executeQuery(response, config, queryText, queryParams, function(result) {
@@ -273,11 +273,11 @@ app.get('/attendance', function(request, response) {
    var sectionID = request.query.sectionid;
 
    //Set the query text and package the parameters in an array
-   var queryText = 'SELECT AttendanceCSVWithHeader FROM gradebook.getAttendance($1);';
+   var queryText = 'SELECT AttendanceCSVWithHeader FROM getAttendance($1);';
    var queryParams = [sectionID];
 
    //Setup the second query, to get the attendance code description table
-   var queryTextAttnDesc = 'SELECT Status, Description FROM gradebook.AttendanceStatus';
+   var queryTextAttnDesc = 'SELECT Status, Description FROM AttendanceStatus';
 
    //Execute the attendance description query first
    //attnStatusRes will hold the table containg the code descriptions
@@ -397,22 +397,28 @@ app.get('/assessmentTypes', function(request, response) {
    var sectionID = request.query.sectionid;
 
    // the query will call a function in the future
-   var queryText = 'SELECT Type FROM AssessmentComponent WHERE Section = $1;';
+   var queryText = 'SELECT ComponentType FROM AssessmentComponent WHERE Section = $1;';
    var queryParams = [sectionID];
 
    executeQuery(response, config, queryText, queryParams, function(result) {
       var assessTypes = [];
-      for(row in result.rows) {
-         assessTypes.push(
-            {
-               "type": result.rows[row].type
-            }
-         );
+      if (result.rows.length == 0)
+      {
+        response.status(500).send('500 - No Assessment Types');
       }
-      var jsonReturn = {
-         "assessTypes": assessTypes
-      };
-      response.send(JSON.stringify(jsonReturn));
+      else {
+        for(row in result.rows) {
+           assessTypes.push(
+              {
+                 "componenttype": result.rows[row].componenttype
+              }
+           );
+        }
+        var jsonReturn = {
+           "assessTypes": assessTypes
+        };
+        response.send(JSON.stringify(jsonReturn));
+      }
    });
 });
 
@@ -425,55 +431,81 @@ app.get('/assessmentItems', function(request, response){
   var sectionID = request.query.sectionid;
   var compType = request.query.componenttype;
 
-  var queryText = "SELECT AC.Type, AC.Weight, AC.Description, " +
+  var queryText = "SELECT AC.Weight, AC.Description, " +
   "AI.SequenceInComponent, AI.BasePoints, AI.ExtraCreditPoints, " +
   "AI.AssignedDate, AI.DueDate, AI.Curve " +
   "FROM AssessmentComponent AC LEFT OUTER JOIN " +
   "AssessmentItem AI ON AC.ID = AI.Component " +
-  "WHERE AC.Section = $1 AND AC.Type = $2 ORDER BY AI.SequenceInComponent;";
+  "WHERE AC.Section IN($1) AND AC.ComponentType IN($2) ORDER BY AI.SequenceInComponent;";
+  //"WHERE Section = $1 AND ComponentType = $2" returns undefined columns
 
   var queryParams = [sectionID, compType];
 
-  executeQuery(response, config, queryText, queryParams, function(result){
-    if(result.rows.length < 1)
-    {
-      response.status(500).send('500 - No Assessments');
-      return;
-    }
-    else {
-      var div = '<div>';
-      div += '<label>Weight: </label><input type="text" value="' +
-        result.rows[0].Weight + '"/>';
-      div += '<label>Description: </label><input type="textarea" value="' +
-        result.rows[0].Description + '"/>';
-      div += '</div>';
+  executeQuery(response, config, queryText, queryParams, function(result) {
 
-      var table = '';
-      if(result.rows[0].SequenceInComponent == null)
+      //var assessType = result.rows[0].componenttype;
+      var assessWeight = result.rows[0].weight;
+      var assessDescription = result.rows[0].description;
+
+      var table = '<table><tr><th>Number</th><th>BasePoints</th>' +
+        '<th>ExtraCreditPoints</th><th>AssignedDate</th><th>DueDate</th>' +
+        '<th>Curve</th></tr>';
+      /*if(result.rows[0].SequenceInComponent == null)
       {
         response.send('No Assessment Items yet');
         return;
       }
       else {
-        table = '<table><tr><th>Number</th><th>BasePoints</th>' +
-          '<th>ExtraCreditPoints</th><th>AssignedDate</th><th>DueDate</th>' +
-          '<th>Curve</th></tr>';
-        for (var i = 0; i < result.rows.length; i++)
+        for (row in result.rows)
         {
           table += '<tr>';
-          table += '<td>' + result.rows[i].SequenceInComponent + '</td>';
-          table += '<td>' + result.rows[i].BasePoints + '</td>';
-          table += '<td>' + result.rows[i].ExtraCreditPoints + '</td>';
-          table += '<td>' + result.rows[i].AssignedDate + '</td>';
-          table += '<td>' + result.rows[i].DueDate + '</td>';
-          table += '<td>' + result.rows[i].Curve + '</td>';
+          table += '<td>' + result.rows[rows].SequenceInComponent + '</td>';
+          table += '<td>' + result.rows[rows].BasePoints + '</td>';
+          table += '<td>' + result.rows[rows].ExtraCreditPoints + '</td>';
+          table += '<td>' + result.rows[rows].AssignedDate + '</td>';
+          table += '<td>' + result.rows[rows].DueDate + '</td>';
+          table += '<td>' + result.rows[rows].Curve + '</td>';
           table += '</tr>';
         }
-        table += '</table>';
-      }
-      response.send(div + table);
-    }
+      }*/
+      table += '<tr rowspan="6"><td>Add Assessment Item</td></tr>';
+      table += '</table>';
+      var jsonReturn = {
+         "assessType": assessType,
+         "assessWeight": assessWeight,
+         "assessDescription": assessDescription,
+         "assessItemTable": table
+      };
+      response.send(JSON.stringify(jsonReturn));
   });
+});
+
+app.get('/assessmentTypesInsert', function(request, response) {
+   //Connnection parameters for the Postgres client recieved in the request
+   var config = createConnectionParams(request.query.user, request.query.database,
+      request.query.password, request.query.host, request.query.port);
+
+   var sectionID = request.query.sectionid;
+   var type = request.query.type;
+   var weight = request.query.weight;
+   var description = request.query.description;
+   // the query will call a function in the future
+   var queryText = 'INSERT INTO AssessmentComponent (section, type, weight, description)' +
+                   'VALUES ($1, $2, $3, $4);';
+   var queryParams = [sectionID, type, weight, description];
+
+   executeQuery(response, config, queryText, queryParams, function(result) {
+      if (result.rowCount == 0)
+      {
+        response.status(500).send('500 - Insert Failed');
+      }
+      else {
+        var jsonReturn = {
+           "rowCount": result.rowCount
+        };
+        response.send(JSON.stringify(jsonReturn));
+      }
+   });
 });
 
 app.use(function(err, req, res, next){
