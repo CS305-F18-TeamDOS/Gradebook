@@ -8,10 +8,33 @@
 --implements management features for AssessmentItems
 --This includes: reading, deleting, updating
 
+
+--This function inserts a new AssessmentComponent with the given parameters
+--as values to insert
+CREATE OR REPLACE FUNCTION createAssessmentComponent(
+                            _Secton INT, _Type VARCHAR, _Weight NUMERIC(5,2),
+                            _Description VARCHAR, _NumItems INT)
+RETURNS BOOLEAN AS
+$$
+BEGIN
+
+  --insert given parameters into AssessmentComponent
+  INSERT INTO AssessmentComponent(Section, Type, Weight, Description, NumItems)
+  VALUES (_Section, _Type, _Weight, _Description, _NumItems);
+
+  RETURN TRUE;
+
+END
+$$
+LANGUAGE sql
+  VOLATILE
+  RETURNS NULL ON NULL INPUT
+  SECURITY INVOKER;
+
 --this function is used to fully remove an AssessmentItem and it's dependents
 --begins by deleting all sumbissions that refference the AssessmentItem to delete
 --then deleting the AssessmentItem indicated by the input parameter
-CREATE OR REPLACE FUNCTION RemoveAssessmentItem(ItemToDelete INT)
+CREATE OR REPLACE FUNCTION removeAssessmentItem(ItemToDelete INT)
 RETURNS BOOLEAN AS
 $$
 BEGIN
