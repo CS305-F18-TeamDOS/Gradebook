@@ -120,10 +120,27 @@ $(document).ready(function() {
 		popAssessmentTypes(dbInfo, sectionID);
 	});
 
-	$('#assessmentTypeSelect').change(function(){
+	$('#assessmentTypeSelect').change(function() {
 		var sectionID = $('#sectionSelect').val();
-		var assessType = $('#assessmentTypeSelect').val();
-		popAssessmentItems(dbInfo, sectionID, assessType)
+		var assessID = $('#assessmentTypeSelect').val();
+		popAssessmentItems(dbInfo, sectionID, assessID);
+	});
+
+	$('#getFields').click(function() {
+		// to be implemented
+	});
+
+	$('#btnAddAssessItem').click(function() {
+		var sectionID = $('#sectionSelect').val();
+		var assessID = $('#assessmentTypeSelect').val();
+		var basePoints = $('#basePointsInput').val();
+		var extraPoints = $('#extraCreditPointsInput').val();
+		var assignedDate = $('#assignedDateInput').val();
+		var dueDate = $('#dueDateInput').val();
+		insertNewAssessItem(dbInfo, assessID, basePoints, extraPoints, assignedDate,
+		dueDate);
+		// repopulate Assessment Items
+		popAssessmentItems(dbInfo, sectionID, assessID);
 	});
 
 	$('#logout').click(function() {
@@ -137,7 +154,7 @@ $(document).ready(function() {
 
 		//show Login tab, hide Roster, Attendance, Grades, and Reports tabs
 		$('#loginTab').css('display', 'inline');
-		$('#rosterTab, #attnTab, #assessTab, #gradesTab, #reportsTab').css('display', 'none');
+		$('#rosterTab, #attnTab, #sectionTab, #assessTab, #gradesTab, #reportsTab').css('display', 'none');
 		$('ul.tabs').tabs('select_tab', 'login');
 	});
 });
@@ -328,7 +345,7 @@ function popAssessmentTypes(connInfo, sectionid) {
 		success: function(result) {
 			var assessTypes = '';
 			for (var i = 0; i < result.assessTypes.length; i++) {
-				assessTypes += '<option value="' + result.assessTypes[i].componenttype +
+				assessTypes += '<option value="' + result.assessTypes[i].componentID +
 				 '">' + result.assessTypes[i].componenttype + '</option>';
 			}
 			setAssessmentTypes(assessTypes);
@@ -347,8 +364,8 @@ function popAssessmentTypes(connInfo, sectionid) {
 	});
 };
 
-function popAssessmentItems(connInfo, sectionid, assessType) {
-	var urlParams = $.extend({}, connInfo, {sectionid:sectionid, assessType:assessType});
+function popAssessmentItems(connInfo, sectionid, assessid) {
+	var urlParams = $.extend({}, connInfo, {sectionid:sectionid, assessid:assessid});
 	$.ajax('assessmentItems', {
 		dataType: 'json',
 		data: urlParams,
@@ -478,7 +495,24 @@ function insertNewAssessType(connInfo, sectionid, type, weight, description) {
 
 		},
 		error: function(result) {
-			showAlert('<p>Error while inserting assessment items</p>');
+			showAlert('<p>Error while inserting assessment type</p>');
+			console.log(result);
+		}
+	});
+}
+
+function insertNewAssessItem(connInfo, assessid, basePoints, extraCreditPoints,
+														 assignedDate, dueDate) {
+	var urlParams = $.extend({}, connInfo, {assessid:assessid, basePoints:basePoints,
+		extraCreditPoints:extraCreditPoints, assignedDate:assignedDate, dueDate:dueDate});
+	$.ajax('assessmentItemsInsert', {
+		dataType: 'json',
+		data: urlParams,
+		success: function(result) {
+
+		},
+		error: function(result) {
+			showAlert('<p>Error while inserting assessment item</p>');
 			console.log(result);
 		}
 	});
