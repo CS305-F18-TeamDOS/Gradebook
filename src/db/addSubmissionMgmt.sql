@@ -11,22 +11,24 @@
 
 --Insert a submission into the database
 CREATE OR REPLACE FUNCTION CreateSubmission(Student INT, Section INT,
-                                            Component INT, SequenceInComponent INT
+                                            Component INT, SequenceInComponent INT,
                                             BasePointsEarned NUMERIC,
-                                            ExtraCreditPointsEarned NUMERIC
+                                            ExtraCreditPointsEarned NUMERIC,
                                             SubmissionDate DATE, Penalty NUMERIC,
                                             InstructorNote VARCHAR)
 RETURNS BOOLEAN AS
 $$
+BEGIN
 
-  INSERT INTO Submission(Student, Section, Component, SequenceInComponent BasePointsEarned,
+  INSERT INTO Submission(Student, Section, Component, SequenceInComponent, BasePointsEarned,
                           ExtraCreditPointsEarned, SubmissionDate, Penalty, InstructorNote)
   VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9);
 
   --returns true if successful
   RETURN TRUE;
 
-$$ LANGUAGE sql
+END
+$$ LANGUAGE plpgsql
    VOLATILE
    RETURNS NULL ON NULL INPUT
    SECURITY INVOKER;
@@ -37,11 +39,16 @@ CREATE OR REPLACE FUNCTION removeSubmission(StudentID INT, SectionID INT, Compon
                                             SequenceInComponent INT)
 RETURNS BOOLEAN AS
 $$
+BEGIN
 
   DELETE FROM Submission
-  WHERE Submission.Student = $1 AND Submission.SectionID = $2 AND
+  WHERE Submission.Student = $1 AND Submission.Section = $2 AND
         Submission.Component = $3 AND Submission.SequenceInComponent = $4;
-$$ LANGUAGE sql
+
+  RETURN TRUE;
+
+END
+$$ LANGUAGE plpgsql
     VOLATILE
     RETURNS NULL ON NULL INPUT
     SECURITY INVOKER;
@@ -62,15 +69,17 @@ RETURNS TABLE
 )
 AS
 $$
+BEGIN
 
   SELECT Student, Section, Component, SequenceInComponent, BasePointsEarned,
          ExtraCreditPoints, SubmissionDate, Penalty, InstructorNote
   FROM Submission;
 
-$$ LANGUAGE sql
+END
+$$ LANGUAGE plpgsql
     STABLE
     CALLED ON NULL INPUT
-    SECURTIY INVOKER;
+    SECURITY INVOKER;
 
 --This function returns one instance of submission, where the given StudentID, SectionID
 --AssessmentComponentID, and SequenceInComponent match the values of that instance
@@ -86,12 +95,13 @@ RETURNS TABLE
 )
 AS
 $$
+BEGIN
 
-  SELECT BasePointsEarned, ExtraCreditPoints, SubmissionDate, Penalty, InstructorNote
+  SELECT BasePointsEarned, ExtraCreditPointsEarned, SubmissionDate, Penalty, InstructorNote
   FROM Submission WHERE Submission.Student = $1 AND Submission.SectionID = $2 AND
                         Submission.Component = $3 AND Submission.SequenceInComponent = $4;
-
-$$ LANGUAGE sql
+END
+$$ LANGUAGE plpgsql
     STABLE
-    REUTRNS NULL ON NULL INPUT
-    SECURTIY INVOKER;
+    RETURNS NULL ON NULL INPUT
+    SECURITY INVOKER;

@@ -11,21 +11,21 @@
 --This function inserts a new AssessmentComponent with the given parameters
 --as values to insert
 CREATE OR REPLACE FUNCTION createAssessmentComponent(
-                            _Secton INT, _Type VARCHAR, _Weight NUMERIC(5,2),
-                            _Description VARCHAR, _NumItems INT)
+                            Secton INT, Type VARCHAR, Weight NUMERIC(5,2),
+                            Description VARCHAR, NumItems INT)
 RETURNS BOOLEAN AS
 $$
 BEGIN
 
   --insert given parameters into AssessmentComponent
   INSERT INTO AssessmentComponent(Section, Type, Weight, Description, NumItems)
-  VALUES (_Section, _Type, _Weight, _Description, _NumItems);
+  VALUES ($1, $2, $3, $4, $5);
 
   RETURN TRUE;
 
 END
 $$
-LANGUAGE sql
+LANGUAGE plpgsql
   VOLATILE
   RETURNS NULL ON NULL INPUT
   SECURITY INVOKER;
