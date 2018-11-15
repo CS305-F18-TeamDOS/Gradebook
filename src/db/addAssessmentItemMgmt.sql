@@ -34,7 +34,7 @@ LANGUAGE sql
 --this function is used to fully remove an AssessmentItem and it's dependents
 --begins by deleting all sumbissions that refference the AssessmentItem to delete
 --then deleting the AssessmentItem indicated by the input parameter
-CREATE OR REPLACE FUNCTION removeAssessmentItem(ItemToDelete INT)
+CREATE OR REPLACE FUNCTION removeAssessmentItem(ItemID INT)
 RETURNS BOOLEAN AS
 $$
 BEGIN
@@ -77,14 +77,17 @@ $$
 
 $$ LANGUAGE sql
     STABLE
-    ROWS 1;
+    CALLED ON NULL INPUT
+    SECURITY INVOKER;
 
---This functions returns a table containing 1 row of an AssessmentItem
---where the row has the given Component and SequenceInComponent
-CREATE OR REPLACE FUNCTION getAssessmentItemsWithComponent
-                              (ComponentID INT, SequenceInComponent INT)
+--This functions returns 1 rows of AssessmentItem,
+--where the item has the given ComponentID and SequenceInComponent
+CREATE OR REPLACE FUNCTION getAssessmentItem(ComponentID INT,
+                                              SequenceInComponent INT)
 RETURNS TABLE
 (
+  Component INT,
+  SequenceInComponent INT,
   BasePoints NUMERIC(6,2),
   ExtraCreditPoints NUMERIC(6,2),
   AssignedDate DATE,
@@ -94,18 +97,19 @@ RETURNS TABLE
 AS
 $$
 
-      SELECT BasePoints, ExtraCreditPoints,
+      SELECT  Component, SequenceInComponent, BasePoints, ExtraCreditPoints,
       AssignedDate, DueDate, Curve
-      FROM AssessmentItem
-      WHERE Component = $1 AND SequenceInComponent = $2;
+      FROM AssessmentItem WHERE AssessmentItem.Component = $1 AND
+                                AssessmentItem.SequenceInComponent = $2;
 
 $$ LANGUAGE sql
     STABLE
-    RETURNS NULL ON NULL INPUT;
+    RETURNS NULL ON NULL INPUT
+    SECURITY INVOKER;
 
 --This functions returns a table containing 0 or more rows of AssessmentItems
 --where each row shares a Component
-CREATE OR REPLACE FUNCTION getAssessmentItemsWithComponent(ComponentID INTEGER)
+CREATE OR REPLACE FUNCTION getAssessmentItemsFromComponent(ComponentID INTEGER)
 RETURNS TABLE
 (
   SequenceInComponent INT,
@@ -121,8 +125,9 @@ $$
       SELECT SequenceInComponent, BasePoints, ExtraCreditPoints,
       AssignedDate, DueDate, Curve
       FROM AssessmentItem
-      WHERE Component = $1;
+      WHERE AssessmentItem.Component = $1;
 
 $$ LANGUAGE sql
     STABLE
-    RETURNS NULL ON NULL INPUT;
+    RETURNS NULL ON NULL INPUT
+    SECURITY INVOKER;

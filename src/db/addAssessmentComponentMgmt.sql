@@ -42,14 +42,14 @@ BEGIN
 
   --delete submissions first
   --submission have a foreign key to AssessmentComponent and AssessmentItem
-  DELETE FROM Submission WHERE Component = $1;
+  DELETE FROM Submission WHERE Submission.Component = $1;
 
   --now we can delete from AssessmentItem
   --AssessmentItem has a foreign key to AssessmentComponent
-  DELETE FROM AssessmentItem WHERE Component = $1;
+  DELETE FROM AssessmentItem WHERE AssessmentItem.Component = $1;
 
   --now delete from AssessmentComponent
-  DELETE FROM AssessmentComponent WHERE ID = $1;
+  DELETE FROM AssessmentComponent WHERE AssessmentComponent.ID = $1;
 
   --returns true if successful
   RETURN TRUE;
@@ -80,7 +80,8 @@ $$
 
 $$ LANGUAGE sql
     STABLE
-    ROWS 1;
+    CALLED ON NULL INPUT
+    SECURITY INVOKER;
 
 
 --This functions returns a 1 row table containing an AssessmentComponent
@@ -99,17 +100,18 @@ $$
 
       SELECT  Section, Type, Weight, Description, NumItems
       FROM AssessmentComponent
-      WHERE ID = $1;
+      WHERE AssessmentComponent.ID = $1;
 
 $$ LANGUAGE sql
+    ROWS 1
     STABLE
     RETURNS NULL ON NULL INPUT
-    ROWS 1;
+    SECURITY INVOKER;
 
 
 --This functions returns a table containing each AssessmentComponent
 --with a Section == the given parameter
-CREATE OR REPLACE FUNCTION getAssessmentComponentWithSection(SectionID INT)
+CREATE OR REPLACE FUNCTION getAssessmentComponentsFromSection(SectionID INT)
 RETURNS TABLE
 (
   ID INT,
@@ -123,8 +125,9 @@ $$
 
       SELECT  ID, Type, Weight, Description, NumItems
       FROM AssessmentComponent
-      WHERE Section = $1;
+      WHERE AssessmentComponent.Section = $1;
 
 $$ LANGUAGE sql
     STABLE
-    RETURNS NULL ON NULL INPUT;
+    RETURNS NULL ON NULL INPUT
+    SECURITY INVOKER;
