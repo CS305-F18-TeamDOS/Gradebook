@@ -224,7 +224,7 @@ CREATE TABLE AttendanceRecord
 
 CREATE TABLE AssessmentComponent
 (
-   ID INT NOT NULL PRIMARY KEY,
+   ID SERIAL NOT NULL PRIMARY KEY,
    Section INT NOT NULL REFERENCES Section(ID),
    Type VARCHAR NOT NULL, --"Assignment", "Quiz", "Exam",...
    Weight NUMERIC(5,2) NOT NULL
