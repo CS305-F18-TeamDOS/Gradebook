@@ -64,7 +64,6 @@ BEGIN
    END IF;
 
    ALTER ROLE Gradebook CREATEROLE CREATEDB;
-   GRANT pg_signal_backend TO Gradebook;
 
 
    --create user GB_WebApp if necessary and make sure the user is a member of
@@ -80,8 +79,17 @@ BEGIN
    -- owner
    GRANT Gradebook TO GB_WebApp;
 
+   --create roles Student and Instructor
+   --their privilidges will be revoked in initializeDB.sql
+   --and granted as needed after table creation
+   IF NOT pg_temp.existsRole('student') THEN
+      CREATE ROLE Student;
+   END IF;
+   IF NOT pg_temp.existsRole('instructor') THEN
+      CREATE ROLE Instructor;
+   END IF;
+
 END
 $$;
-
 
 COMMIT;

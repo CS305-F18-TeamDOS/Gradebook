@@ -54,10 +54,10 @@ DECLARE
 BEGIN
    SELECT COUNT(*)
    FROM pg_catalog.pg_roles
-   WHERE rolname IN ('gradebook', 'gb_webapp')
+   WHERE rolname IN ('gradebook', 'gb_webapp', 'student', 'instructor')
    INTO gradebookRoleCount;
 
-   IF gradebookRoleCount <> 2 THEN
+   IF gradebookRoleCount <> 4 THEN
       RAISE EXCEPTION
          'Missing roles: one or more of the expected Gradebook roles '
          'are not defined';
@@ -71,26 +71,31 @@ DO
 $$
 DECLARE
    currentDB VARCHAR(128);
+   currentSchema VARCHAR(128);
 BEGIN
    currentDB = current_database();
+   currentSchema = current_schema();
 
-   --deny "public" (all users) permission to do anything with the database
+   --deny "public", student, and instructor permission to do anything with the database
    -- Postgres grants a few privileges by default to all users
    EXECUTE format('REVOKE ALL PRIVILEGES ON DATABASE %I FROM PUBLIC', currentDB);
+   EXECUTE format('REVOKE ALL PRIVILEGES ON DATABASE %I FROM Student', currentDB);
+   EXECUTE format('REVOKE ALL PRIVILEGES ON DATABASE %I FROM Instructor', currentDB);
+
+   --grant student and instructor permission to access the current schema
+   EXECUTE format('GRANT ALL PRIVILEGES ON SCHEMA %I TO Student', currentSchema);
+   EXECUTE format('GRANT ALL PRIVILEGES ON SCHEMA %I TO Instructor', currentSchema);
 
    --give Gradebook role all privileges on the current database
    EXECUTE format('GRANT ALL PRIVILEGES ON DATABASE %I TO Gradebook', currentDB);
 
-   --let user GB_WebApp connect to the database
+   --let user GB_WebApp, Student, and Instructor roles connect to the DB
    EXECUTE format('GRANT CONNECT ON DATABASE %I TO GB_WebApp', currentDB);
+   EXECUTE format('GRANT CONNECT ON DATABASE %I TO Student', currentDB);
+   EXECUTE format('GRANT CONNECT ON DATABASE %I TO Instructor', currentDB);
+
 END
 $$;
-
-
---Grant Gradebook to the current user
--- allows altering privilieges of objects, even after being owned by Gradebook;
--- the utility of (need for) this permission is unclear, but keeping it for now
-GRANT Gradebook TO current_user;
 
 
 --Remove all privileges from public on objects created in the future in this DB
@@ -107,20 +112,9 @@ ALTER DEFAULT PRIVILEGES GRANT ALL PRIVILEGES ON SEQUENCES TO Gradebook;
 ALTER DEFAULT PRIVILEGES GRANT ALL PRIVILEGES ON FUNCTIONS TO Gradebook;
 ALTER DEFAULT PRIVILEGES GRANT ALL PRIVILEGES ON TYPES TO Gradebook;
 
-
---Permit only the Gradebook role to create or use objects the public schema
-REVOKE ALL PRIVILEGES ON SCHEMA public FROM PUBLIC;
-GRANT ALL PRIVILEGES ON SCHEMA public TO  Gradebook;
-
-
 --Create a schema to hold app-specific info and permit only the Gradebook role
 --to create or use objects in that schema
 -- this code might have to be moved to a function if schemas are used to support
 -- multi-tenancy (schema name will be a parameter)
-CREATE SCHEMA IF NOT EXISTS Gradebook;
-REVOKE ALL PRIVILEGES ON SCHEMA Gradebook FROM PUBLIC;
-GRANT ALL PRIVILEGES ON SCHEMA Gradebook TO Gradebook;
-
-
 
 COMMIT;
