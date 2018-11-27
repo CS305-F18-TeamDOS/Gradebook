@@ -5,7 +5,7 @@ CS305-71
 Team DOS
 ***  
 
-Date of Last Revision: *November 5, 2018*  
+Date of Last Revision: *November 27, 2018*  
 Modified by: *Kenneth Kozlowski*
 
 <!--This document was created using MacDown, a free program for writing markdown files on MAC OSX-->
