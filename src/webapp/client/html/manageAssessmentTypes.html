@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<!--
+manageAssessmentTypes.html - Gradebook (DOS Implementation)
+
+*Summary of the page being built here*
+
+The page will have 4 tabs at the top of the page:
+	1.  **Will be filled in later**
+
+NOTES:
+* The institution name can be changed as needed for the institution that will be using this product
+*<Any other notes here>
+
+Team Members: Kyle Bella, Kenneth Kozlowski, Joseph Tether
+CS 305-71
+TEAM DOS
+
+Author: Kenneth Kozlowski 
+Date of Last Revision: November 20, 2018
+-->
+<html>
+	<head>
+		<title>Manage Assessments | Gradebook</title>
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<!--Import Materialize framework - Learn more: http://materializecss.com/-->
+	<link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
+	</head>
+	
+	
+	<body>
+		 <nav>
+    		<div class="nav-wrapper">
+      			<a href="#" class="brand-logo"> Gradebook - Sample Institution</a>
+      			
+      			<!--
+      			This list will be the post-login navigation bar. 
+      			-->
+     			<ul id="nav-mobile" class="right hide-on-med-and-down">
+     				<li><a href="viewStudentGradesForm.html">View/Assign Grades</a></li>
+        			<li><a href="ManageAssessmentTypesForm.html">Manage Assessments</a></li>
+        			<li><a href="changeLog.html">Manage Grade Tiers</a></li>
+        			<li><a hfref="login.html">Logout</a></li>
+      			</ul>
+    	    </div>
+    	</nav><!--End of the Header Navigation -->
+    	
+    	
+    	<div class="container"> 
+		    <div class="section"> 
+		    
+		    <!--Content goes here-->
+		    <h2 class="center-align"><u>Assessment Management</u></h2>
+		    
+		     <div class="row">
+                    <div class="input-field col s12">
+                        <select>
+                          <option value="" disabled selected>Assessment Type</option>
+                        </select>
+                        <label>Assessment Type</label>
+                    </div>
+                </div>
+		    <br>
+		  <a id="btnAddAssessType" class="waves-effect waves-light btn">Add Type</a>
+		        <a id="btnChangeAssessType" class="waves-effect waves-light btn" style="display : none">Update Type</a>
+		        <a id="btnDeleteAssessType" class="waves-effect waves-light btn" style="display : none">Delete Type</a>
+ 	            <div class="divider"></div>
+
+
+		   <div>
+		<table id="assessmentItemTable">
+				<!--Populated dynamically-->
+		</table>
+		<table>
+			<tr>
+				<td id="newItem" colspan="6">
+					<a id="getFields" class="waves-effect waves-light btn">Add Item</a>
+				</td>
+				<td id="newItemSubmit" style="display : none">
+					<a id="btnAddAssessItem" class="waves-effect waves-light btn">Submit</a>
+					<a id="btnCloseItemFields" class="waves-effect waves-light btn">Close</a>
+				</td>
+				<td id="newItemBasePoints" style="display : none" class="input-field col s12 m6 l3">
+					<input id="basePointsInput" value="" />
+					<label for="basePointsInput">Base Points</label>
+				</td>
+				<td id="newItemExtraPoints" style="display : none" class="input-field col s12 m6 l3">
+					<input id="extraCreditPointsInput" value="" />
+					<label for="extraCreditPointsInput">Extra Credit Points</label>
+				</td>
+				<td id="newItemAssignedDate" style="display : none" class="input-field col s12 m6 l3">
+					<input id="assignedDateInput" value="" />
+					<label for="assignedDateInput">Date Assigned</label>
+				</td>
+				<td id="newItemDueDate" style="display : none" class="input-field col s12 m6 l3">
+					<input id="dueDateInput" value="" />
+					<label for="dueDateInput">Date Due</label>
+				</td>
+			</tr>
+		</table>
+	</div>
+	
+	
+	<!--Generic confirm used by showConfirm() in index.js-->
+	<div id="msg-genericConfirm" class="modal">
+		<div id="genericConfirmBody" class="modal-content"></div>
+		<div class="modal-footer">
+			<a id="btnConfirm" href="#!" class="modal-action modal-close waves-effect waves-gray btn-flat" onclick=>Confirm</a>
+			<a href="#!" class="modal-action modal-close waves-effect waves-gray btn-flat">Cancel</a>
+		</div>
+	</div>
+		    </div><!--End section div-->
+		</div><!--End container div-->
+	</body>
+	
+		<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="materialize.min.js"></script>
+	<script type="text/javascript" src="viewStudentGrades.js"></script><!--This file needs to be changed and reset to be a independant js file for this page-->
+	
+</html><!--End of document-->
