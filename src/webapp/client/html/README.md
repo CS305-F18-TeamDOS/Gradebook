@@ -48,3 +48,25 @@ As of now, the list is just maintained as one large numbered list.
 <!-- This will probably need to be changed in the future because the list will probably be reorganized with different categories for all of the changes to fall under.-->
 
 
+***
+### ManageAssessmentTypesForm.html<!--Added for M6, M7-->
+This is another form data collection page where the end user will be prompted to select information from dynamically populated drop down menus selecting the *year, season, course, and section* they want to manage the assessment types and items for.  
+
+Once the user makes the selections from the drop down menus and clicks on submit, a new page loads where the user can pick the assessment type that they want to make modifcations to. 
+
+
+***
+### ManageAssessmentTypes.html <!--Added for M6, M7-->
+This page will allow the end user to choose which Assessment type they want to make changes to the items within or to add a new assessment type to the course.  
+
+The button `Add Type` will bring up a small form within the webpage for the user to enter in the information needed to create a new assessment type.  
+
+The button `Add Item` will bring up a small form within the webpage for the user to enter in the new information needed to create a new assessment item.  
+
+Also on the page will be a dynamically loaded table containing all of the assessment items within an assessment type and make any modifications needed to them. When the user clicks on the number of the row in the table three buttons will show: `update`, `delete`, and `close`.  
+
+Clicking on `update` will load the same small form which will allow the user to make any needed changes to the item and then confirm the changes.  
+
+Clicking on the `delete` button will prompt the user to make sure that they want to continue and delete the item.  
+
+Clickin on the `close` button will collapse the buttons and just show the row number again.
