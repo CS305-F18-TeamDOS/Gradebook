@@ -684,6 +684,34 @@ app.get('/assessmentTypesDelete', function(request, response) {
   });
 });
 
+app.get('/assessmentItemsDelete', function(request, response) {
+  //Connnection parameters for the Postgres client recieved in the request
+  var config = createConnectionParams(request.query.user, request.query.database,
+     request.query.password, request.query.host, request.query.port);
+
+  var assessID = parseInt(request.query.assessid);
+  console.log(assessID);
+  var sequenceInComponent = parseInt(request.query.sequenceincomponent);
+  console.log(sequenceInComponent);
+
+  var queryText = "DELETE FROM AssessmentItem " +
+  "WHERE Component = $1 AND SequenceInComponent = $2;";
+  var queryParams = [assessID, sequenceInComponent];
+
+  executeQuery(response, config, queryText, queryParams, function(result) {
+    if (result.rowCount == 0)
+    {
+      response.status(500).send('500 - Delete Failed');
+    }
+    else {
+      var jsonReturn = {
+         "rowCount": result.rowCount
+      };
+      response.send(JSON.stringify(jsonReturn));
+    }
+  });
+});
+
 app.use(function(err, req, res, next){
   console.error(err);
   res.status(500).send('Internal Server Error');

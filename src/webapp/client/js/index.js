@@ -185,6 +185,9 @@ $(document).ready(function() {
 		deleteAssessType(dbInfo, assessID);
 
 		popAssessmentTypes(dbInfo, sectionID);
+		$('#typeInput').val(null);
+		$('#weightInput').val(null);
+		$('#description').val(null);
 	});
 
 	$("#assessmentItemTable").on('click', "a[id^='getForUpdate']", function() {
@@ -222,6 +225,16 @@ $(document).ready(function() {
 		updateAssessItem(dbInfo, assessID, sequenceInComponent, basePoints,
 			extraCreditPoints, assignedDate, dueDate, curve);
 		// repopulate Assessment Items
+		popAssessmentItems(dbInfo, sectionID, assessID);
+	});
+
+	$('#assessmentItemTable').on('click', "a[id^='submitDelete']", function() {
+		var tr = $(this).parent().parent();
+		var sectionID = $('#sectionSelect').val();
+		var assessID = $('#assessmentTypeSelect').val();
+		var sequenceInComponent = tr.prop('id');
+		deleteAssessItem(dbInfo, assessID, sequenceInComponent);
+
 		popAssessmentItems(dbInfo, sectionID, assessID);
 	});
 
@@ -558,11 +571,6 @@ function setAssessmentTypes(htmlText) {
 	$('#assessmentTypeSelect').html(content);
 	$('#assessmentTypeSelect').prop('disabled', htmlText == null);
 	$('#assessmentTypeSelect').material_select(); //reload dropdown
-	if(htmlText == null)
-	{
-		$('#btnChangeAssessType').css('display', 'none');
-		$('#btnDeleteAssessType').css('display', 'none');
-	}
 
 	setAssessmentItems(null); //reset dependent fields
 };
@@ -572,6 +580,8 @@ function setAssessmentItems(htmlText) {
 	if (htmlText == null) {
 		$('#newItem').css('display', 'none');
 		$('#assessmentItemTable').html('');
+		$('#btnChangeAssessType').css('display', 'none');
+		$('#btnDeleteAssessType').css('display', 'none');
 	}
 	else {
 		$('#assessmentItemTable').html(htmlText);
@@ -651,6 +661,21 @@ function deleteAssessType(connInfo, assessid)
 {
 	var urlParams = $.extend({}, connInfo, {assessid:assessid});
 	$.ajax('assessmentTypesDelete', {
+		dataType: 'json',
+		data: urlParams,
+		success: function(result) {
+			console.log(result.rowCount + " rows deleted");
+		},
+		error: function(result) {
+			showAlert('<p>Error while deleting assessment type</p>');
+			console.log(result);
+		}
+	});
+};
+
+function deleteAssessItem(connInfo, assessid, sequenceincomponent) {
+	var urlParams = $.extend({}, connInfo, {assessid:assessid, sequenceincomponent:sequenceincomponent});
+	$.ajax('assessmentItemsDelete', {
 		dataType: 'json',
 		data: urlParams,
 		success: function(result) {
