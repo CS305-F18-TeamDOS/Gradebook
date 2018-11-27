@@ -67,6 +67,6 @@ Also on the page will be a dynamically loaded table containing all of the assess
 
 Clicking on `update` will load the same small form which will allow the user to make any needed changes to the item and then confirm the changes.  
 
-Clicking on the `delete` button will prompt the user to make sure that they want to continue and delete the item.  
+Clicking on the `delete` button will delete an assessment item.  
 
 Clickin on the `close` button will collapse the buttons and just show the row number again.
