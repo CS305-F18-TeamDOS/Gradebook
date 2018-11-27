@@ -11,7 +11,7 @@
 --This function inserts a new AssessmentComponent with the given parameters
 --as values to insert
 CREATE OR REPLACE FUNCTION createAssessmentComponent(
-                            Secton INT, Type VARCHAR, Weight NUMERIC(5,2),
+                            Section INT, Type VARCHAR, Weight NUMERIC(5,2),
                             Description VARCHAR, NumItems INT)
 RETURNS BOOLEAN AS
 $$
