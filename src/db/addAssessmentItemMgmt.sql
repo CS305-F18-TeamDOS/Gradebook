@@ -1,4 +1,4 @@
---assAssessmentItemMgmt.sql - GradeBook
+--addAssessmentItemMgmt.sql - GradeBook
 
 --Team DOS: Kyle Bella, Kenneth Kozlowski, Joe Tether
 --Created for CS305-71
@@ -8,43 +8,35 @@
 --implements management features for AssessmentItems
 --This includes: reading, deleting, updating
 
---check that due date is not before class start date
---check that due date is not after class end date
---used in check constraint for AssessmentComponent table
---takes due date and component id as parameters
-CREATE OR REPLACE FUNCTION DueDateValidityCheck
-(DueDate DATE, ComponentID INT) RETURNS BOOLEAN AS
+
+--This function inserts a new AssessmentComponent with the given parameters
+--as values to insert
+CREATE OR REPLACE FUNCTION createAssessmentItem(
+                                Component INT, SequenceInComponent INT,
+                                BasePoints NUMERIC(6,2), ExtraCreditPoints NUMERIC(6,2),
+                                AssignedDate DATE, DueDate DATE, Curve NUMERIC(5,2))
+RETURNS BOOLEAN AS
 $$
-DECLARE
-  SectionEndDate DATE;
-  SectionStartDate DATE;
 BEGIN
-  SectionEndDate = (SELECT EndDate FROM Section
-                    WHERE Section.ID = --getting start date from section related to assessment
-                      (SELECT Section FROM AssessmentComponent
-                        WHERE AssessmentComponent.ID = ComponentID))::date;
 
-  SectionStartDate = (SELECT StartDate FROM Section
-                    WHERE Section.ID = --getting end date from section related to assessment
-                     (SELECT Section FROM AssessmentComponent
-                       WHERE AssessmentComponent.ID = ComponentID))::date;
+  --insert given parameters into AssessmentComponent
+  INSERT INTO AssessmentItem(Component, SequenceInComponent, BasePoints, ExtraCreditPoints,
+                              AssignedDate, DueDate, Curve)
+  VALUES ($1, $2, $3, $4, $5, $6, $7);
 
-  IF SectionStartDate <= DueDate AND DueDate <= SectionEndDate THEN
-    RETURN TRUE;
-  ELSE
-    RETURN FALSE;
-  END IF;
-END;
-$$ LANGUAGE plpgsql
-    VOLATILE
-    RETURNS NULL ON NULL INPUT
-    SECURITY INVOKER;
+  RETURN TRUE;
 
+END
+$$
+LANGUAGE plpgsql
+  VOLATILE
+  RETURNS NULL ON NULL INPUT
+  SECURITY INVOKER;
 
 --this function is used to fully remove an AssessmentItem and it's dependents
 --begins by deleting all sumbissions that refference the AssessmentItem to delete
 --then deleting the AssessmentItem indicated by the input parameter
-CREATE OR REPLACE FUNCTION RemoveAssessmentItem(ItemToDelete INT)
+CREATE OR REPLACE FUNCTION removeAssessmentItem(ItemID INT)
 RETURNS BOOLEAN AS
 $$
 BEGIN
@@ -87,14 +79,17 @@ $$
 
 $$ LANGUAGE sql
     STABLE
-    ROWS 1;
+    CALLED ON NULL INPUT
+    SECURITY INVOKER;
 
---This functions returns a table containing 1 row of an AssessmentItem
---where the row has the given Component and SequenceInComponent
-CREATE OR REPLACE FUNCTION getAssessmentItemsWithComponent
-                              (ComponentID INT, SequenceInComponent INT)
+--This functions returns 1 rows of AssessmentItem,
+--where the item has the given ComponentID and SequenceInComponent
+CREATE OR REPLACE FUNCTION getAssessmentItem(ComponentID INT,
+                                              SequenceInComponent INT)
 RETURNS TABLE
 (
+  Component INT,
+  SequenceInComponent INT,
   BasePoints NUMERIC(6,2),
   ExtraCreditPoints NUMERIC(6,2),
   AssignedDate DATE,
@@ -104,18 +99,19 @@ RETURNS TABLE
 AS
 $$
 
-      SELECT BasePoints, ExtraCreditPoints,
+      SELECT  Component, SequenceInComponent, BasePoints, ExtraCreditPoints,
       AssignedDate, DueDate, Curve
-      FROM AssessmentItem
-      WHERE Component = $1 AND SequenceInComponent = $2;
+      FROM AssessmentItem WHERE AssessmentItem.Component = $1 AND
+                                AssessmentItem.SequenceInComponent = $2;
 
 $$ LANGUAGE sql
     STABLE
-    RETURNS NULL ON NULL INPUT;
+    RETURNS NULL ON NULL INPUT
+    SECURITY INVOKER;
 
 --This functions returns a table containing 0 or more rows of AssessmentItems
 --where each row shares a Component
-CREATE OR REPLACE FUNCTION getAssessmentItemsWithComponent(ComponentID INTEGER)
+CREATE OR REPLACE FUNCTION getAssessmentItemsFromComponent(ComponentID INTEGER)
 RETURNS TABLE
 (
   SequenceInComponent INT,
@@ -131,8 +127,9 @@ $$
       SELECT SequenceInComponent, BasePoints, ExtraCreditPoints,
       AssignedDate, DueDate, Curve
       FROM AssessmentItem
-      WHERE Component = $1;
+      WHERE AssessmentItem.Component = $1;
 
 $$ LANGUAGE sql
     STABLE
-    RETURNS NULL ON NULL INPUT;
+    RETURNS NULL ON NULL INPUT
+    SECURITY INVOKER;

@@ -224,7 +224,7 @@ CREATE TABLE AttendanceRecord
 
 CREATE TABLE AssessmentComponent
 (
-   ID INT NOT NULL PRIMARY KEY,
+   ID SERIAL NOT NULL PRIMARY KEY,
    Section INT NOT NULL REFERENCES Section(ID),
    Type VARCHAR NOT NULL, --"Assignment", "Quiz", "Exam",...
    Weight NUMERIC(5,2) NOT NULL
@@ -247,8 +247,10 @@ CREATE TABLE AssessmentItem
   DueDate Date CHECK (DueDate >= AssignedDate), --item can not be due before it's assigned
   Curve NUMERIC(5,2) CHECK(Curve > 0),
 
-  CONSTRAINT DateVailidty --confirm that section startdate <= item duedate <= section enddate
-          CHECK(DueDateValidityCheck(DueDate, Component)),
+  CONSTRAINT DateVailidty --confirm that Section.StartDate <= DueDate <= Section.EndDate
+                          --confirm that item AssignedDate <= Section.EndDate
+                          --NOTE: Item may be assigned before Section start date, e.g. summer reading
+          CHECK(DueDateValidityCheck(DueDate, AssignedDate, Component)),
 
   PRIMARY KEY(Component, SequenceInComponent)
 );
