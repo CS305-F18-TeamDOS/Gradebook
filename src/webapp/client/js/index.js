@@ -35,6 +35,14 @@ Each instance of connInfo as a parameter in a function definition refers to an
 	 "password":String, "instructorid":Number
 */
 
+/*
+Keep the original assessment data so changing the fields is only permanent when
+ user presses "Submit"
+*/
+var assessOrginInfo = {
+	"basePoints":null, "extraCreditPoints":null, "assignedDate":null,
+	"dueDate":null, "curve":null
+};
 
 $(document).ready(function() {
 	$('select').material_select(); //load dropdown boxes
@@ -124,10 +132,13 @@ $(document).ready(function() {
 		var sectionID = $('#sectionSelect').val();
 		var assessID = $('#assessmentTypeSelect').val();
 		popAssessmentItems(dbInfo, sectionID, assessID);
+		$('#btnChangeAssessType').css('display', 'inline-block');
+		$('#btnDeleteAssessType').css('display', 'inline-block');
 	});
 
 	$('#getFields').click(function() {
-		// to be implemented
+		$('#newItem').css('display', 'none');
+		$('#newItemSubmit, #newItemBasePoints, #newItemExtraPoints, #newItemAssignedDate, #newItemDueDate').css('display', 'inline');
 	});
 
 	$('#btnAddAssessItem').click(function() {
@@ -141,6 +152,87 @@ $(document).ready(function() {
 		dueDate);
 		// repopulate Assessment Items
 		popAssessmentItems(dbInfo, sectionID, assessID);
+	});
+
+	$('#btnCloseItemFields').click(function() {
+		$('#newItem').css('display', 'inline');
+		$('#newItemSubmit, #newItemBasePoints, #newItemExtraPoints, #newItemAssignedDate, #newItemDueDate').css('display', 'none');
+	});
+
+	$('#btnChangeAssessType').click(function() {
+		var sectionID = $('#sectionSelect').val();
+		var assessID = $('#assessmentTypeSelect').val();
+		var assessType = $('#typeInput').val();
+		var assessWeight = $('#weightInput').val();
+		var assessDescription = $('#descriptionInput').val();
+		updateAssessType(dbInfo, assessID, assessType, assessWeight, assessDescription);
+		// repopulate Assessment Types
+		popAssessmentTypes(dbInfo, sectionID);
+	});
+
+	$('#btnDeleteAssessType').click(function() {
+		var assessType = $('#typeInput').val();
+		var msg = '<h5>Confirm deletion of type: ' + assessType + '</h5>' +
+				'<p>Deleting type ' + assessType + ' will also delete all its associated ' +
+				'items.  Are you sure you want to delete it?</p>';
+		$('#genericConfirmBody').html(msg);
+		$('#msg-genericConfirm').modal('open');
+	});
+
+	$('#btnConfirm').click(function(event) {
+		var sectionID = $('#sectionSelect').val();
+		var assessID = $('#assessmentTypeSelect').val();
+		deleteAssessType(dbInfo, assessID);
+
+		popAssessmentTypes(dbInfo, sectionID);
+	});
+
+	$("#assessmentItemTable").on('click', "a[id^='getForUpdate']", function() {
+		var tr = $(this).parent().parent();
+		tr.find('#sequence').html('<a id="submitUpdate" class="waves-effect waves-light btn">Update</a>' +
+															'<a id="submitDelete" class="waves-effect waves-light btn">Delete</a>' +
+														  '<a id="closeFields" class="waves-effect waves-light btn">Close</a>');
+		assessOrginInfo.basePoints = tr.find('#basepoint').html();
+		tr.find('#basepoint').html('<input id="basePointsInput" value="' + assessOrginInfo.basePoints + '" type="text"/>' +
+															 '<label for="basePointsInput">Base Points</label>');
+		assessOrginInfo.extraCreditPoints = tr.find('#extrapoint').html();
+		tr.find('#extrapoint').html('<input id="extraCreditPointsInput" value="' + assessOrginInfo.extraCreditPoints + '" type="text"/>' +
+													 		 '<label for="extraCreditPointsInput">Extra Credit Points</label>');
+		assessOrginInfo.assignedDate = tr.find('#assigned').html();
+		tr.find('#assigned').html('<input id="assignedDateInput" value="' + assessOrginInfo.assignedDate + '" type="text"/>' +
+													 		 '<label for="assignedDateInput">Date Assigned</label>');
+		assessOrginInfo.dueDate = tr.find('#due').html();
+		tr.find('#due').html('<input id="dueDateInput" value="' + assessOrginInfo.dueDate + '" type="text"/>' +
+												 '<label for="dueDateInput">Date Due</label>');
+		assessOrginInfo.curve = tr.find('#curve').html();
+		tr.find('#curve').html('<input id="curveInput" value="' + assessOrginInfo.curve + '" type="text"/>' +
+													 '<label for="curveInput">Curve</label>');
+	});
+
+	$('#assessmentItemTable').on('click', "a[id^='submitUpdate']", function() {
+		var tr = $(this).parent().parent();
+		var sectionID = $('#sectionSelect').val();
+		var assessID = $('#assessmentTypeSelect').val();
+		var sequenceInComponent = tr.prop('id');
+		var basePoints = tr.find('#basePointsInput').val();
+		var extraCreditPoints = tr.find('#extraCreditPointsInput').val();
+		var assignedDate = tr.find('#assignedDateInput').val();
+		var dueDate = tr.find('#dueDateInput').val();
+		var curve = tr.find('#curveInput').val();
+		updateAssessItem(dbInfo, assessID, sequenceInComponent, basePoints,
+			extraCreditPoints, assignedDate, dueDate, curve);
+		// repopulate Assessment Items
+		popAssessmentItems(dbInfo, sectionID, assessID);
+	});
+
+	$('#assessmentItemTable').on('click', "a[id^='closeFields']", function() {
+		var tr = $(this).parent().parent();
+		tr.find('#sequence').html('<a id="getForUpdate" class="waves-effect waves-light btn">' + tr.prop('id') + '</a>');
+		tr.find('#basepoint').html(assessOrginInfo.basePoints);
+		tr.find('#extrapoint').html(assessOrginInfo.extraCreditPoints);
+		tr.find('#assigned').html(assessOrginInfo.assignedDate);
+		tr.find('#due').html(assessOrginInfo.dueDate);
+		tr.find('#curve').html(assessOrginInfo.curve);
 	});
 
 	$('#logout').click(function() {
@@ -378,6 +470,7 @@ function popAssessmentItems(connInfo, sectionid, assessid) {
 		error: function(result) {
 			showAlert('<p>Error while retrieving assessment items</p>');
 			console.log(result);
+			setAssessmentItems(null);
 		}
 	});
 };
@@ -465,41 +558,42 @@ function setAssessmentTypes(htmlText) {
 	$('#assessmentTypeSelect').html(content);
 	$('#assessmentTypeSelect').prop('disabled', htmlText == null);
 	$('#assessmentTypeSelect').material_select(); //reload dropdown
+	if(htmlText == null)
+	{
+		$('#btnChangeAssessType').css('display', 'none');
+		$('#btnDeleteAssessType').css('display', 'none');
+	}
 
 	setAssessmentItems(null); //reset dependent fields
 };
 
 function setAssessmentItems(htmlText) {
+	console.log(htmlText);
 	if (htmlText == null) {
+		$('#newItem').css('display', 'none');
 		$('#assessmentItemTable').html('');
 	}
 	else {
-		if (htmlText.substring(0, 7) !== '<table>') {
-			console.log('WARN: setAssessmentItems(): Unable to style assessment item table;' +
-			 ' first 7 chars did not match "<table>"');
-		}
-		else {
-			//add attibutes to <table> tag to use non-compact framework styling
-			htmlText = '<table class="striped">' + htmlText.substring(7);
-		}
 		$('#assessmentItemTable').html(htmlText);
+		$('#newItem').css('display', 'inline');
 	}
+	$('#newItemSubmit, #newItemBasePoints, #newItemExtraPoints, #newItemAssignedDate, #newItemDueDate').css('display', 'none');
 };
 
-function insertNewAssessType(connInfo, sectionid, type, weight, description) {
-	var urlParams = $.extend({}, connInfo, {sectionid:sectionid, type:type, weight:weight, description:description});
+function insertNewAssessType(connInfo, sectionid, componenttype, weight, description) {
+	var urlParams = $.extend({}, connInfo, {sectionid:sectionid, componenttype:componenttype, weight:weight, description:description});
 	$.ajax('assessmentTypesInsert', {
 		dataType: 'json',
 		data: urlParams,
 		success: function(result) {
-
+			console.log(result.rowCount + " rows added");
 		},
 		error: function(result) {
 			showAlert('<p>Error while inserting assessment type</p>');
 			console.log(result);
 		}
 	});
-}
+};
 
 function insertNewAssessItem(connInfo, assessid, basePoints, extraCreditPoints,
 														 assignedDate, dueDate) {
@@ -509,11 +603,62 @@ function insertNewAssessItem(connInfo, assessid, basePoints, extraCreditPoints,
 		dataType: 'json',
 		data: urlParams,
 		success: function(result) {
-
+			console.log(result.rowCount + " rows added");
 		},
 		error: function(result) {
 			showAlert('<p>Error while inserting assessment item</p>');
 			console.log(result);
 		}
 	});
-}
+};
+
+function updateAssessType(connInfo, assessid, componenttype, weight, description) {
+	var urlParams = $.extend({}, connInfo, {assessid:assessid, componenttype:componenttype, weight:weight, description:description});
+	console.log(assessid);
+	$.ajax('assessmentTypesUpdate', {
+		dataType: 'json',
+		data: urlParams,
+		success: function(result) {
+			console.log(result.rowCount + " rows updated");
+		},
+		error: function(result) {
+			showAlert('<p>Error while updating assessment type</p>');
+			console.log(result);
+		}
+	});
+};
+
+function updateAssessItem(connInfo, assessid, sequenceincomponent, basepoints, extracreditpoints,
+														 assigneddate, duedate, curve) {
+  var urlParams = $.extend({}, connInfo, {assessid:assessid,
+		sequenceincomponent:sequenceincomponent, basepoints:basepoints,
+		extracreditpoints:extracreditpoints, assigneddate:assigneddate,
+		duedate:duedate, curve:curve});
+	$.ajax('assessmentItemsUpdate', {
+		dataType: 'json',
+		data: urlParams,
+		success: function(result) {
+			console.log(result.rowCount + " rows updated");
+		},
+		error: function(result) {
+			showAlert('<p>Error while updating assessment item</p>');
+			console.log(result);
+		}
+	});
+};
+
+function deleteAssessType(connInfo, assessid)
+{
+	var urlParams = $.extend({}, connInfo, {assessid:assessid});
+	$.ajax('assessmentTypesDelete', {
+		dataType: 'json',
+		data: urlParams,
+		success: function(result) {
+			console.log(result.rowCount + " rows deleted");
+		},
+		error: function(result) {
+			showAlert('<p>Error while deleting assessment item</p>');
+			console.log(result);
+		}
+	});
+};

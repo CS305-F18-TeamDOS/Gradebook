@@ -77,6 +77,8 @@ function executeQuery(response, config, queryText, queryParams, queryCallback) {
          console.log(err);
       }
       else { //Try and execute the query
+        console.log(queryText);
+        console.log(queryParams);
          client.query(queryText, queryParams, function (err, result) {
             if(err) { //If the query returns an error, 500
                response.status(500).send('500 - Query execution error');
@@ -448,25 +450,34 @@ app.get('/assessmentItems', function(request, response){
       var assessWeight = result.rows[0].weight;
       var assessDescription = result.rows[0].description;
 
-      var table = '<table><tr><th>Number</th><th>BasePoints</th>' +
-        '<th>ExtraCreditPoints</th><th>AssignedDate</th><th>DueDate</th>' +
-        '<th>Curve</th></tr>';
-      if(result.rows[0].SequenceInComponent != null)
+      var table = '<tr><th>Number</th><th>BasePoints</th><th>ExtraCreditPoints</th>' +
+        '<th>AssignedDate</th><th>DueDate</th><th>Curve</th></tr>';
+      if(result.rows[0].sequenceincomponent != null)
       {
         for (row in result.rows)
         {
-          table += '<tr>';
-          table += '<td>' + result.rows[rows].SequenceInComponent + '</td>';
-          table += '<td>' + result.rows[rows].BasePoints + '</td>';
-          table += '<td>' + result.rows[rows].ExtraCreditPoints + '</td>';
-          table += '<td>' + result.rows[rows].AssignedDate + '</td>';
-          table += '<td>' + result.rows[rows].DueDate + '</td>';
-          table += '<td>' + result.rows[rows].Curve + '</td>';
+          table += '<tr id="' + result.rows[row].sequenceincomponent + '">';
+          table += '<td id="sequence"><a id="getForUpdate" class="waves-effect waves-light btn">' + result.rows[row].sequenceincomponent + '</a></td>';
+          table += '<td id="basepoint">' + result.rows[row].basepoints + '</td>';
+          if (result.rows[row].extracreditpoints == null)
+          {
+            table += '<td id="extrapoint"></td>';
+          }
+          else {
+            table += '<td id="extrapoint">' + result.rows[row].extracreditpoints + '</td>';
+          }
+          table += '<td id="assigned">' + result.rows[row].assigneddate + '</td>';
+          table += '<td id="due">' + result.rows[row].duedate + '</td>';
+          if (result.rows[row].curve == null)
+          {
+            table += '<td id="curve"></td>';
+          }
+          else {
+            table += '<td id="curve">' + result.rows[row].curve + '</td>';
+          }
           table += '</tr>';
         }
       }
-      table += '<tr><td colspan="6"><a id="getFields">Add Assessment Item</a></td></tr>';
-      table += '</table>';
       var jsonReturn = {
          "assessType": assessType,
          "assessWeight": assessWeight,
@@ -483,13 +494,13 @@ app.get('/assessmentTypesInsert', function(request, response) {
       request.query.password, request.query.host, request.query.port);
 
    var sectionID = request.query.sectionid;
-   var type = request.query.type;
+   var componenttype = request.query.componenttype;
    var weight = request.query.weight;
    var description = request.query.description;
    // the query will call a function in the future
-   var queryText = 'INSERT INTO AssessmentComponent (section, type, weight, description)' +
+   var queryText = 'INSERT INTO AssessmentComponent (section, componenttype, weight, description)' +
                    'VALUES ($1, $2, $3, $4);';
-   var queryParams = [sectionID, type, weight, description];
+   var queryParams = [sectionID, componenttype, weight, description];
 
    executeQuery(response, config, queryText, queryParams, function(result) {
       if (result.rowCount == 0)
@@ -510,29 +521,158 @@ app.get('/assessmentItemsInsert', function(request, response) {
   var config = createConnectionParams(request.query.user, request.query.database,
      request.query.password, request.query.host, request.query.port);
 
-  var assessID = request.query.assessid;
-  var basePoints = request.query.basePoints;
+  var assessID = parseInt(request.query.assessid);
+  var basePoints = parseFloat(request.query.basePoints);
   var extraPoints = request.query.extraCreditPoints;
-  var assignedDate = request.query.assignedDate;
-  var dueDate = request.query.dueDate;
+  var assignedDate = new Date(request.query.assignedDate);
+  var dueDate = new Date(request.query.dueDate);
 
-  var queryCountRowsText = 'SELECT COUNT(*) FROM AssessmentItem WHERE Component = $1;';
+  if (extraPoints != '')
+  {
+    extraPoints = parseFloat(extraPoints);
+  }
+  else {
+    extraPoints = null;
+  }
+
+  var queryCountRowsText = "SELECT SequenceInComponent FROM AssessmentItem WHERE Component = $1 ORDER BY SequenceInComponent;";
   var queryParams = [assessID];
 
   executeQuery(response, config, queryCountRowsText, queryParams, function(result) {
-    console.log(result);
-    var nextInComponent = result.rows[0].count + 1;
+    var nextInComponent = 1;
+    if (result.rows.length != 0)
+    {
+      nextInComponent = parseInt(result.rows[parseInt(result.rows.length) - 1].sequenceincomponent) + 1;
+    }
 
-    var queryText = 'INSERT INTO (Component, SequenceInComponent, BasePoints,' +
-    'ExtraCreditPoints, AssignedDate, DueDate)' +
-    'VALUES ($1, $2, $3, $4, $5, $6);';
+    var queryText = "INSERT INTO AssessmentItem (Component, SequenceInComponent, BasePoints," +
+    "ExtraCreditPoints, AssignedDate, DueDate)" +
+    "VALUES ($1, $2, $3, $4, $5, $6);";
     queryParams.push(nextInComponent, basePoints, extraPoints, assignedDate, dueDate);
-    console.log(queryParams);
+
 
     executeQuery(response, config, queryText, queryParams, function(result) {
       if (result.rowCount == 0)
       {
         response.status(500).send('500 - Insert Failed');
+      }
+      else {
+        var jsonReturn = {
+           "rowCount": result.rowCount
+        };
+        response.send(JSON.stringify(jsonReturn));
+      }
+    });
+  });
+});
+
+app.get('/assessmentTypesUpdate', function(request, response) {
+  //Connnection parameters for the Postgres client recieved in the request
+  var config = createConnectionParams(request.query.user, request.query.database,
+     request.query.password, request.query.host, request.query.port);
+
+  console.log(request.query.assessid);
+  var assessID = request.query.assessid;
+  console.log(request.query.componenttype);
+  var componentType = request.query.componenttype;
+  console.log(request.query.weight);
+  var weight = request.query.weight;
+  console.log(request.query.description);
+  var description = request.query.description;
+
+  var queryText = "UPDATE AssessmentComponent " +
+  "SET ComponentType = $2, Weight = $3, Description = $4 " +
+  "WHERE ID = $1;";
+  var queryParams = [assessID, componentType, weight, description];
+
+  executeQuery(response, config, queryText, queryParams, function(result) {
+    console.log(result);
+    if (result.rowCount == 0)
+    {
+      response.status(500).send('500 - Update Failed');
+    }
+    else {
+      var jsonReturn = {
+         "rowCount": result.rowCount
+      };
+      response.send(JSON.stringify(jsonReturn));
+    }
+  });
+});
+
+app.get('/assessmentItemsUpdate', function(request, response) {
+  //Connnection parameters for the Postgres client recieved in the request
+  console.log("On Server");
+  var config = createConnectionParams(request.query.user, request.query.database,
+     request.query.password, request.query.host, request.query.port);
+
+  var assessID = parseInt(request.query.assessid);
+  console.log(assessID);
+  var sequenceInComponent = parseInt(request.query.sequenceincomponent);
+  console.log(sequenceInComponent);
+  var basePoints = parseFloat(request.query.basepoints);
+  console.log(basePoints);
+  var extraPoints = null;
+  if (request.query.extracreditpoints !== '' &&
+      request.query.extracreditpoints !== null)
+  {
+    extraPoints = parseFloat(request.query.extracreditpoints);
+  }
+  console.log(extraPoints);
+  var assignedDate = new Date(request.query.assigneddate);
+  console.log(assignedDate);
+  var dueDate = new Date(request.query.duedate);
+  console.log(dueDate);
+  var curve = null;
+  if (request.query.curve !== '' && request.query.curve !== null)
+  {
+    curve = parseFloat(request.query.curve);
+  }
+  console.log(curve);
+
+  var queryText = "UPDATE AssessmentItem " +
+  "SET BasePoints = $3, ExtraCreditPoints = $4, AssignedDate = $5,  " +
+  "DueDate = $6, Curve = $7 " +
+  "WHERE Component = $1 AND SequenceInComponent = $2;";
+  var queryParams = [assessID, sequenceInComponent, basePoints, extraPoints,
+  assignedDate, dueDate, curve];
+
+  executeQuery(response, config, queryText, queryParams, function(result) {
+    console.log(result);
+    if (result.rowCount == 0)
+    {
+      response.status(500).send('500 - Update Failed');
+    }
+    else {
+      var jsonReturn = {
+         "rowCount": result.rowCount
+      };
+      response.send(JSON.stringify(jsonReturn));
+    }
+  });
+});
+
+app.get('/assessmentTypesDelete', function(request, response) {
+  //Connnection parameters for the Postgres client recieved in the request
+  var config = createConnectionParams(request.query.user, request.query.database,
+     request.query.password, request.query.host, request.query.port);
+
+  var assessID = parseInt(request.query.assessid);
+  console.log(assessID);
+
+  var queryText = "DELETE FROM AssessmentItem " +
+  "WHERE Component = $1;";
+  var queryParams = [assessID];
+
+  executeQuery(response, config, queryText, queryParams, function(result) {
+    console.log(result);
+
+    queryText = "DELETE FROM AssessmentComponent " +
+    "WHERE ID = $1;"
+    executeQuery(response, config, queryText, queryParams, function(result) {
+      if (result.rowCount == 0)
+      {
+        response.status(500).send('500 - Delete Failed');
       }
       else {
         var jsonReturn = {

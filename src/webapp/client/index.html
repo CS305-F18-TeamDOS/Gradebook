@@ -267,13 +267,43 @@ Currently, only attendance information is served
 				<label for="descriptionInput">Description</label>
 			</div>
 		</div>
-		<a id="btnAddAssessType" class="waves-effect waves-light btn">Add Assessment Type</a>
+		<a id="btnAddAssessType" class="waves-effect waves-light btn">Add Type</a>
+		<a id="btnChangeAssessType" class="waves-effect waves-light btn" style="display : none">Update Type</a>
+		<a id="btnDeleteAssessType" class="waves-effect waves-light btn" style="display : none">Delete Type</a>
 
 	<div class="divider"></div>
 
-	<div id="assessmentItemTable">
-
-		<!--Populated dynamically-->
+	<div>
+		<table id="assessmentItemTable">
+				<!--Populated dynamically-->
+		</table>
+		<table>
+			<tr>
+				<td id="newItem" colspan="6">
+					<a id="getFields" class="waves-effect waves-light btn">Add Item</a>
+				</td>
+				<td id="newItemSubmit" style="display : none">
+					<a id="btnAddAssessItem" class="waves-effect waves-light btn">Submit</a>
+					<a id="btnCloseItemFields" class="waves-effect waves-light btn">Close</a>
+				</td>
+				<td id="newItemBasePoints" style="display : none" class="input-field col s12 m6 l3">
+					<input id="basePointsInput" value="" />
+					<label for="basePointsInput">Base Points</label>
+				</td>
+				<td id="newItemExtraPoints" style="display : none" class="input-field col s12 m6 l3">
+					<input id="extraCreditPointsInput" value="" />
+					<label for="extraCreditPointsInput">Extra Credit Points</label>
+				</td>
+				<td id="newItemAssignedDate" style="display : none" class="input-field col s12 m6 l3">
+					<input id="assignedDateInput" value="" />
+					<label for="assignedDateInput">Date Assigned</label>
+				</td>
+				<td id="newItemDueDate" style="display : none" class="input-field col s12 m6 l3">
+					<input id="dueDateInput" value="" />
+					<label for="dueDateInput">Date Due</label>
+				</td>
+			</tr>
+		</table>
 	</div>
 
 	</div>
@@ -351,6 +381,15 @@ Currently, only attendance information is served
 		<div id="genericAlertBody" class="modal-content"></div>
 		<div class="modal-footer">
 			<a href="#!" class="modal-action modal-close waves-effect waves-gray btn-flat">OK</a>
+		</div>
+	</div>
+
+	<!--Generic confirm used by showConfirm() in index.js-->
+	<div id="msg-genericConfirm" class="modal">
+		<div id="genericConfirmBody" class="modal-content"></div>
+		<div class="modal-footer">
+			<a id="btnConfirm" href="#!" class="modal-action modal-close waves-effect waves-gray btn-flat" onclick=>Confirm</a>
+			<a href="#!" class="modal-action modal-close waves-effect waves-gray btn-flat">Cancel</a>
 		</div>
 	</div>
 
