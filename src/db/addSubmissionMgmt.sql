@@ -55,7 +55,7 @@ $$ LANGUAGE plpgsql
 
 --This function returns one instance of submission, where the given StudentID, SectionID
 --AssessmentComponentID, and SequenceInComponent match the values of that instance
-CREATE OR REPLACE FUNCTION getSubmissions(StudentID INT, SectionID INT, ComponentID INT,
+CREATE OR REPLACE FUNCTION getSubmission(StudentID INT, SectionID INT, ComponentID INT,
                                           SequenceInComponent INT)
 RETURNS TABLE
 (
