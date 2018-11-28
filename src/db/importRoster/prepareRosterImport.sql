@@ -39,7 +39,7 @@ CREATE TEMPORARY TABLE IF NOT EXISTS RosterStaging
 
 --Function to import a roster currently in the rosterStaging table
 --param seasonIdentification is a season order, code, or name
--- see function Gradebook.getSeasonOrder(VARCHAR(20))
+-- see function getSeasonOrder(VARCHAR(20))
 CREATE OR REPLACE FUNCTION pg_temp.importRoster(year INT,
                                                 seasonIdentification VARCHAR(20),
                                                 course VARCHAR(8),

@@ -4,6 +4,13 @@ index.js - Gradebook
 Andrew Figueroa
 Data Science & Systems Lab (DASSL), Western Connecticut State University
 
+
+Modified by team DOS (Kyle Bella, Kenneth Kozlowski and Joseph Tether)
+CS 305-71 @ WCSU
+Last To Make Modification: Kenneth Kozlowski
+Date of Last Revision: 11/2/2018
+
+
 Copyright (c) 2017- DASSL. ALL RIGHTS RESERVED.
 Licensed to others under CC 4.0 BY-NC-SA
 https://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -22,7 +29,7 @@ Currently, a globally scoped variable is used to store login information.
  client cookies.
 */
 var dbInfo = {
-	"host":null, "port":null, "database":null, "user":null, "password":null,
+	"host":'localhost', "port":5432, "database":'gradebook', "user":null, "password":null,
 	 "instructorid":null
 };
 var instInfo = { "fname":null, "mname":null, "lname": null, "dept":null };
@@ -68,7 +75,25 @@ $(document).ready(function() {
 	$('#btnLogin').click(function() {
 		dbInfo = getDBFields();
 		var email = $('#email').val().trim();
-		if (dbInfo != null && email != '') {
+		
+		
+		/*This outer if/else checks to verify the domain name of the email address to verify that the user is logging 
+		in with the correct email address. This will also help to prevent unauthorized users to log into the system 
+		if the case would arrive where someone would use an email address like 'something@gmail.com' to spoof the 
+		username of 'something@sample.edu' for example to gain access into the system.
+		
+		The 'sample.edu' domain name and the 'connect.sample.edu' domain name can be changed to match any domain name 
+		that the end uer needs to make  sure will work.
+		
+		The connect.sample.edu domain name is there to verify that when a student logs into the application that their 
+		email address will be verified as correct. A different check is done in the if to make sure that a student 
+		can log in as well as instructors. This is here to make sure that institutions that use different email 
+		domains for students and faculty is covered.
+		*/
+		if(email.endsWith('@sample.edu') || email.endsWith('@connect.sample.edu'))
+		{
+		    if (dbInfo != null && email != '') 
+		    {
 			serverLogin(dbInfo, email, function() {
 				//clear login fields and close DB Info box
 				$('#email').val('');
@@ -78,11 +103,17 @@ $(document).ready(function() {
 
 				popYears(dbInfo);
 			});
+		    }
+		    else 
+		    {
+			showAlert('<h5><u>ERROR</u></h5><p>The username or password field is not filled in.' +
+				  'Please make sure all fields are filled in</p>');
+		    }
 		}
-		else {
-			showAlert('<h5>Missing field(s)</h5><p>One or more fields are ' +
-			 'not filled in.</p><p>All fields are required, including those in ' +
-			 'DB Info.</p>');
+		else
+		{
+		showAlert('<h5><u>Login Incomplete</u></h5><p>The domain name of the email address provided is not recognized' +
+			  'by the server.<br> Please try again or contact support if you believe this is an error.</p>');
 		}
 	});
 
@@ -247,7 +278,7 @@ $(document).ready(function() {
 		tr.find('#due').html(assessOrginInfo.dueDate);
 		tr.find('#curve').html(assessOrginInfo.curve);
 	});
-
+  
 	$('#logout').click(function() {
 		dbInfo = null;
 		instInfo = null;

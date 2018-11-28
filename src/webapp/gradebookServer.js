@@ -42,6 +42,10 @@ const monthNames = [
 var pg = require('pg'); //Postgres client module   | https://github.com/brianc/node-postgres
 var sjcl = require('sjcl'); //Encryption module    | https://github.com/bitwiseshiftleft/sjcl
 var express = require('express'); //Express module | https://github.com/expressjs/express
+var passport = require('passport'); //Passport module | https://github.com/jaredhanson/passport
+var LocalStrategy = require('passport-local').Strategy; //
+var session = require('express-session');
+var bodyParser = require('body-parser');
 
 var app = express();
 
@@ -56,7 +60,7 @@ function createConnectionParams(user, database, passwordText, host, port) {
    var config = {
       user: user.trim(),
       database: database.trim(),
-      password: password.trim(),
+      password: passwordText.trim(),
       host: host.trim(),
       port: port.trim()
    };
@@ -73,8 +77,24 @@ function executeQuery(response, config, queryText, queryParams, queryCallback) {
    var client = new pg.Client(config); //Connect to pg instance
    client.connect(function(err) {
       if(err) { //If a connection error happens, 500
-         response.status(500).send('500 - Database connection error');
+         switch (err.code) {
+            case '28P01': //Authentiaction failed
+            response.status(500).send('500 - Authentiaction failed');
+            break;
+            case '3D000': //Database does not exist
+            response.status(500).send('500 - Database does not exist');
+            break;
+            case 'ECONNREFUSED': //Refused Connnection (likely an incorrect port)
+            response.status(500).send('500 - Connnection Refused');
+            break;
+            case 'ENOTFOUND': //Invalid host
+            response.status(500).send('500 - Host not found');
+            break;
+         default:
+            response.status(500).send('500 - Database connection error');
+         }
          console.log(err);
+         //Currently does not work in index.html
       }
       else { //Try and execute the query
         console.log(queryText);

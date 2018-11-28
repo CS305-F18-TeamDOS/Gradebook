@@ -45,7 +45,7 @@ CREATE TEMPORARY TABLE CourseScheduleStaging
 -- This is accomplished by testing if [currentYear * COUNT(Seasons) + Season + 1]
 -- is equal to [newYear * COUNT(Seasons) + Season].
 --Each year is mapped to a scale counting for the number of
--- seasons that are in Gradebook.  This allows a simple equality check to see
+-- seasons that are in Gradebook  This allows a simple equality check to see
 -- if the supplied term is in sequence
 CREATE FUNCTION pg_temp.checkTermSequence(year INT, seasonOrder NUMERIC(1,0))
 RETURNS BOOLEAN AS
@@ -127,8 +127,8 @@ BEGIN
       DO UPDATE
          SET Title = EXCLUDED.Title;
 
-   --The first CTE inserts new instructors into Gradebook.Instructor, and RETURNS
-   -- their full names for insertion into  Gradebook.Section table
+   --The first CTE inserts new instructors into Instructor, and RETURNS
+   -- their full names for insertion into  Section table
    WITH insertedFullNames AS
    (
       --This CTE creates a table of individual instructor names from single section,
@@ -171,7 +171,7 @@ BEGIN
       RETURNING id, FName || ' ' || COALESCE(MName || ' ', '') || LName as FullName
    ),
    --This second CTE UNIONS any existing instructors that were not inserted into
-   -- Gradebook.Instructor so they can be used for insertion into Gradebook.Section
+   -- Instructor so they can be used for insertion into Section
    instructorFullNames AS (
       SELECT id, FullName
       FROM insertedFullNames
