@@ -8,7 +8,7 @@
 --implements management features for Submissions
 --This includes: reading, deleting, updating
 
-
+--------------------------------------------------------------------------------
 --Insert a submission into the database
 CREATE OR REPLACE FUNCTION CreateSubmission(Student INT, Section INT,
                                             Component INT, SequenceInComponent INT,
@@ -33,6 +33,7 @@ $$ LANGUAGE plpgsql
    CALLED ON NULL INPUT
    SECURITY INVOKER;
 
+--------------------------------------------------------------------------------
 --remove a submission where the Student, Section, Component, and SequenceInComponent
 --are all a match for the given parameters
 CREATE OR REPLACE FUNCTION removeSubmission(StudentID INT, SectionID INT, ComponentID INT,
@@ -53,6 +54,7 @@ $$ LANGUAGE plpgsql
     RETURNS NULL ON NULL INPUT
     SECURITY INVOKER;
 
+--------------------------------------------------------------------------------
 --This function returns one instance of submission, where the given StudentID, SectionID
 --AssessmentComponentID, and SequenceInComponent match the values of that instance
 CREATE OR REPLACE FUNCTION getSubmission(StudentID INT, SectionID INT, ComponentID INT,
@@ -76,4 +78,38 @@ END
 $$ LANGUAGE plpgsql
     STABLE
     RETURNS NULL ON NULL INPUT
+    SECURITY INVOKER;
+
+--------------------------------------------------------------------------------
+--Takes 6 parameters, one for each attribute of Submission
+--The first four paramters, Student, Section, Component and SequenceInComponent, form the PK
+-- of the Submission to update
+--The other parameters are updated attrbiute values
+--All attributes of a Submission (except the PK attributes) allow NULL,
+-- so entires of NULL will be changed as such
+CREATE OR REPLACE FUNCTION updateSubmission(Student INT, Section INT,
+                                            Component INT, SequenceInComponent INT,
+                                            BasePointsEarned NUMERIC,
+                                            ExtraCreditPointsEarned NUMERIC,
+                                            SubmissionDate DATE, Penalty NUMERIC,
+                                            InstructorNote VARCHAR)
+RETURNS BOOLEAN AS
+$$
+BEGIN
+
+  UPDATE Submission
+  SET    Submission.BasePointsEarned = $5,
+         Submission.ExtraCreditPointsEarned = $6,
+         Submission.SubmissionDate = $7,
+         Submission.Penatly = $8,
+         Submission.InstructorNote = $9
+  WHERE Submission.Student = $1 AND Submission.SectionID = $2 AND
+        Submission.Component = $3 AND Submission.SequenceInComponent = $4;
+
+  RETURN TRUE;
+
+END;
+$$ LANGUAGE plpgsql
+    STABLE
+    CALLED ON NULL INPUT
     SECURITY INVOKER;
