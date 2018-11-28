@@ -41,7 +41,7 @@ Currently, only attendance information is served
 	</style>
 	</head>
 	<body>
-	
+
 	<!--Top of screen banner (navbar) - Includes logo, profile, and tabs-->
 	<nav class="nav-extended">
 		<div class="nav-wrapper">
@@ -62,8 +62,10 @@ Currently, only attendance information is served
 		<div class="nav-content">
 			<ul class="tabs tabs-transparent">
 				<li id="loginTab" class="tab"><a href="#login">Login</a></li>
+				<li id="sectionTab" class="tab" style="display: none"><a href="#sections">Section</a></li>
 				<li id="rosterTab" class="tab" style="display: none"><a href="#roster">Roster</a></li>
 				<li id="attnTab" class="tab" style="display: none"><a href="#attendance">Attendance</a></li>
+				<li id="assessTab" class="tab" style="display: none"><a href="#assessments">Assessments</a></li>
 				<li id="gradesTab" class="tab" style="display: none"><a href="#grades">Grades</a></li>
 				<li id="reportsTab" class="tab" style="display: none"><a href="#reports">Reports</a></li>
 				<li id="aboutTab" class="tab"><a href="#about">About</a></li>
@@ -72,12 +74,12 @@ Currently, only attendance information is served
 			</ul>
 		</div>
 	</nav>
-	
-	
+
+
 	<div class="container"> <!--Adds left and right spacing for content-->
 	<div class="section"> <!--Adds spacing between navbar and content-->
-	
-	<div id="login">		
+
+	<div id="login">
 		<div class="row">
 			<h5>Login</h5>
 		</div>
@@ -94,9 +96,9 @@ Currently, only attendance information is served
 			</div>
 			<a id="btnLogin" class="waves-effect waves-light btn">Login</a>
 		</div>
-		
+
 		<div class="divider"></div><br/>
-		
+
 		<ul id="dbInfoBox" class="collapsible" data-collapsible="expandable"><li>
 		<div class="collapsible-header">
 			<i id="dbInfoArrow" class="material-icons">keyboard_arrow_down</i>DB Info
@@ -123,13 +125,8 @@ Currently, only attendance information is served
 		</div>
 		</li></ul>
 	</div>
-	
-	<div id="roster">
-		<p class="center-align">The Roster page is not yet implemented</p>
-	</div>
-	
-	<div id="attendance">
-	<div class="row">
+
+	<div id="sections" class="row">
 		<div class="input-field col s12 m6 l3">
 			<select id="yearSelect" disabled="true">
 				<option value="" disabled="true" selected="true">Choose year</option>
@@ -155,9 +152,41 @@ Currently, only attendance information is served
 			<label>Section</label>
 		</div>
 	</div>
-	
-	<div class="divider"></div>
-	
+
+	<div id="roster">
+		<p class="center-align">The Roster page is not yet implemented</p>
+	</div>
+
+	<div id="attendance">
+	<!--<div class="row">
+		<div class="input-field col s12 m6 l3">
+			<select id="yearSelect" disabled="true">
+				<option value="" disabled="true" selected="true">Choose year</option>
+			</select>
+			<label>Year</label>
+		</div>
+		<div class="input-field col s12 m6 l3">
+			<select id="seasonSelect" disabled="true">
+				<option value="" disabled="true" selected="true">Choose season</option>
+			</select>
+			<label>Season</label>
+		</div>
+		<div class="input-field col s12 m6 l3">
+			<select id="courseSelect" disabled="true">
+				<option value="" disabled="true" selected="true">Choose course</option>
+			</select>
+			<label>Course</label>
+		</div>
+		<div class="input-field col s12 m6 l3">
+			<select id="sectionSelect" disabled="true">
+				<option value="" disabled="true" selected="true">Choose section</option>
+			</select>
+			<label>Section</label>
+		</div>
+	</div>
+
+	<div class="divider"></div>-->
+
 	<ul id="attnOptionsBox" class="collapsible" style="display: none" data-collapsible="expandable">
 	<li>
 		<div class="collapsible-header">
@@ -182,33 +211,124 @@ Currently, only attendance information is served
 		</div>
 	</li>
 	</ul>
-	
+
 	<br/>
 	<div id="attendanceData" class="col s12" style="overflow-x:auto">
 		<!--Populated dynamically-->
 	</div>
-	
+
 	</div>
-	
+
+	<div id="assessments">
+	<!--<div class="row">
+		<div class="input-field col s12 m6 l3">
+			<select id="yearSelect" disabled="true">
+				<option value="" disabled="true" selected="true">Choose year</option>
+			</select>
+			<label>Year</label>
+		</div>
+		<div class="input-field col s12 m6 l3">
+			<select id="seasonSelect" disabled="true">
+				<option value="" disabled="true" selected="true">Choose season</option>
+			</select>
+			<label>Season</label>
+		</div>
+		<div class="input-field col s12 m6 l3">
+			<select id="courseSelect" disabled="true">
+				<option value="" disabled="true" selected="true">Choose course</option>
+			</select>
+			<label>Course</label>
+		</div>
+		<div class="input-field col s12 m6 l3">
+			<select id="sectionSelect" disabled="true">
+				<option value="" disabled="true" selected="true">Choose section</option>
+			</select>
+			<label>Section</label>
+		</div>-->
+		<div class="input-field col s12 m6 l3">
+			<select id="assessmentTypeSelect" disabled="true">
+				<option value="" disabled="true" selected="true">Choose Assessment Type</option>
+			</select>
+		</div>
+		<div class="row">
+			<div class="input-field col s12 m6 l3">
+				<i class="material-icons prefix">mode_edit</i>
+				<input id="typeInput" type="text"/>
+				<label for="typeInput">Type</label>
+			</div>
+			<div class="input-field col s12 m6 l3">
+				<i class="material-icons prefix">mode_edit</i>
+				<input id="weightInput" type="text"/>
+				<label for="weightInput">Weight</label>
+			</div>
+			<div class="input-field col s12 m6 l3">
+				<!--<i class="material-icons prefix">mode_edit</i>-->
+				<textarea id="descriptionInput" class="materialize-textarea"></textarea>
+				<label for="descriptionInput">Description</label>
+			</div>
+		</div>
+		<a id="btnAddAssessType" class="waves-effect waves-light btn">Add Type</a>
+		<a id="btnChangeAssessType" class="waves-effect waves-light btn" style="display : none">Update Type</a>
+		<a id="btnDeleteAssessType" class="waves-effect waves-light btn" style="display : none">Delete Type</a>
+
+	<div class="divider"></div>
+
+	<div>
+		<table id="assessmentItemTable">
+				<!--Populated dynamically-->
+		</table>
+		<table>
+			<tr>
+				<td id="newItem" colspan="6">
+					<a id="getFields" class="waves-effect waves-light btn">Add Item</a>
+				</td>
+				<td id="newItemSubmit" style="display : none">
+					<a id="btnAddAssessItem" class="waves-effect waves-light btn">Submit</a>
+					<a id="btnCloseItemFields" class="waves-effect waves-light btn">Close</a>
+				</td>
+				<td id="newItemBasePoints" style="display : none" class="input-field col s12 m6 l3">
+					<input id="basePointsInput" value="" />
+					<label for="basePointsInput">Base Points</label>
+				</td>
+				<td id="newItemExtraPoints" style="display : none" class="input-field col s12 m6 l3">
+					<input id="extraCreditPointsInput" value="" />
+					<label for="extraCreditPointsInput">Extra Credit Points</label>
+				</td>
+				<td id="newItemAssignedDate" style="display : none" class="input-field col s12 m6 l3">
+					<input id="assignedDateInput" value="" />
+					<label for="assignedDateInput">Date Assigned</label>
+				</td>
+				<td id="newItemDueDate" style="display : none" class="input-field col s12 m6 l3">
+					<input id="dueDateInput" value="" />
+					<label for="dueDateInput">Date Due</label>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+	</div>
+
+
+
 	<div id="grades">
 		<p class="center-align">The Grades page is not yet implemented</p>
 	</div>
-	
+
 	<div id="reports">
 		<p class="center-align">The Reports page is not yet implemented</p>
 	</div>
-	
+
 	<div id="about">
 		<h4>About Gradebook</h4>
 		<p>Gradebook is an open-source product for instructors to record student
 		 assessment and attendance. It is developed at the Data Science &amp;
 		 Systems Lab (<a href="https://dassl.github.io" target="_blank">DASSL</a>
-		 , read <em>dazzle</em>) at the Western Connecticut State University 
+		 , read <em>dazzle</em>) at the Western Connecticut State University
 		 (<a href="http://wcsu.edu/" target="_blank">WCSU</a>).</p>
 		<h5>Goals</h5>
 		<p>Gradebook is developed with the following goals:</p>
 		<ol>
-			<li>Provide instructors a free, open, and modern tool to record 
+			<li>Provide instructors a free, open, and modern tool to record
 			 student assessment and attendance</li>
 			<li>Provide instructors a framework to surface, analyze, and visualize
 			 patterns in student performance</li>
@@ -233,7 +353,7 @@ Currently, only attendance information is served
 		 its current state. There are no guarantees that future development
 		 releases will provide any kind of backward compatibility or portability.</p>
 		<h5>Contributors</h5>
-		<p>Gradebook was conceived by and is designed by 
+		<p>Gradebook was conceived by and is designed by
 		 <a href="http://sites.wcsu.edu/murthys/" target="_blank">Sean Murthy</a>,
 		 a member of the Computer Science faculty at WCSU.</p>
 		<p>The following undergraduate Computer Science students at WCSU
@@ -255,7 +375,7 @@ Currently, only attendance information is served
 			<p>PROVIDED AS IS. NO WARRANTIES EXPRESSED OR IMPLIED. USE AT YOUR OWN
 			 RISK.</p>
 	</div>
-	
+
 	<!--Generic alert used by showAlert() in index.js-->
 	<div id="msg-genericAlert" class="modal">
 		<div id="genericAlertBody" class="modal-content"></div>
@@ -263,10 +383,19 @@ Currently, only attendance information is served
 			<a href="#!" class="modal-action modal-close waves-effect waves-gray btn-flat">OK</a>
 		</div>
 	</div>
-	
+
+	<!--Generic confirm used by showConfirm() in index.js-->
+	<div id="msg-genericConfirm" class="modal">
+		<div id="genericConfirmBody" class="modal-content"></div>
+		<div class="modal-footer">
+			<a id="btnConfirm" href="#!" class="modal-action modal-close waves-effect waves-gray btn-flat" onclick=>Confirm</a>
+			<a href="#!" class="modal-action modal-close waves-effect waves-gray btn-flat">Cancel</a>
+		</div>
+	</div>
+
 	</div>
 	</div>
-	
+
 	</body>
 
 	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
