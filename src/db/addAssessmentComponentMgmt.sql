@@ -27,7 +27,7 @@ END
 $$
 LANGUAGE plpgsql
   VOLATILE
-  RETURNS NULL ON NULL INPUT
+  CALLED ON NULL INPUT
   SECURITY INVOKER;
 
 --Deletes the AssessmentComponent with an ID == the input value
@@ -59,30 +59,6 @@ $$ LANGUAGE plpgsql
    VOLATILE
    RETURNS NULL ON NULL INPUT
    SECURITY INVOKER;
-
-
---This functions returns all assessment components
-CREATE OR REPLACE FUNCTION getAssessmentComponents()
-RETURNS TABLE
-(
-  ID INT,
-  Section INT,
-  Type VARCHAR,
-  Weight NUMERIC(5,2),
-  Description VARCHAR,
-  NumItems INT
-)
-AS
-$$
-
-      SELECT  ID, Section, Type, Weight, Description, NumItems
-      FROM AssessmentComponent;
-
-$$ LANGUAGE sql
-    STABLE
-    CALLED ON NULL INPUT
-    SECURITY INVOKER;
-
 
 --This functions returns a 1 row table containing an AssessmentComponent
 --When given a single parameter, which is a ComponentID

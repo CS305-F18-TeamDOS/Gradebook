@@ -30,7 +30,7 @@ BEGIN
 END
 $$ LANGUAGE plpgsql
    VOLATILE
-   RETURNS NULL ON NULL INPUT
+   CALLED ON NULL INPUT
    SECURITY INVOKER;
 
 --remove a submission where the Student, Section, Component, and SequenceInComponent
@@ -51,34 +51,6 @@ END
 $$ LANGUAGE plpgsql
     VOLATILE
     RETURNS NULL ON NULL INPUT
-    SECURITY INVOKER;
-
---This function returns all attributes of all instance of Submission
-CREATE OR REPLACE FUNCTION getSubmissions()
-RETURNS TABLE
-(
-  Student INT,
-  Section INT,
-  Component INT,
-  SequenceInComponent INT,
-  BasePointsEarned NUMERIC(6,2),
-  ExtraCreditPointsEarned NUMERIC(6,2),
-  SubmissionDate DATE,
-  Penalty NUMERIC(6,2),
-  InstructorNote VARCHAR
-)
-AS
-$$
-BEGIN
-
-  SELECT Student, Section, Component, SequenceInComponent, BasePointsEarned,
-         ExtraCreditPoints, SubmissionDate, Penalty, InstructorNote
-  FROM Submission;
-
-END
-$$ LANGUAGE plpgsql
-    STABLE
-    CALLED ON NULL INPUT
     SECURITY INVOKER;
 
 --This function returns one instance of submission, where the given StudentID, SectionID

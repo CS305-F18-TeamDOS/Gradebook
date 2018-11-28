@@ -30,7 +30,7 @@ END
 $$
 LANGUAGE plpgsql
   VOLATILE
-  RETURNS NULL ON NULL INPUT
+  CALLED ON NULL INPUT
   SECURITY INVOKER;
 
 --this function is used to fully remove an AssessmentItem and it's dependents
@@ -57,30 +57,6 @@ $$ LANGUAGE plpgsql
    VOLATILE
    RETURNS NULL ON NULL INPUT
    SECURITY INVOKER;
-
---This functions returns all rows of AssessmentItem
-CREATE OR REPLACE FUNCTION getAssessmentItems()
-RETURNS TABLE
-(
-  Component INT,
-  SequenceInComponent INT,
-  BasePoints NUMERIC(6,2),
-  ExtraCreditPoints NUMERIC(6,2),
-  AssignedDate DATE,
-  DueDate DATE,
-  Curve NUMERIC(5,2)
-)
-AS
-$$
-
-      SELECT  Component, SequenceInComponent, BasePoints, ExtraCreditPoints,
-      AssignedDate, DueDate, Curve
-      FROM AssessmentItem;
-
-$$ LANGUAGE sql
-    STABLE
-    CALLED ON NULL INPUT
-    SECURITY INVOKER;
 
 --This functions returns 1 rows of AssessmentItem,
 --where the item has the given ComponentID and SequenceInComponent
