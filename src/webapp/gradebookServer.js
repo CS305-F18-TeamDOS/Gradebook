@@ -18,7 +18,14 @@ all Gradebook objects to exist in a schema called "gradebook".
 
 A static page is served at '/', along with some js and css dependencies
 Additionally, five REST calls are implemented that this pages uses to
-get data from the Gradebook db
+get data from the Gradebook db.
+
+
+This document in its current version has been modified by Team DOS: Kyle Bella,
+Kenneth Kozlowski and Joseph Tether for CS305@WCSU
+
+Last Edited by: Kenneth Kozlowski
+Date Of Last Revision: November 29, 2018
 */
 //Super secret password - Used for a temporary password encryption scheme
 const superSecret = 'dassl2017';
@@ -42,9 +49,6 @@ const monthNames = [
 var pg = require('pg'); //Postgres client module   | https://github.com/brianc/node-postgres
 var sjcl = require('sjcl'); //Encryption module    | https://github.com/bitwiseshiftleft/sjcl
 var express = require('express'); //Express module | https://github.com/expressjs/express
-var passport = require('passport'); //Passport module | https://github.com/jaredhanson/passport
-var LocalStrategy = require('passport-local').Strategy; //
-var session = require('express-session');
 var bodyParser = require('body-parser');
 
 var app = express();
@@ -120,12 +124,32 @@ app.get('/favicon.ico', function (request, response) {
 
 //Serve our homepage when a user goes to the root
 app.get('/', function(request, response) {
-   response.sendFile('client/index.html', {root: __dirname});
+   response.sendFile('client/html/login.html', {root: __dirname});
 });
 
 //Serve our homepage when a user goes to the root
 app.get('/index.html', function(request, response) {
-   response.sendFile('client/index.html', {root: __dirname});
+   response.sendFile('client/html/login.html', {root: __dirname});
+});
+
+//Loads the about page
+app.get('/about.html', function(request, response) {
+   response.sendFile('client/html/about.html', {root: __dirname});
+});
+
+//Loads the Change Log page
+app.get('/changeLog.html', function(request, response) {
+   response.sendFile('client/html/changeLog.html', {root: __dirname});
+});
+
+//Loads the Assessment Mgmt. Form Page
+app.get('/manageAssessmentTypesForm.html', function(request, response) {
+   response.sendFile('client/html/manageAssessmentTypesForm.html', {root: __dirname});
+});
+
+//Loads the Manage Assessments Page
+app.get('/manageAssessments.html', function(request, response) {
+   response.sendFile('client/html/manageAssessments.html', {root: __dirname});
 });
 
 //Serve css and js dependencies
