@@ -118,12 +118,32 @@ app.get('/favicon.ico', function (request, response) {
 
 //Serve our homepage when a user goes to the root
 app.get('/', function(request, response) {
-   response.sendFile('client/index.html', {root: __dirname});
+   response.sendFile('client/html/login.html', {root: __dirname});
 });
 
 //Serve our homepage when a user goes to the root
 app.get('/index.html', function(request, response) {
-   response.sendFile('client/index.html', {root: __dirname});
+   response.sendFile('client/html/login.html', {root: __dirname});
+});
+
+//Loads the about page
+app.get('/about.html', function(request, response) {
+   response.sendFile('client/html/about.html', {root: __dirname});
+});
+
+//Loads the Change Log page
+app.get('/changeLog.html', function(request, response) {
+   response.sendFile('client/html/changeLog.html', {root: __dirname});
+});
+
+//Loads the Assessment Mgmt. Form Page
+app.get('/manageAssessmentTypesForm.html', function(request, response) {
+   response.sendFile('client/html/manageAssessmentTypesForm.html', {root: __dirname});
+});
+
+//Loads the Manage Assessments Page
+app.get('/manageAssessments.html', function(request, response) {
+   response.sendFile('client/html/manageAssessments.html', {root: __dirname});
 });
 
 //Serve css and js dependencies
