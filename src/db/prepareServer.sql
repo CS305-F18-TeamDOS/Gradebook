@@ -64,7 +64,7 @@ BEGIN
    END IF;
 
    ALTER ROLE Gradebook CREATEROLE CREATEDB;
-
+   GRANT pg_signal_backend TO Gradebook;
 
    --create user GB_WebApp if necessary and make sure the user is a member of
    --Gradebook role
