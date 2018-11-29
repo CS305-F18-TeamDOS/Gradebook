@@ -120,8 +120,10 @@ $$ LANGUAGE sql
 CREATE OR REPLACE FUNCTION updateAssessmentComponent(ComponentID INT, Type VARCHAR,
                                                      Weight NUMERIC(5, 2),
                                                     Description VARCHAR, NumItems INT)
-RETURNS BOOLEAN AS
+RETURNS INTEGER AS
 $$
+DECLARE 
+  affectedRowCount INTEGER;
 BEGIN
 
   UPDATE AssessmentComponent
@@ -130,8 +132,9 @@ BEGIN
          AssessmentComponent.Description = $4,
          AssessmentComponent.NumItems = COALESCE($5, AssessmentComponent.NumItems)
   WHERE AssessmentComponent.ComponentID = $1;
+  GET DIAGNOSTICS affectedRowCount = ROW_COUNT;
 
-  RETURN TRUE;
+  RETURN affectedRowCount;
 
 END;
 $$ LANGUAGE plpgsql
