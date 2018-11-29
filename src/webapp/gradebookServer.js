@@ -49,9 +49,6 @@ const monthNames = [
 var pg = require('pg'); //Postgres client module   | https://github.com/brianc/node-postgres
 var sjcl = require('sjcl'); //Encryption module    | https://github.com/bitwiseshiftleft/sjcl
 var express = require('express'); //Express module | https://github.com/expressjs/express
-var passport = require('passport'); //Passport module | https://github.com/jaredhanson/passport
-var LocalStrategy = require('passport-local').Strategy; //
-var session = require('express-session');
 var bodyParser = require('body-parser');
 
 var app = express();
