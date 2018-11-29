@@ -93,8 +93,10 @@ CREATE OR REPLACE FUNCTION updateSubmission(Student INT, Section INT,
                                             ExtraCreditPointsEarned NUMERIC,
                                             SubmissionDate DATE, Penalty NUMERIC,
                                             InstructorNote VARCHAR)
-RETURNS BOOLEAN AS
+RETURNS INTEGER AS
 $$
+DECLARE
+  affectedRowCount INTEGER;
 BEGIN
 
   UPDATE Submission
@@ -105,8 +107,9 @@ BEGIN
          Submission.InstructorNote = $9
   WHERE Submission.Student = $1 AND Submission.SectionID = $2 AND
         Submission.Component = $3 AND Submission.SequenceInComponent = $4;
+  GET DIAGNOSTICS affectedRowCount = ROW_COUNT;
 
-  RETURN TRUE;
+  RETURN affectedRowCount;
 
 END;
 $$ LANGUAGE plpgsql
