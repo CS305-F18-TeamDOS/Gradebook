@@ -90,7 +90,7 @@ $(document).ready(function() {
 		can log in as well as instructors. This is here to make sure that institutions that use different email 
 		domains for students and faculty is covered.
 		*/
-		if(email.endsWith('@sample.edu') || email.endsWith('@connect.sample.edu'))
+		if(email.endsWith('@example.edu') || email.endsWith('@connect.example.edu'))
 		{
 		    if (dbInfo != null && email != '') 
 		    {
