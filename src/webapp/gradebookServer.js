@@ -18,7 +18,14 @@ all Gradebook objects to exist in a schema called "gradebook".
 
 A static page is served at '/', along with some js and css dependencies
 Additionally, five REST calls are implemented that this pages uses to
-get data from the Gradebook db
+get data from the Gradebook db.
+
+
+This document in its current version has been modified by Team DOS: Kyle Bella,
+Kenneth Kozlowski and Joseph Tether for CS305@WCSU
+
+Last Edited by: Kenneth Kozlowski
+Date Of Last Revision: November 29, 2018
 */
 //Super secret password - Used for a temporary password encryption scheme
 const superSecret = 'dassl2017';
