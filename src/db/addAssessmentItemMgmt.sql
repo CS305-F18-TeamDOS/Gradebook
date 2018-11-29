@@ -127,8 +127,10 @@ CREATE OR REPLACE FUNCTION updateAssessmentItem(ComponentID INT,
                                                 AssignedDate DATE,
                                                 DueDate DATE,
                                                 Curve NUMERIC(5,2))
-RETURNS BOOLEAN AS
+RETURNS INTEGER AS
 $$
+DECLARE
+  affectedRowCount INTEGER;
 BEGIN
 
   UPDATE AssessmentItem
@@ -137,8 +139,9 @@ BEGIN
          AssessmentItem.DueDate = $5,
          AssessmentItem.Curve = $6
   WHERE (AssessmentItem.ComponentID = $1 AND AssessmentItem.SequenceInItem = $2);
+  GET DIAGNOSTICS affectedRowCount = ROW_COUNT;
 
-  RETURN TRUE;
+  RETURN affectedRowCount;
 
 END;
 $$ LANGUAGE plpgsql
