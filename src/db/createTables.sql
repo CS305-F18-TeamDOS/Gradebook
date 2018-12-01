@@ -45,6 +45,12 @@ CREATE TABLE Course
    Title VARCHAR(100) NOT NULL --e.g., 'C++ Programming'
 );
 
+REVOKE ALL PRIVILEGES ON Course FROM Student;
+REVOKE ALL PRIVILEGES ON Course FROM Instructor;
+
+GRANT SELECT ON Course TO Student;
+GRANT SELECT ON Course TO Instructor;
+
 
 CREATE TABLE Season
 (
@@ -60,6 +66,13 @@ CREATE TABLE Season
    Code CHAR(1) NOT NULL UNIQUE CHECK(Code ~ '[A-Z]')
 );
 
+REVOKE ALL PRIVILEGES ON Season FROM Student;
+REVOKE ALL PRIVILEGES ON Season FROM Instructor;
+
+--no reason to add or modify seasons
+GRANT SELECT ON Season TO Student;
+GRANT SELECT ON Season TO Instructor;
+
 --enforce case-insensitive uniqueness of season name
 CREATE UNIQUE INDEX idx_Unique_SeasonName ON Season(LOWER(TRIM(Name)));
 
@@ -73,6 +86,12 @@ CREATE TABLE Term
    UNIQUE(Year, Season)
 );
 
+REVOKE ALL PRIVILEGES ON Term FROM Student;
+REVOKE ALL PRIVILEGES ON Term FROM Instructor;
+
+GRANT SELECT ON Term TO Student;
+GRANT SELECT ON Term TO Instructor;
+
 
 CREATE TABLE Instructor
 (
@@ -84,6 +103,12 @@ CREATE TABLE Instructor
    Email VARCHAR(319) CHECK(TRIM(Email) LIKE '_%@_%._%'),
    UNIQUE(FName, MName, LName)
 );
+
+REVOKE ALL PRIVILEGES ON Instructor FROM Student;
+REVOKE ALL PRIVILEGES ON INstructor FROM Instructor;
+
+GRANT SELECT ON Instructor TO Student;
+GRANT SELECT ON Instructor TO Instructor;
 
 --enforce case-insensitive uniqueness of instructor e-mail addresses
 CREATE UNIQUE INDEX idx_Unique_InstructorEmail
@@ -120,6 +145,12 @@ CREATE TABLE Section
               )
 );
 
+REVOKE ALL PRIVILEGES ON Section FROM Student;
+REVOKE ALL PRIVILEGES ON Section FROM Instructor;
+
+GRANT SELECT ON Section TO Student;
+GRANT SELECT ON Section TO Instructor;
+
 --Table to store all possible letter grades
 --A -> F, standard letter grades
 --some universities permit A+
@@ -154,6 +185,12 @@ CREATE TABLE Grade
                              AND GPA IS NOT NULL))
 );
 
+REVOKE ALL PRIVILEGES ON Grade FROM Student;
+REVOKE ALL PRIVILEGES ON Grade FROM Instructor;
+
+GRANT SELECT ON Grade TO Student;
+GRANT SELECT ON Grade TO Instructor;
+
 
 --Table to store mapping of percentage score to a letter grade: varies by section
 CREATE TABLE GradeTier
@@ -164,6 +201,12 @@ CREATE TABLE GradeTier
    HighPercentage NUMERIC(5,2) NOT NULL CHECK (HighPercentage > 0) UNIQUE,
    PRIMARY KEY(Section, LetterGrade)
 );
+
+REVOKE ALL PRIVILEGES ON GradeTier FROM Student;
+REVOKE ALL PRIVILEGES ON GradeTier FROM Instructor;
+
+GRANT SELECT ON GradeTier TO Student;
+GRANT SELECT, INSERT, UPDATE, DELETE ON GradeTier TO Instructor;
 
 
 CREATE TABLE Student
@@ -179,6 +222,12 @@ CREATE TABLE Student
    CONSTRAINT StudentNameRequired --ensure at least one of the name fields is used
       CHECK (FName IS NOT NULL OR MName IS NOT NULL OR LName IS NOT NULL)
 );
+
+REVOKE ALL PRIVILEGES ON Student FROM Student;
+REVOKE ALL PRIVILEGES ON Student FROM Instructor;
+
+GRANT SELECT ON Student TO Student;
+GRANT SELECT ON Student TO Instructor;
 
 --enforce case-insensitive uniqueness of student e-mail addresses
 CREATE UNIQUE INDEX idx_Unique_StudentEmail
@@ -203,12 +252,24 @@ CREATE TABLE Enrollee
    FOREIGN KEY (Section, FinalGradeAwarded) REFERENCES GradeTier
 );
 
+REVOKE ALL PRIVILEGES ON Enrollee FROM Student;
+REVOKE ALL PRIVILEGES ON Enrollee FROM Instructor;
+
+GRANT SELECT ON Enrollee TO Student;
+GRANT SELECT ON Enrollee TO Instructor;
+
 
 CREATE TABLE AttendanceStatus
 (
    Status CHAR(1) NOT NULL PRIMARY KEY, --'P', 'A', ...
    Description VARCHAR(20) NOT NULL UNIQUE --'Present', 'Absent', ...
 );
+
+REVOKE ALL PRIVILEGES ON AttendanceStatus FROM Student;
+REVOKE ALL PRIVILEGES ON AttendanceStatus FROM Instructor;
+
+GRANT SELECT ON AttendanceStatus TO Student;
+GRANT SELECT ON AttendanceStatus TO Instructor;
 
 
 CREATE TABLE AttendanceRecord
@@ -221,6 +282,11 @@ CREATE TABLE AttendanceRecord
    FOREIGN KEY (Student, Section) REFERENCES Enrollee
 );
 
+REVOKE ALL PRIVILEGES ON AttendanceRecord FROM Student;
+REVOKE ALL PRIVILEGES ON AttendanceRecord FROM Instructor;
+
+GRANT SELECT ON AttendanceRecord TO Student;
+GRANT SELECT ON AttendanceRecord TO Instructor;
 
 CREATE TABLE AssessmentComponent
 (
@@ -235,6 +301,12 @@ CREATE TABLE AssessmentComponent
    Description VARCHAR,
    NumItems INT NOT NULL DEFAULT 1 CHECK(NumItems >= 0)
 );
+
+REVOKE ALL PRIVILEGES ON AssessmentComponent FROM Student;
+REVOKE ALL PRIVILEGES ON AssessmentComponent FROM Instructor;
+
+GRANT SELECT ON AssessmentComponent TO Student;
+GRANT SELECT, INSERT, UPDATE, DELETE ON AssessmentComponent TO Instructor;
 
 --Table mapping assessment items to parent component items
 CREATE TABLE AssessmentItem
@@ -255,6 +327,12 @@ CREATE TABLE AssessmentItem
   PRIMARY KEY(Component, SequenceInComponent)
 );
 
+REVOKE ALL PRIVILEGES ON AssessmentItem FROM Student;
+REVOKE ALL PRIVILEGES ON AssessmentItem FROM Instructor;
+
+GRANT SELECT ON AssessmentItem TO Student;
+GRANT SELECT, INSERT, UPDATE, DELETE ON AssessmentItem TO Instructor;
+
 --table mapping enrollee submissions of asssessment items
 CREATE TABLE Submission
 (
@@ -271,6 +349,12 @@ CREATE TABLE Submission
    FOREIGN KEY (Student, Section) REFERENCES Enrollee,
    FOREIGN KEY (Component, SequenceInComponent) REFERENCES AssessmentItem
 );
+
+REVOKE ALL PRIVILEGES ON Submission FROM Student;
+REVOKE ALL PRIVILEGES ON Submission FROM Instructor;
+
+GRANT SELECT ON Submission TO Student;
+GRANT SELECT, UPDATE, INSERT, DELETE ON Submission TO Instructor;
 
 
 --turn spooling off
