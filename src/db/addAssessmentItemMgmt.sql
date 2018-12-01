@@ -8,7 +8,7 @@
 --implements management features for AssessmentItems
 --This includes: reading, deleting, updating
 
-
+--------------------------------------------------------------------------------
 --This function inserts a new AssessmentComponent with the given parameters
 --as values to insert
 CREATE OR REPLACE FUNCTION createAssessmentItem(
@@ -30,9 +30,10 @@ END
 $$
 LANGUAGE plpgsql
   VOLATILE
-  RETURNS NULL ON NULL INPUT
+  CALLED ON NULL INPUT
   SECURITY INVOKER;
 
+--------------------------------------------------------------------------------
 --this function is used to fully remove an AssessmentItem and it's dependents
 --begins by deleting all sumbissions that refference the AssessmentItem to delete
 --then deleting the AssessmentItem indicated by the input parameter
@@ -58,30 +59,7 @@ $$ LANGUAGE plpgsql
    RETURNS NULL ON NULL INPUT
    SECURITY INVOKER;
 
---This functions returns all rows of AssessmentItem
-CREATE OR REPLACE FUNCTION getAssessmentItems()
-RETURNS TABLE
-(
-  Component INT,
-  SequenceInComponent INT,
-  BasePoints NUMERIC(6,2),
-  ExtraCreditPoints NUMERIC(6,2),
-  AssignedDate DATE,
-  DueDate DATE,
-  Curve NUMERIC(5,2)
-)
-AS
-$$
-
-      SELECT  Component, SequenceInComponent, BasePoints, ExtraCreditPoints,
-      AssignedDate, DueDate, Curve
-      FROM AssessmentItem;
-
-$$ LANGUAGE sql
-    STABLE
-    CALLED ON NULL INPUT
-    SECURITY INVOKER;
-
+--------------------------------------------------------------------------------
 --This functions returns 1 rows of AssessmentItem,
 --where the item has the given ComponentID and SequenceInComponent
 CREATE OR REPLACE FUNCTION getAssessmentItem(ComponentID INT,
@@ -109,6 +87,7 @@ $$ LANGUAGE sql
     RETURNS NULL ON NULL INPUT
     SECURITY INVOKER;
 
+--------------------------------------------------------------------------------
 --This functions returns a table containing 0 or more rows of AssessmentItems
 --where each row shares a Component
 CREATE OR REPLACE FUNCTION getAssessmentItemsFromComponent(ComponentID INTEGER)
@@ -132,4 +111,40 @@ $$
 $$ LANGUAGE sql
     STABLE
     RETURNS NULL ON NULL INPUT
+    SECURITY INVOKER;
+
+--------------------------------------------------------------------------------
+--Takes 6 parameters, one for each attribute of AssessmentItem
+--The first two paramters, ComponentID and SequenceInComponent, form the PK
+-- of the Item to update
+--The other parameters are updated attrbiute values
+--Any NULL input for BasePoints will be ignored, as it does not allow NULL
+--AssignedDate, DueDate, and Curve allows a change to a NULL input,
+-- as per the table's definition
+CREATE OR REPLACE FUNCTION updateAssessmentItem(ComponentID INT,
+                                                SequenceInComponent INT,
+                                                BasePoints NUMERIC(6,2),
+                                                AssignedDate DATE,
+                                                DueDate DATE,
+                                                Curve NUMERIC(5,2))
+RETURNS INTEGER AS
+$$
+DECLARE
+  affectedRowCount INTEGER;
+BEGIN
+
+  UPDATE AssessmentItem
+  SET    AssessmentItem.BasePoints = COALESCE($3, AssessmentItem.BasePoints),
+         AssessmentItem.AssignedDate = $4,
+         AssessmentItem.DueDate = $5,
+         AssessmentItem.Curve = $6
+  WHERE (AssessmentItem.ComponentID = $1 AND AssessmentItem.SequenceInItem = $2);
+  GET DIAGNOSTICS affectedRowCount = ROW_COUNT;
+
+  RETURN affectedRowCount;
+
+END;
+$$ LANGUAGE plpgsql
+    STABLE
+    CALLED ON NULL INPUT
     SECURITY INVOKER;

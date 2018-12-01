@@ -8,6 +8,7 @@
 --implements management features for AssessmentComponents
 --This includes: reading, deleting, updating
 
+--------------------------------------------------------------------------------
 --This function inserts a new AssessmentComponent with the given parameters
 --as values to insert
 CREATE OR REPLACE FUNCTION createAssessmentComponent(
@@ -27,11 +28,12 @@ END
 $$
 LANGUAGE plpgsql
   VOLATILE
-  RETURNS NULL ON NULL INPUT
+  CALLED ON NULL INPUT
   SECURITY INVOKER;
 
+--------------------------------------------------------------------------------
 --Deletes the AssessmentComponent with an ID == the input value
---First, mus delete all tables with the ComponentToDelete as a foreign key
+--First, must delete all tables with the ComponentToDelete as a foreign key
 --begins by deleting all Sumbissions with a foreign key to the ComponentToDelete
 --then deleting all AssessmentItems that refference the ComponentToDelete
 --then deleting the AssessmentComponent instance with an ID == ComponentToDelete
@@ -60,30 +62,7 @@ $$ LANGUAGE plpgsql
    RETURNS NULL ON NULL INPUT
    SECURITY INVOKER;
 
-
---This functions returns all assessment components
-CREATE OR REPLACE FUNCTION getAssessmentComponents()
-RETURNS TABLE
-(
-  ID INT,
-  Section INT,
-  Type VARCHAR,
-  Weight NUMERIC(5,2),
-  Description VARCHAR,
-  NumItems INT
-)
-AS
-$$
-
-      SELECT  ID, Section, Type, Weight, Description, NumItems
-      FROM AssessmentComponent;
-
-$$ LANGUAGE sql
-    STABLE
-    CALLED ON NULL INPUT
-    SECURITY INVOKER;
-
-
+--------------------------------------------------------------------------------
 --This functions returns a 1 row table containing an AssessmentComponent
 --When given a single parameter, which is a ComponentID
 CREATE OR REPLACE FUNCTION getAssessmentComponent(ComponentID INT)
@@ -108,7 +87,7 @@ $$ LANGUAGE sql
     RETURNS NULL ON NULL INPUT
     SECURITY INVOKER;
 
-
+--------------------------------------------------------------------------------
 --This functions returns a table containing each AssessmentComponent
 --with a Section == the given parameter
 CREATE OR REPLACE FUNCTION getAssessmentComponentsFromSection(SectionID INT)
@@ -130,4 +109,35 @@ $$
 $$ LANGUAGE sql
     STABLE
     RETURNS NULL ON NULL INPUT
+    SECURITY INVOKER;
+
+--------------------------------------------------------------------------------
+--Takes 5 parameters, one for each attribute of AssessmentComponent
+--The first paramter, ID, is the ID of the Component to update
+--The other parameters are updated attrbiute values
+--Any NULL input for Type, Weight, or NumItems will be ignored as they do no allow NULL
+--Decription allows a change to a NULL input, as per the table's definition
+CREATE OR REPLACE FUNCTION updateAssessmentComponent(ComponentID INT, Type VARCHAR,
+                                                     Weight NUMERIC(5, 2),
+                                                    Description VARCHAR, NumItems INT)
+RETURNS INTEGER AS
+$$
+DECLARE 
+  affectedRowCount INTEGER;
+BEGIN
+
+  UPDATE AssessmentComponent
+  SET    AssessmentComponent.Type = COALESCE($2, AssessmentComponent.Type),
+         AssessmentComponent.Weight = COALESCE($3, AssessmentComponent.Weight),
+         AssessmentComponent.Description = $4,
+         AssessmentComponent.NumItems = COALESCE($5, AssessmentComponent.NumItems)
+  WHERE AssessmentComponent.ComponentID = $1;
+  GET DIAGNOSTICS affectedRowCount = ROW_COUNT;
+
+  RETURN affectedRowCount;
+
+END;
+$$ LANGUAGE plpgsql
+    STABLE
+    CALLED ON NULL INPUT
     SECURITY INVOKER;
