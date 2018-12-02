@@ -1,38 +1,38 @@
-/*
-index.js - Gradebook
-
-Andrew Figueroa
-Data Science & Systems Lab (DASSL), Western Connecticut State University
-
-
-Modified by team DOS (Kyle Bella, Kenneth Kozlowski and Joseph Tether)
-CS 305-71 @ WCSU
-Last To Make Modification: Kenneth Kozlowski
-Date of Last Revision: 11/2/2018
-
-
-Copyright (c) 2017- DASSL. ALL RIGHTS RESERVED.
-Licensed to others under CC 4.0 BY-NC-SA
-https://creativecommons.org/licenses/by-nc-sa/4.0/
-
-ALL ARTIFACTS PROVIDED AS IS. NO WARRANTIES EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
-
-This JavaScript file provides the client-side JS code that is used by the index.html
-page. The functionality provided includes accessing the REST API provided by the web
-server component of the Gradebook webapp, along with providing interactivity for the
-index.html webpage.
-*/
-
+function getCookie(cname) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i<ca.length; i++)
+  {
+    var c = ca[i];
+    while (c.charAt(0) == ' ')
+    {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0)
+    {
+      if (cname === "dbInfo" || cname === "instInfo")
+      {
+        return JSON.parse(c.substring(name.length, c.length));
+      }
+      else {
+        return c.substring(name.length, c.length);
+      }
+    }
+  }
+  return "";
+}
 /*
 Currently, a globally scoped variable is used to store login information.
  At a later point, it may be stored through a more appropriate manner, such as
  client cookies.
 */
-var dbInfo = {
-	"host":'localhost', "port":5432, "database":'gb_data', // change back to 'gradebook' after testing
-	"user":'gb_webapp', "password":null, "instructorid":null
-};
-var instInfo = { "fname":null, "mname":null, "lname": null, "dept":null };
+var dbInfo = getCookie("dbInfo");
+var instInfo = getCookie("instInfo");
+var sectionID = getCookie("sectionID");
+console.log(dbInfo);
+console.log(instInfo);
+console.log(sectionID);
 
 /*
 Each instance of connInfo as a parameter in a function definition refers to an
@@ -72,87 +72,7 @@ $(document).ready(function() {
 		}
 	});
 
-	$('#btnLogin').click(function() {
-		dbInfo = getDBFields();
-		var email = $('#email').val().trim();
-
-
-		/*This outer if/else checks to verify the domain name of the email address to verify that the user is logging
-		in with the correct email address. This will also help to prevent unauthorized users to log into the system
-		if the case would arrive where someone would use an email address like 'something@gmail.com' to spoof the
-		username of 'something@sample.edu' for example to gain access into the system.
-
-		The 'sample.edu' domain name and the 'connect.sample.edu' domain name can be changed to match any domain name
-		that the end uer needs to make  sure will work.
-
-		The connect.sample.edu domain name is there to verify that when a student logs into the application that their
-		email address will be verified as correct. A different check is done in the if to make sure that a student
-		can log in as well as instructors. This is here to make sure that institutions that use different email
-		domains for students and faculty is covered.
-		*/
-		if(email.endsWith('@example.edu') || email.endsWith('@connect.example.edu'))
-		{
-		    if (dbInfo != null && email != '')
-		    {
-			serverLogin(dbInfo, email, function() {
-				//clear login fields and close DB Info box
-				$('#email').val('');
-				$('#passwordBox').val('');
-				$('#dbInfoBox').collapsible('close', 0);
-				$('#dbInfoArrow').html('keyboard_arrow_down');
-
-				popYears(dbInfo);
-
-				goToAssessmentTypeMgmt();
-			});
-		    }
-		    else
-		    {
-			showAlert('<h5><u>ERROR</u></h5><p>The username or password field is not filled in.' +
-				  'Please make sure all fields are filled in</p>');
-		    }
-		}
-		else
-		{
-		showAlert('<h5><u>Login Incomplete</u></h5><p>The domain name of the email address provided is not recognized' +
-			  'by the server.<br> Please try again or contact support if you believe this is an error.</p>');
-		}
-	});
-
-	$('#yearSelect').change(function() {
-		var year = $('#yearSelect').val();
-		popSeasons(dbInfo, year);
-	});
-
-	$('#seasonSelect').change(function() {
-		var year = $('#yearSelect').val();
-		var season = $('#seasonSelect').val();
-		popCourses(dbInfo, year, season);
-	});
-
-	$('#courseSelect').change(function() {
-		var year = $('#yearSelect').val();
-		var season = $('#seasonSelect').val();
-		var course = $('#courseSelect').val();
-		popSections(dbInfo, year, season, course);
-	});
-
-	$('#sectionSelect').change(function() {
-		var sectionID = $('#sectionSelect').val();
-		$('#rosterTab, #attnTab, #assessTab, #gradesTab, #reportsTab').css('display', 'inline');
-		setAssessmentTypes(null);
-		popAttendance(dbInfo, sectionID);
-		popAssessmentTypes(dbInfo, sectionID);
-	});
-
-	$('#opt-showPresent, #opt-compactTab').change(function() {
-		//reload attendance table since options were modified
-		var sectionID = $('#sectionSelect').val();
-		popAttendance(dbInfo, sectionID);
-	});
-
 	$('#btnAddAssessType').click(function() {
-		var sectionID = $('#sectionSelect').val();
 		var assessType = $('#typeInput').val();
 		var assessWeight = $('#weightInput').val();
 		var assessDescription = $('#descriptionInput').val();
@@ -162,8 +82,8 @@ $(document).ready(function() {
 	});
 
 	$('#assessmentTypeSelect').change(function() {
-		var sectionID = $('#sectionSelect').val();
 		var assessID = $('#assessmentTypeSelect').val();
+    console.log(sectionID);
 		popAssessmentItems(dbInfo, sectionID, assessID);
 		$('#btnChangeAssessType').css('display', 'inline-block');
 		$('#btnDeleteAssessType').css('display', 'inline-block');
@@ -175,7 +95,6 @@ $(document).ready(function() {
 	});
 
 	$('#btnAddAssessItem').click(function() {
-		var sectionID = $('#sectionSelect').val();
 		var assessID = $('#assessmentTypeSelect').val();
 		var basePoints = $('#basePointsInput').val();
 		var extraPoints = $('#extraCreditPointsInput').val();
@@ -193,7 +112,6 @@ $(document).ready(function() {
 	});
 
 	$('#btnChangeAssessType').click(function() {
-		var sectionID = $('#sectionSelect').val();
 		var assessID = $('#assessmentTypeSelect').val();
 		var assessType = $('#typeInput').val();
 		var assessWeight = $('#weightInput').val();
@@ -213,7 +131,6 @@ $(document).ready(function() {
 	});
 
 	$('#btnConfirm').click(function(event) {
-		var sectionID = $('#sectionSelect').val();
 		var assessID = $('#assessmentTypeSelect').val();
 		deleteAssessType(dbInfo, assessID);
 
@@ -247,7 +164,6 @@ $(document).ready(function() {
 
 	$('#assessmentItemTable').on('click', "a[id^='submitUpdate']", function() {
 		var tr = $(this).parent().parent();
-		var sectionID = $('#sectionSelect').val();
 		var assessID = $('#assessmentTypeSelect').val();
 		var sequenceInComponent = tr.prop('id');
 		var basePoints = tr.find('#basePointsInput').val();
@@ -263,7 +179,6 @@ $(document).ready(function() {
 
 	$('#assessmentItemTable').on('click', "a[id^='submitDelete']", function() {
 		var tr = $(this).parent().parent();
-		var sectionID = $('#sectionSelect').val();
 		var assessID = $('#assessmentTypeSelect').val();
 		var sequenceInComponent = tr.prop('id');
 		deleteAssessItem(dbInfo, assessID, sequenceInComponent);
@@ -300,200 +215,6 @@ $(document).ready(function() {
 function showAlert(htmlContent) {
 	$('#genericAlertBody').html(htmlContent);
 	$('#msg-genericAlert').modal('open');
-};
-
-function getDBFields() {
-	var host = $('#host').val();
-	var port = $('#port').val();
-	var db = $('#database').val();
-	var uname = $('#user').val();
-	var pw =  $('#passwordBox').val().trim();
-
-	if (host === "" || port === "" || db === "" || uname === "" || pw === "") {
-		return null;
-	}
-	else if (host == null || port == null || db == null || uname == null) {
-		console.log("WARN: Database info not specified, using defaults");
-		host = dbInfo.host;
-		port = dbInfo.port;
-		db = dbInfo.database;
-		uname = dbInfo.user;
-	}
-	else {
-		host = host.trim();
-		port = port.trim();
-		db = db.trim();
-		uname = db.trim();
-	}
-
-	pw = JSON.stringify(sjcl.encrypt('dassl2017', pw));
-
-	var connInfo = { 'host':host, 'port':parseInt(port, 10), 'database':db,
-	 'user':uname, 'password':pw };
-	return connInfo;
-};
-
-function serverLogin(connInfo, email, callback) {
-	//"create a copy" of connInfo with instructoremail and set to urlParams
-	var urlParams = $.extend({}, connInfo, {instructoremail:email});
-	$.ajax('login', {
-		dataType: 'json',
-		data: urlParams ,
-		success: function(result) {
-			//populate dbInfo and instInfo with info from response
-			dbInfo.instructorid = result.instructor.id;
-			instInfo = { fname:result.instructor.fname,
-			mname:result.instructor.mname, lname:result.instructor.lname,
-			dept:result.instructor.department };
-
-			//hide Login tab, show Roster, Attendance, Grades, and Reports tabs
-			$('#loginTab').css('display', 'none');
-			//$('#sectionTab').css('display', 'inline');
-			//$('ul.tabs').tabs('select_tab', 'sections');
-
-
-			//populate instructor name and display profile (including logout menu)
-			//Array.prototype.join is used because in JS: '' + null = 'null'
-			var instName = [instInfo.fname, instInfo.mname, instInfo.lname].join(' ');
-			$('#instName').html(instName);
-			$('#profile').css('display', 'inline');
-
-			callback();
-		},
-		error: function(result) {
-			//currently does not distinguish between credential and connection errors
-			switch (result.responseText) {
-				case '500 - Authentiaction failed'://Authentiaction failed
-					showAlert('<h5>Could not login</h5><p>Login failed - credentials ' +
-					'incorrect</p><p>Please re-enter credentials</p>');
-					break;
-				case '500 - Database does not exist'://Database does not exist
-					showAlert('<h5>Could not connect</h5><p> Connnection failed - unknown ' +
-					'database, ensure the database name is correct');
-					break;
-				case '500 - Connnection Refused'://Refused Connnection (likely an incorrect port)
-					showAlert('<h5>Could not connect</h5><p> Connnection refused - ' +
-					'ensure that the correct port is being used');
-					break;
-				case '500 - Host not found'://Invalid host
-					showAlert('<h5>Could not connect</h5><p> Connnection failed - ' +
-					'ensure the hostname is correct');
-					break;
-				default:
-					showAlert('<h5>Could not login</h5><p>Unknown error - Please contact ' +
-				  'your administrator');
-			}
-			console.log(result);
-		}
-	});
-};
-
-function goToAssessmentTypeMgmt() {
-	document.cookie = "dbInfo=" + JSON.stringify(dbInfo) + ";path=/";
-	document.cookie = "instInfo=" + JSON.stringify(instInfo) + ";path=/";
-	console.log(document.cookie);
-	window.location.href = "../manageAssessmentTypesForm.html";
-};
-
-function popYears(connInfo) {
-	$.ajax('years', {
-		dataType: 'json',
-		data: connInfo,
-		success: function(result) {
-			var years = '';
-			for (var i = 0; i < result.years.length; i++) {
-				years += '<option value="' + result.years[i] + '">' +
-				 result.years[i] + '</option>';
-			}
-			setYears(years);
-		},
-		error: function(result) {
-			showAlert('<p>Error while retrieving years</p>');
-			console.log(result);
-		}
-	});
-};
-
-function popSeasons(connInfo, year) {
-	var urlParams = $.extend({}, connInfo, {year:year});
-	$.ajax('seasons', {
-		dataType: 'json',
-		data: urlParams,
-		success: function(result) {
-			var seasons = '';
-			for (var i = 0; i < result.seasons.length; i++) {
-				seasons += '<option value="' + result.seasons[i].seasonorder +
-				 '">' + result.seasons[i].seasonname + '</option>';
-			}
-			setSeasons(seasons);
-		},
-		error: function(result) {
-			showAlert('<p>Error while retrieving seasons</p>');
-			console.log(result);
-		}
-	});
-};
-
-function popCourses(connInfo, year, seasonorder) {
-	var urlParams = $.extend({}, connInfo, {year:year, seasonorder:seasonorder});
-	$.ajax('courses', {
-		dataType: 'json',
-		data: urlParams,
-		success: function(result) {
-			var courses = '';
-			for (var i = 0; i < result.courses.length; i++) {
-				courses += '<option value="' + result.courses[i] + '">' +
-				 result.courses[i] + '</option>';
-			}
-			setCourses(courses);
-		},
-		error: function(result) {
-			showAlert('<p>Error while retrieving courses</p>');
-			console.log(result);
-		}
-	});
-};
-
-function popSections(connInfo, year, seasonorder, coursenumber) {
-	var urlParams = $.extend({}, connInfo, {year:year, seasonorder:seasonorder,
-	 coursenumber:coursenumber});
-	$.ajax('sections', {
-		dataType: 'json',
-		data: urlParams,
-		success: function(result) {
-			var sections = '';
-			for (var i = 0; i < result.sections.length; i++) {
-				sections += '<option value="' + result.sections[i].sectionid +
-				 '">' + result.sections[i].sectionnumber + '</option>';
-			}
-			setSections(sections);
-		},
-		error: function(result) {
-			showAlert('<p>Error while retrieving sections</p>');
-			console.log(result);
-		}
-	});
-};
-
-function popAttendance(connInfo, sectionid) {
-	var urlParams = $.extend({}, connInfo, {sectionid:sectionid});
-	$.ajax('attendance', {
-		dataType: 'html',
-		data: urlParams,
-		success: function(result) {
-			setAttendance(result);
-		},
-		error: function(result) {
-			if (result.responseText == '500 - No Attenance Records') {
-				showAlert('<p>No attendance records exist for this section</p>');
-			}
-			else {
-				showAlert('<p>Error while retrieving attendance data</p>');
-			}
-			setAttendance(null);
-			console.log(result);
-		}
-	});
 };
 
 function popAssessmentTypes(connInfo, sectionid) {
@@ -540,83 +261,6 @@ function popAssessmentItems(connInfo, sectionid, assessid) {
 			setAssessmentItems(null);
 		}
 	});
-};
-
-function setYears(htmlText) {
-	var content = '<option value="" disabled="true" selected="true">' +
-	 'Choose year</option>' + htmlText;
-	$('#yearSelect').html(content);
-	$('#yearSelect').prop('disabled', htmlText == null);
-	$('#yearSelect').material_select(); //reload dropdown
-
-	setSeasons(null); //reset dependent fields
-};
-
-function setSeasons(htmlText) {
-	var content = '<option value="" disabled="true" selected="true">' +
-	 'Choose season</option>' + htmlText;
-	$('#seasonSelect').html(content);
-	$('#seasonSelect').prop('disabled', htmlText == null);
-	$('#seasonSelect').material_select(); //reload dropdown
-
-	setCourses(null); //reset dependent fields
-};
-
-function setCourses(htmlText) {
-	var content = '<option value="" disabled="true" selected="true">' +
-	 'Choose course</option>' + htmlText;
-	$('#courseSelect').html(content);
-	$('#courseSelect').prop('disabled', htmlText == null);
-	$('#courseSelect').material_select(); //reload dropdown
-
-	setSections(null); //reset dependent fields
-};
-
-function setSections(htmlText) {
-	var content = '<option value="" disabled="true" selected="true">' +
-	 'Choose section</option>' + htmlText;
-	$('#sectionSelect').html(content);
-	$('#sectionSelect').prop('disabled', htmlText == null);
-	$('#sectionSelect').material_select(); //reload dropdown
-
-	setAttendance(null);
-	setAssessmentTypes(null);
-};
-
-function setAttendance(htmlText) {
-	var showPs = $('#opt-showPresent').is(':checked');
-	var isCompact = $('#opt-compactTab').is(':checked');
-
-	if (htmlText == null) {
-		$('#attendanceData').html('');
-		$('#attnOptionsBox').css('display', 'none');
-	}
-	else {
-		if (htmlText.substring(0, 7) !== '<table>') {
-			console.log('WARN: setAttendance(): Unable to style attendance table;' +
-			 ' first 7 chars did not match "<table>"');
-		}
-		else {
-			if (!showPs) {
-				//replace all 'P' fields with a space
-				htmlText = htmlText.replace(/>P<\/td>/g, '> </td>');
-			}
-			if (isCompact) {
-				//add attibutes to <table> tag to use compact framework styling
-				htmlText = '<table class="striped" style="line-height:1.1;">' +
-				 htmlText.substring(7);
-
-				//give all td tags the "compact" class
-				htmlText = htmlText.replace(/<td /g, '<td class="compact" ');
-			}
-			else {
-				//add attibutes to <table> tag to use non-compact framework styling
-				htmlText = '<table class="striped">' + htmlText.substring(7);
-			}
-		}
-		$('#attnOptionsBox').css('display', 'block');
-		$('#attendanceData').html(htmlText);
-	}
 };
 
 function setAssessmentTypes(htmlText) {
@@ -741,3 +385,5 @@ function deleteAssessItem(connInfo, assessid, sequenceincomponent) {
 		}
 	});
 };
+
+popAssessmentTypes(dbInfo, sectionID);

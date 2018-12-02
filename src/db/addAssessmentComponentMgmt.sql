@@ -12,14 +12,14 @@
 --This function inserts a new AssessmentComponent with the given parameters
 --as values to insert
 CREATE OR REPLACE FUNCTION createAssessmentComponent(
-                            Section INT, Type VARCHAR, Weight NUMERIC(5,2),
+                            Section INT, ComponentType VARCHAR, Weight NUMERIC(5,2),
                             Description VARCHAR, NumItems INT)
 RETURNS BOOLEAN AS
 $$
 BEGIN
 
   --insert given parameters into AssessmentComponent
-  INSERT INTO AssessmentComponent(Section, Type, Weight, Description, NumItems)
+  INSERT INTO AssessmentComponent(Section, ComponentType, Weight, Description, NumItems)
   VALUES ($1, $2, $3, $4, $5);
 
   RETURN TRUE;
@@ -69,7 +69,7 @@ CREATE OR REPLACE FUNCTION getAssessmentComponent(ComponentID INT)
 RETURNS TABLE
 (
   Section INT,
-  Type VARCHAR,
+  ComponentType VARCHAR,
   Weight NUMERIC(5,2),
   Description VARCHAR,
   NumItems INT
@@ -77,7 +77,7 @@ RETURNS TABLE
 AS
 $$
 
-      SELECT  Section, Type, Weight, Description, NumItems
+      SELECT  Section, ComponentType, Weight, Description, NumItems
       FROM AssessmentComponent
       WHERE AssessmentComponent.ID = $1;
 
@@ -94,7 +94,7 @@ CREATE OR REPLACE FUNCTION getAssessmentComponentsFromSection(SectionID INT)
 RETURNS TABLE
 (
   ID INT,
-  Type VARCHAR,
+  ComponentType VARCHAR,
   Weight NUMERIC(5,2),
   Description VARCHAR,
   NumItems INT
@@ -102,7 +102,7 @@ RETURNS TABLE
 AS
 $$
 
-      SELECT  ID, Type, Weight, Description, NumItems
+      SELECT  ID, ComponentType, Weight, Description, NumItems
       FROM AssessmentComponent
       WHERE AssessmentComponent.Section = $1;
 
@@ -117,17 +117,17 @@ $$ LANGUAGE sql
 --The other parameters are updated attrbiute values
 --Any NULL input for Type, Weight, or NumItems will be ignored as they do no allow NULL
 --Decription allows a change to a NULL input, as per the table's definition
-CREATE OR REPLACE FUNCTION updateAssessmentComponent(ComponentID INT, Type VARCHAR,
+CREATE OR REPLACE FUNCTION updateAssessmentComponent(ComponentID INT, ComponentType VARCHAR,
                                                      Weight NUMERIC(5, 2),
                                                     Description VARCHAR, NumItems INT)
 RETURNS INTEGER AS
 $$
-DECLARE 
+DECLARE
   affectedRowCount INTEGER;
 BEGIN
 
   UPDATE AssessmentComponent
-  SET    AssessmentComponent.Type = COALESCE($2, AssessmentComponent.Type),
+  SET    AssessmentComponent.ComponentType = COALESCE($2, AssessmentComponent.ComponentType),
          AssessmentComponent.Weight = COALESCE($3, AssessmentComponent.Weight),
          AssessmentComponent.Description = $4,
          AssessmentComponent.NumItems = COALESCE($5, AssessmentComponent.NumItems)

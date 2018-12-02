@@ -4,7 +4,7 @@ manageAssessmentTypesForm.html - Gradebook (DOS Implementation)
 
 This page will serve as a form for data collection to collect the data that is needed to filter the assessment items that are included in the course and section that the instructor wants to make changes to.  This page will contain several selection menus to collect the data from the end user. The data that the user will have the option to choose will be dynamcially filled in from data filtered from the DBMS.
 
-Using the selection menus increases the security of the application because it means the end user cannot enter in their own data that will be interpreted badly and cause malicious actions to be preformed on the DB. 
+Using the selection menus increases the security of the application because it means the end user cannot enter in their own data that will be interpreted badly and cause malicious actions to be preformed on the DB.
 
 Once the user is finished filling in all of the data then they will need to press a submit button which will take all of the data that the user picked and process it into the DBMS as a query to load the next set of results for the next page if all of the selection menus have an option filled in. If all of the options are not filled in then there will be a dialog box that states that there are one or more fields missing and will keep everything all filled in.
 
@@ -55,16 +55,16 @@ Date of Last Revision: November 8, 2018
 	<!--Import Materialize framework - Learn more: http://materializecss.com/-->
 	<link type="text/css" rel="stylesheet" href="../css/materialize.min.css"  media="screen,projection"/>
 	</head>
-	
-	
+
+
 	<body>
 		 <nav>
     		<div class="nav-wrapper">
       			<a href="#" class="brand-logo"> Gradebook - Sample Institution</a>
-      			
+
       			<!--
       			This list will be the pre-login navigation bar. These will change once the user is logged into the system
-      			
+
       			-->
      			<ul id="nav-mobile" class="right hide-on-med-and-down">
      				<li><a href="viewStudentGradesForm.html">View/Assign Grades</a></li>
@@ -74,73 +74,73 @@ Date of Last Revision: November 8, 2018
       			</ul>
     	    </div>
     	</nav><!--End of the Header Navigation -->
-    	
-    	
-    	<div class="container"> 
-		    <div class="section"> 
-		    
+
+
+    	<div class="container">
+		    <div class="section">
+
 		    <!--A title on the page so that the user knows where they are on the program-->
 		        <h2 class="center-align"><u>Manage Assessment Types Search</u></h2>
 		        <br><br>
-		        
+
 		        <!--
 		        This section is here to allow the instructor to filter which year, season,  course, section and assessment type that they want to manage the assessment items for.
-		        
+
 		        This section improves the security of the program because it adds more selection from the user which will make it less likely that the end user could insert bad queries into the DBMS which will make it less likely that the end user could end up causing malicious damage to the system.
-		        
+
 		        TODO: Add in the Javascript to set the drop down menus to dynamically populate when the user makes the selections and before the user starts making selections.
-		        
+
 		        Fields that can be dynamically populated before the instructor starts making selections:
 		            * Year
 		            * Season
-		            
+
 		        Fields that depend on other needed data:
 		            * Course - Depends on year and season
 		            * Section - Depends on year, season, and course
-		            
+
 		        -->
                 <div class="row">
                     <div class="input-field col s12 m6">
-                        <select>
-                          <option value="" disabled selected>Year</option>
+                        <select id="yearSelect" disabled="true">
+                          <option value="" disabled="true" selected="true">Year</option>
                         </select>
                         <label>Year</label>
                       </div>
                       <div class="input-field col s12 m6">
-                        <select>
-                          <option value="" disabled selected>Season</option>
+                        <select id="seasonSelect" disabled="true">
+                          <option value="" disabled="true" selected="true">Season</option>
                         </select>
                         <label>Season</label>
                      </div>
                 </div><!--End of first row of slection boxes-->
-          
+
                 <div class="row">
                     <div class="input-field col s12 m6">
-                        <select>
-                          <option value="" disabled selected>Pick which Course</option>
+                        <select id="courseSelect" disabled="true">
+                          <option value="" disabled="true" selected="true">Pick which Course</option>
                         </select>
                         <label>Course</label>
                       </div>
                       <div class="input-field col s12 m6">
-                        <select>
-                          <option value="" disabled selected>Which Section?</option>
+                        <select id="sectionSelect" disabled="true">
+                          <option value="" disabled="true" selected="true">Which Section?</option>
                         </select>
                         <label>Section</label>
                   </div>
                 </div><!--End of course and section selection row-->
-            
-               
-                    <button class="btn waves-effect waves-light" type="submit" name="action" id="submit_to_Assessment_Mgmt">Submit
+
+
+                    <button class="btn waves-effect waves-light" type="submit" name="action" disabled="true" id="submit_to_Assessment_Mgmt">Submit
                 <i class="material-icons right">send</i>
             </button>
-		    
+
 		    </div><!--End section div-->
 		</div><!--End container div-->
 	</body>
-	
+
 	<!--Script links go here-->
 	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 	<script type="text/javascript" src="../js/materialize.min.js"></script>
-	<script type="text/javascript" src="../js/index.js"></script><!--This file needs to be changed and reset to be a independant js file for this page-->
-	
+	<script type="text/javascript" src="../js/assessmentTypeMgmt.js"></script><!--This file needs to be changed and reset to be a independant js file for this page-->
+
 </html><!--End of document-->

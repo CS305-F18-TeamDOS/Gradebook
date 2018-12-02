@@ -64,7 +64,7 @@ function createConnectionParams(user, database, passwordText, host, port) {
    var config = {
       user: user.trim(),
       database: database.trim(),
-      password: passwordText.trim(),
+      password: password.trim(),
       host: host.trim(),
       port: port.trim()
    };
@@ -83,6 +83,7 @@ function executeQuery(response, config, queryText, queryParams, queryCallback) {
       if(err) { //If a connection error happens, 500
          switch (err.code) {
             case '28P01': //Authentiaction failed
+            console.log(config);
             response.status(500).send('500 - Authentiaction failed');
             break;
             case '3D000': //Database does not exist
@@ -132,6 +133,11 @@ app.get('/index.html', function(request, response) {
    response.sendFile('client/html/login.html', {root: __dirname});
 });
 
+//Loads the login page
+app.get('/login.html', function(request, response) {
+  response.sendFile('client/html/login.html', {root: __dirname});
+});
+
 //Loads the about page
 app.get('/about.html', function(request, response) {
    response.sendFile('client/html/about.html', {root: __dirname});
@@ -163,6 +169,14 @@ app.get('/js/materialize.min.js', function(request, response) {
 
 app.get('/js/index.js', function(request, response) {
 	response.sendFile('client/js/index.js', {root: __dirname});
+});
+
+app.get('/js/assessmentTypeMgmt.js', function(request, response) {
+  response.sendFile('client/js/assessmentTypeMgmt.js', {root: __dirname});
+});
+
+app.get('/js/assessmentMgmt.js', function(request, response) {
+  response.sendFile('client/js/assessmentMgmt.js', {root: __dirname});
 });
 
 //Returns instructor id and name from a provided email.
