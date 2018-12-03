@@ -13,31 +13,11 @@ In summary, This page is set as a form data collection page to simplify the UI f
 The page will have 4 tabs at the top of the page:
 	1. View/Manage Student Grades
 	2. Manage Assessment Types & Items (This form page which will eventially lead to the page this form describes)
-	3. Manage grade Tiers
-	4. Logout
+	3. Logout
 
 NOTES:
 * The institution name can be changed as needed for the institution that will be using this product
-*<Any other notes here>
-This file needs to be renamed to manageAssessmentTypesForm.html because this is jsut a form that displays the form data needed to show the other data
-
-After the submit button is pressed, the site should take the information that is gathered by this form and pass it to a JS function that will process the query with the DBMS and then return a list of Assessment types to a selection menu on the page manageAssessmentTypes.html
-
-On the manage Types page ( A different page) there shoulld be a button to return to the previous page so the instructior can make changes to the data that they have already submitted to make changes to another course's assessments.
-Also on that page there should be:
-    * A dynamic selection menu containing all of the instructors created assessments.
-    * A submit button to load the assessment type that the user chooses
-    * A text fild that will by default be populated with the description of the assessment (if there is one and blank if there is not one) where the user can update the description
-    * A button called update where the description can be updated once pressed
-    * A button delete that will remove the assessment type
-        * This button will have a dialog box that pops up warning the user that this operation cannot be undone once completed and prompt the user to makre sure that is what they want to do.
-        * If yes, then a query is submitted to drop all rows in that assessment type and then drop that type itself.
-    * A view plain for the results from the query
-    *An edit and delete button for each of the rows returned.
-        *Edit will load a new form page that will show the data on input fields that the user can change
-        *Delete will preform the same functionality as the delete button mentioned above.
-
-At the bottom of the page there will be a note that informs the user that if they want to return to other parts of the application, press any of the tabs at the top of the page.
+* After the submit button is pressed, the site should take the information that is gathered by this form and pass it to a JS function that will process the query with the DBMS and then return a list of Assessment types to a selection menu on the page manageAssessmentTypes.html
 
 NOTE: These 2 pages will share the same javascript file because the files are sharing the same sort of functionality
 
@@ -46,102 +26,96 @@ CS 305-71
 TEAM DOS
 
 Author: Kenneth Kozlowski
-Last Edited By: Kyle Bella
-Date of Last Revision: December 2, 2018
+Last Edited By: Kenneth Kozlowski
+Date of Last Revision: December 3, 2018
 -->
 <html>
 	<head>
 		<title>Manage Assessment Types | Gradebook</title>
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-	<!--Import Materialize framework - Learn more: http://materializecss.com/-->
-	<link type="text/css" rel="stylesheet" href="../css/materialize.min.css"  media="screen,projection"/>
+		<!--Import Materialize framework - Learn more: http://materializecss.com/-->
+		<link type="text/css" rel="stylesheet" href="../css/materialize.min.css"  media="screen,projection"/>
 	</head>
 
 
 	<body>
 		 <nav>
-    		<div class="nav-wrapper">
-      			<a href="#" class="brand-logo"> Gradebook - Sample Institution</a>
-
-      			<!--
-      			This list will be the pre-login navigation bar. These will change once the user is logged into the system
-
-      			-->
-     			<ul id="nav-mobile" class="right hide-on-med-and-down">
-     				<li><a href="viewStudentGradesForm.html">View/Assign Grades</a></li>
-        			<li><a href="ManageAssessmentTypesForm.html">Manage Assessments</a></li>
-        			<li><a href="changeLog.html">Manage Grade Tiers</a></li>
-        			<li><a hfref="login.html">Logout</a></li>
-      			</ul>
-    	    </div>
-    	</nav><!--End of the Header Navigation -->
+    			<div class="nav-wrapper">
+      				<a href="#" class="brand-logo"> Gradebook - Sample Institution</a>
+      				<!--
+      				This list will be the pre-login navigation bar. These will change once the user is logged into the system
+      				-->
+     				<ul id="nav-mobile" class="right hide-on-med-and-down">
+     					<li><a href="viewStudentGradesForm.html">View/Assign Grades</a></li>
+        				<li><a href="ManageAssessmentTypesForm.html">Manage Assessments</a></li>
+        				<li><a href="changeLog.html">Manage Grade Tiers</a></li>
+        				<li><a hfref="login.html">Logout</a></li>
+      				</ul>
+    	    		</div>
+    		</nav><!--End of the Header Navigation -->
 
 
-    	<div class="container">
+    		<div class="container">
 		    <div class="section">
 
-		    <!--A title on the page so that the user knows where they are on the program-->
+		    	<!--A title on the page so that the user knows where they are on the program-->
 		        <h2 class="center-align"><u>Manage Assessment Types Search</u></h2>
 		        <br><br>
-
 		        <!--
 		        This section is here to allow the instructor to filter which year, season,  course, section and assessment type that they want to manage the assessment items for.
 
 		        This section improves the security of the program because it adds more selection from the user which will make it less likely that the end user could insert bad queries into the DBMS which will make it less likely that the end user could end up causing malicious damage to the system.
 
-		        TODO: Add in the Javascript to set the drop down menus to dynamically populate when the user makes the selections and before the user starts making selections.
-
 		        Fields that can be dynamically populated before the instructor starts making selections:
 		            * Year
-		            * Season
 
 		        Fields that depend on other needed data:
+			    * Season - Depends on the year
 		            * Course - Depends on year and season
 		            * Section - Depends on year, season, and course
 
 		        -->
-                <div class="row">
-                    <div class="input-field col s12 m6">
-                        <select id="yearSelect" disabled="true">
-                          <option value="" disabled="true" selected="true">Year</option>
-                        </select>
-                        <label>Year</label>
-                      </div>
-                      <div class="input-field col s12 m6">
-                        <select id="seasonSelect" disabled="true">
-                          <option value="" disabled="true" selected="true">Season</option>
-                        </select>
-                        <label>Season</label>
-                     </div>
-                </div><!--End of first row of slection boxes-->
+                	<div class="row">
+                    		<div class="input-field col s12 m6">
+                        		<select id="yearSelect" disabled="true">
+                          			<option value="" disabled="true" selected="true">Year</option>
+                       		 	</select>
+                        		<label>Year</label>
+                      		</div>
+                      		<div class="input-field col s12 m6">
+                        		<select id="seasonSelect" disabled="true">
+                          			<option value="" disabled="true" selected="true">Season</option>
+                        		</select>
+                        		<label>Season</label>
+                     		</div>
+                	</div><!--End of first row of slection boxes-->
 
-                <div class="row">
-                    <div class="input-field col s12 m6">
-                        <select id="courseSelect" disabled="true">
-                          <option value="" disabled="true" selected="true">Pick which Course</option>
-                        </select>
-                        <label>Course</label>
-                      </div>
-                      <div class="input-field col s12 m6">
-                        <select id="sectionSelect" disabled="true">
-                          <option value="" disabled="true" selected="true">Which Section?</option>
-                        </select>
-                        <label>Section</label>
-                  </div>
-                </div><!--End of course and section selection row-->
+                	<div class="row">
+                    		<div class="input-field col s12 m6">
+                       			<select id="courseSelect" disabled="true">
+                          			<option value="" disabled="true" selected="true">Pick which Course</option>
+                        		</select>
+                        		<label>Course</label>
+                      		</div>
+                      		<div class="input-field col s12 m6">
+                        		<select id="sectionSelect" disabled="true">
+                          		<option value="" disabled="true" selected="true">Which Section?</option>
+                        		</select>
+                        		<label>Section</label>
+                  		</div>
+                	</div><!--End of course and section selection row-->
 
 
-                    <button class="btn waves-effect waves-light" type="submit" name="action" disabled="true" id="submit_to_Assessment_Mgmt">Submit
-                <i class="material-icons right">send</i>
-            </button>
+                    	<button class="btn waves-effect waves-light" type="submit" name="action" disabled="true" id="submit_to_Assessment_Mgmt">Submit
+                		<i class="material-icons right">send</i>
+            		</button>
 
 		    </div><!--End section div-->
 		</div><!--End container div-->
 	</body>
-
 	<!--Script links go here-->
 	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 	<script type="text/javascript" src="../js/materialize.min.js"></script>
-	<script type="text/javascript" src="../js/assessmentTypeMgmt.js"></script><!--This file needs to be changed and reset to be a independant js file for this page-->
-
+	<script type="text/javascript" src="../js/assessmentTypeMgmt.js"></script>
+	
 </html><!--End of document-->
