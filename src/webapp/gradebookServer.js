@@ -24,8 +24,8 @@ get data from the Gradebook db.
 This document in its current version has been modified by Team DOS: Kyle Bella,
 Kenneth Kozlowski and Joseph Tether for CS305@WCSU
 
-Last Edited by: Kenneth Kozlowski
-Date Of Last Revision: November 29, 2018
+Last Edited by: Kyle Bella
+Date Of Last Revision: December 2, 2018
 */
 //Super secret password - Used for a temporary password encryption scheme
 const superSecret = 'dassl2017';

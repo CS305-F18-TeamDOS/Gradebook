@@ -7,8 +7,8 @@ Data Science & Systems Lab (DASSL), Western Connecticut State University
 
 Modified by team DOS (Kyle Bella, Kenneth Kozlowski and Joseph Tether)
 CS 305-71 @ WCSU
-Last To Make Modification: Kenneth Kozlowski
-Date of Last Revision: 11/2/2018
+Last To Make Modification: Kyle Bella
+Date of Last Revision: 12/2/2018
 
 
 Copyright (c) 2017- DASSL. ALL RIGHTS RESERVED.
@@ -80,12 +80,12 @@ $(document).ready(function() {
 		/*This outer if/else checks to verify the domain name of the email address to verify that the user is logging
 		in with the correct email address. This will also help to prevent unauthorized users to log into the system
 		if the case would arrive where someone would use an email address like 'something@gmail.com' to spoof the
-		username of 'something@sample.edu' for example to gain access into the system.
+		username of 'something@example.edu' for example to gain access into the system.
 
-		The 'sample.edu' domain name and the 'connect.sample.edu' domain name can be changed to match any domain name
+		The 'example.edu' domain name and the 'connect.example.edu' domain name can be changed to match any domain name
 		that the end uer needs to make  sure will work.
 
-		The connect.sample.edu domain name is there to verify that when a student logs into the application that their
+		The connect.example.edu domain name is there to verify that when a student logs into the application that their
 		email address will be verified as correct. A different check is done in the if to make sure that a student
 		can log in as well as instructors. This is here to make sure that institutions that use different email
 		domains for students and faculty is covered.

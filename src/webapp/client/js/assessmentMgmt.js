@@ -1,3 +1,31 @@
+/*
+assessmentTypeMgmt.js - Gradebook
+
+Andrew Figueroa
+Data Science & Systems Lab (DASSL), Western Connecticut State University
+
+
+Modified by team DOS (Kyle Bella, Kenneth Kozlowski and Joseph Tether)
+CS 305-71 @ WCSU
+Last To Make Modification: Kyle Bella
+Date of Last Revision: 12/2/2018
+
+
+Copyright (c) 2017- DASSL. ALL RIGHTS RESERVED.
+Licensed to others under CC 4.0 BY-NC-SA
+https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+ALL ARTIFACTS PROVIDED AS IS. NO WARRANTIES EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
+
+This JavaScript file provides the client-side JS code that is used by the manageAssessments.html
+page. The functionality provided includes accessing the REST API provided by the web
+server component of the Gradebook webapp, along with providing interactivity for the
+manageAssessments.html webpage.
+*/
+
+/*
+This function gets the cookies set by the previous page
+*/
 function getCookie(cname) {
   var name = cname + "=";
   var decodedCookie = decodeURIComponent(document.cookie);
@@ -23,9 +51,7 @@ function getCookie(cname) {
   return "";
 }
 /*
-Currently, a globally scoped variable is used to store login information.
- At a later point, it may be stored through a more appropriate manner, such as
- client cookies.
+Set the global variables to the values of the cookies.
 */
 var dbInfo = getCookie("dbInfo");
 var instInfo = getCookie("instInfo");
@@ -33,14 +59,6 @@ var sectionID = getCookie("sectionID");
 console.log(dbInfo);
 console.log(instInfo);
 console.log(sectionID);
-
-/*
-Each instance of connInfo as a parameter in a function definition refers to an
- object with the following keys, which are used as part of the REST API calls to
- the Gradebook server:
-	"host":String, "port":Number, "database":String, "user":String,
-	 "password":String, "instructorid":Number
-*/
 
 /*
 Keep the original assessment data so changing the fields is only permanent when
