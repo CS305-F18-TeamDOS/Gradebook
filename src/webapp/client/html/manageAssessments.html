@@ -2,131 +2,140 @@
 <!--
 manageAssessments.html - Gradebook (DOS Implementation)
 
-*Summary of the page being built here*
+This page is the resulting page of the prevous form data collection page where the instructor choose
+the information that they wanted on which class and section they want to make changes to the assessment
+types and items to. The page will have a drop down menu at the top of the page allowing the user to
+choose the assessment item that they want to manage or add a new assessment type.
 
-The page will have 4 tabs at the top of the page:
-	1.  **Will be filled in later**
+Below will be a table containing all of the infomration about the assessment items that are present for
+the class. There will be buttons with each row number that the user can click on to bring down more
+options for the instructor to modify, remove or close the drop down menu.
+
+The page will have 3 tabs at the top of the page:
+	1. Manage Grades
+	2. Manage Assessments
+	3. Logout
 
 NOTES:
 * The institution name can be changed as needed for the institution that will be using this product
-*<Any other notes here>
 
 Team Members: Kyle Bella, Kenneth Kozlowski, Joseph Tether
 CS 305-71
 TEAM DOS
 
 Author: Kenneth Kozlowski
-Last Edited by: Kyle Bella
-Date of Last Revision: December 2, 2018
+Last Edited by: Kenneth Kozlowski
+Date of Last Revision: December 3, 2018
 -->
 <html>
 	<head>
 		<title>Manage Assessments | Gradebook</title>
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-	<!--Import Materialize framework - Learn more: http://materializecss.com/-->
-	<link type="text/css" rel="stylesheet" href="../css/materialize.min.css"  media="screen,projection"/>
+		<!--Import Materialize framework - Learn more: http://materializecss.com/-->
+		<link type="text/css" rel="stylesheet" href="../css/materialize.min.css"  media="screen,projection"/>
 	</head>
 
 
 	<body>
 		 <nav>
-    		<div class="nav-wrapper">
-      			<a href="#" class="brand-logo"> Gradebook - Sample Institution</a>
+    			<div class="nav-wrapper">
+      				<a href="#" class="brand-logo"> Gradebook - Sample Institution</a>
 
-      			<!--
-      			This list will be the post-login navigation bar.
-      			-->
-     			<ul id="nav-mobile" class="right hide-on-med-and-down">
-     				<li><a href="viewStudentGradesForm.html">View/Assign Grades</a></li>
-        			<li><a href="ManageAssessmentTypesForm.html">Manage Assessments</a></li>
-        			<li><a href="changeLog.html">Manage Grade Tiers</a></li>
-        			<li><a hfref="login.html">Logout</a></li>
-      			</ul>
-    	    </div>
-    	</nav><!--End of the Header Navigation -->
+      				<!--
+      				This list will be the post-login navigation bar.
+      				-->
+     				<ul id="nav-mobile" class="right hide-on-med-and-down">
+     					<li><a href="viewStudentGradesForm.html">View/Assign Grades</a></li>
+        				<li><a href="ManageAssessmentTypesForm.html">Manage Assessments</a></li>
+        				<li><a href="changeLog.html">Manage Grade Tiers</a></li>
+        				<li><a hfref="login.html">Logout</a></li>
+      				</ul>
+    	    		</div>
+    		</nav><!--End of the Header Navigation -->
 
 
-    	<div class="container">
+    		<div class="container">
 		    <div class="section">
 
-		    <!--Content goes here-->
-		    <h2 class="center-align"><u>Assessment Management</u></h2>
+		    	<h2 class="center-align"><u>Assessment Management</u></h2>
 
-		     <div class="row">
-                    <div class="input-field col s12">
-                        <select id="assessmentTypeSelect" disabled="true">
-                          <option value="" disabled="true" selected="true">Assessment Type</option>
-                        </select>
-                        <label>Assessment Type</label>
-                    </div>
-                </div>
-								<div class="row">
-									<div class="input-field col s12 m6 l3">
-										<i class="material-icons prefix">mode_edit</i>
-										<input id="typeInput" type="text"/>
-										<label for="typeInput">Type</label>
-									</div>
-									<div class="input-field col s12 m6 l3">
-										<i class="material-icons prefix">mode_edit</i>
-										<input id="weightInput" type="text"/>
-										<label for="weightInput">Weight</label>
-									</div>
-									<div class="input-field col s12 m6 l3">
-										<!--<i class="material-icons prefix">mode_edit</i>-->
-										<textarea id="descriptionInput" class="materialize-textarea"></textarea>
-										<label for="descriptionInput">Description</label>
-									</div>
-								</div>
-		    <br>
-		  <a id="btnAddAssessType" class="waves-effect waves-light btn">Add Type</a>
-		        <a id="btnChangeAssessType" class="waves-effect waves-light btn" style="display : none">Update Type</a>
-		        <a id="btnDeleteAssessType" class="waves-effect waves-light btn" style="display : none">Delete Type</a>
- 	            <div class="divider"></div>
-
-
-		   <div>
-		<table id="assessmentItemTable">
-				<!--Populated dynamically-->
-		</table>
-		<table>
-			<tr>
-				<td id="newItem" colspan="6">
-					<a id="getFields" class="waves-effect waves-light btn">Add Item</a>
-				</td>
-				<td id="newItemSubmit" style="display : none">
-					<a id="btnAddAssessItem" class="waves-effect waves-light btn">Submit</a>
-					<a id="btnCloseItemFields" class="waves-effect waves-light btn">Close</a>
-				</td>
-				<td id="newItemBasePoints" style="display : none" class="input-field col s12 m6 l3">
-					<input id="basePointsInput" value="" />
-					<label for="basePointsInput">Base Points</label>
-				</td>
-				<td id="newItemExtraPoints" style="display : none" class="input-field col s12 m6 l3">
-					<input id="extraCreditPointsInput" value="" />
-					<label for="extraCreditPointsInput">Extra Credit Points</label>
-				</td>
-				<td id="newItemAssignedDate" style="display : none" class="input-field col s12 m6 l3">
-					<input id="assignedDateInput" value="" />
-					<label for="assignedDateInput">Date Assigned</label>
-				</td>
-				<td id="newItemDueDate" style="display : none" class="input-field col s12 m6 l3">
-					<input id="dueDateInput" value="" />
-					<label for="dueDateInput">Date Due</label>
-				</td>
-			</tr>
-		</table>
-	</div>
+		     	<div class="row">
+                    		<div class="input-field col s12">
+                        		<select id="assessmentTypeSelect" disabled="true">
+                          			<option value="" disabled="true" selected="true">Assessment Type</option>
+                        		</select>
+                        		<label>Assessment Type</label>
+                    		</div>
+                	</div>
+			<div class="row">
+				<div class="input-field col s12 m6 l3">
+					<i class="material-icons prefix">mode_edit</i>
+					<input id="typeInput" type="text"/>
+					<label for="typeInput">Type</label>
+					</div>
+					<div class="input-field col s12 m6 l3">
+						<i class="material-icons prefix">mode_edit</i>
+						<input id="weightInput" type="text"/>
+						<label for="weightInput">Weight</label>
+					</div>
+					<div class="input-field col s12 m6 l3">
+						<!--<i class="material-icons prefix">mode_edit</i>-->
+						<textarea id="descriptionInput" class="materialize-textarea"></textarea>
+						<label for="descriptionInput">Description</label>
+					</div>
+				</div>
+			</div>
+		    	<br>
+		  	<a id="btnAddAssessType" class="waves-effect waves-light btn">Add Type</a>
+	     		<a id="btnChangeAssessType" class="waves-effect waves-light btn" style="display : none">Update Type</a>
+	        	<a id="btnDeleteAssessType" class="waves-effect waves-light btn" style="display : none">Delete Type</a>
+ 	            	<div class="divider"></div>
 
 
-	<!--Generic confirm used by showConfirm() in index.js-->
-	<div id="msg-genericConfirm" class="modal">
-		<div id="genericConfirmBody" class="modal-content"></div>
-		<div class="modal-footer">
-			<a id="btnConfirm" href="#!" class="modal-action modal-close waves-effect waves-gray btn-flat" onclick=>Confirm</a>
-			<a href="#!" class="modal-action modal-close waves-effect waves-gray btn-flat">Cancel</a>
-		</div>
-	</div>
-		    </div><!--End section div-->
+		   		<div>
+					<table id="assessmentItemTable">
+					<!--Populated dynamically-->
+					</table>
+					<table>
+						<tr>
+							<td id="newItem" colspan="6">
+								<a id="getFields" class="waves-effect waves-light btn">Add Item</a>
+							</td>
+							<td id="newItemSubmit" style="display : none">
+								<a id="btnAddAssessItem" class="waves-effect waves-light btn">Submit</a>
+								<a id="btnCloseItemFields" class="waves-effect waves-light btn">Close</a>
+							</td>
+							<td id="newItemBasePoints" style="display : none" class="input-field col s12 m6 l3">
+								<input id="basePointsInput" value="" />
+								<label for="basePointsInput">Base Points</label>
+							</td>
+							<td id="newItemExtraPoints" style="display : none" class="input-field col s12 m6 l3">
+								<input id="extraCreditPointsInput" value="" />
+								<label for="extraCreditPointsInput">Extra Credit Points</label>
+							</td>
+							<td id="newItemAssignedDate" style="display : none" class="input-field col s12 m6 l3">
+								<input id="assignedDateInput" value="" />
+								<label for="assignedDateInput">Date Assigned</label>
+							</td>
+							<td id="newItemDueDate" style="display : none" class="input-field col s12 m6 l3">
+								<input id="dueDateInput" value="" />
+								<label for="dueDateInput">Date Due</label>
+							</td>
+						</tr>
+					</table>
+				</div>
+
+
+				<!--Generic confirm used by showConfirm() in index.js-->
+				<div id="msg-genericConfirm" class="modal">
+					<div id="genericConfirmBody" class="modal-content"></div>
+						<div class="modal-footer">
+							<a id="btnConfirm" href="#!" class="modal-action modal-close waves-effect waves-gray btn-flat" onclick=>Confirm</a>
+							<a href="#!" class="modal-action modal-close waves-effect waves-gray btn-flat">Cancel</a>
+						</div>
+					</div>
+				</div>
+			</div><!--End section div-->
 		</div><!--End container div-->
 	</body>
 
