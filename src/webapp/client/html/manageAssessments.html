@@ -15,8 +15,9 @@ Team Members: Kyle Bella, Kenneth Kozlowski, Joseph Tether
 CS 305-71
 TEAM DOS
 
-Author: Kenneth Kozlowski 
-Date of Last Revision: November 29, 2018
+Author: Kenneth Kozlowski
+Last Edited by: Kyle Bella
+Date of Last Revision: December 2, 2018
 -->
 <html>
 	<head>
@@ -25,15 +26,15 @@ Date of Last Revision: November 29, 2018
 	<!--Import Materialize framework - Learn more: http://materializecss.com/-->
 	<link type="text/css" rel="stylesheet" href="../css/materialize.min.css"  media="screen,projection"/>
 	</head>
-	
-	
+
+
 	<body>
 		 <nav>
     		<div class="nav-wrapper">
       			<a href="#" class="brand-logo"> Gradebook - Sample Institution</a>
-      			
+
       			<!--
-      			This list will be the post-login navigation bar. 
+      			This list will be the post-login navigation bar.
       			-->
      			<ul id="nav-mobile" class="right hide-on-med-and-down">
      				<li><a href="viewStudentGradesForm.html">View/Assign Grades</a></li>
@@ -43,22 +44,39 @@ Date of Last Revision: November 29, 2018
       			</ul>
     	    </div>
     	</nav><!--End of the Header Navigation -->
-    	
-    	
-    	<div class="container"> 
-		    <div class="section"> 
-		    
+
+
+    	<div class="container">
+		    <div class="section">
+
 		    <!--Content goes here-->
 		    <h2 class="center-align"><u>Assessment Management</u></h2>
-		    
+
 		     <div class="row">
                     <div class="input-field col s12">
-                        <select>
-                          <option value="" disabled selected>Assessment Type</option>
+                        <select id="assessmentTypeSelect" disabled="true">
+                          <option value="" disabled="true" selected="true">Assessment Type</option>
                         </select>
                         <label>Assessment Type</label>
                     </div>
                 </div>
+								<div class="row">
+									<div class="input-field col s12 m6 l3">
+										<i class="material-icons prefix">mode_edit</i>
+										<input id="typeInput" type="text"/>
+										<label for="typeInput">Type</label>
+									</div>
+									<div class="input-field col s12 m6 l3">
+										<i class="material-icons prefix">mode_edit</i>
+										<input id="weightInput" type="text"/>
+										<label for="weightInput">Weight</label>
+									</div>
+									<div class="input-field col s12 m6 l3">
+										<!--<i class="material-icons prefix">mode_edit</i>-->
+										<textarea id="descriptionInput" class="materialize-textarea"></textarea>
+										<label for="descriptionInput">Description</label>
+									</div>
+								</div>
 		    <br>
 		  <a id="btnAddAssessType" class="waves-effect waves-light btn">Add Type</a>
 		        <a id="btnChangeAssessType" class="waves-effect waves-light btn" style="display : none">Update Type</a>
@@ -98,8 +116,8 @@ Date of Last Revision: November 29, 2018
 			</tr>
 		</table>
 	</div>
-	
-	
+
+
 	<!--Generic confirm used by showConfirm() in index.js-->
 	<div id="msg-genericConfirm" class="modal">
 		<div id="genericConfirmBody" class="modal-content"></div>
@@ -111,8 +129,8 @@ Date of Last Revision: November 29, 2018
 		    </div><!--End section div-->
 		</div><!--End container div-->
 	</body>
-	
+
 		<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 	<script type="text/javascript" src="../js/materialize.min.js"></script>
-	<script type="text/javascript" src="../js/index.js"></script>
+	<script type="text/javascript" src="../js/assessmentMgmt.js"></script>
 </html><!--End of document-->

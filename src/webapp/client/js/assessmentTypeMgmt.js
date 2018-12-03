@@ -1,5 +1,5 @@
 /*
-index.js - Gradebook
+assessmentTypeMgmt.js - Gradebook
 
 Andrew Figueroa
 Data Science & Systems Lab (DASSL), Western Connecticut State University
@@ -17,30 +17,40 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/
 
 ALL ARTIFACTS PROVIDED AS IS. NO WARRANTIES EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
 
-This JavaScript file provides the client-side JS code that is used by the index.html
+This JavaScript file provides the client-side JS code that is used by the manageAssessmentTypesForm.html
 page. The functionality provided includes accessing the REST API provided by the web
 server component of the Gradebook webapp, along with providing interactivity for the
-index.html webpage.
+manageAssessmentTypesForm.html webpage.
 */
 
 /*
-Currently, a globally scoped variable is used to store login information.
- At a later point, it may be stored through a more appropriate manner, such as
- client cookies.
+This function gets the cookies set by the previous page
 */
-var dbInfo = {
-	"host":'localhost', "port":5432, "database":'gb_data', // change back to 'gradebook' after testing
-	"user":'gb_webapp', "password":null, "instructorid":null
-};
-var instInfo = { "fname":null, "mname":null, "lname": null, "dept":null };
-
+function getCookie(cname) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i<ca.length; i++)
+  {
+    var c = ca[i];
+    while (c.charAt(0) == ' ')
+    {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0)
+    {
+      return JSON.parse(c.substring(name.length, c.length));
+    }
+  }
+  return "";
+}
 /*
-Each instance of connInfo as a parameter in a function definition refers to an
- object with the following keys, which are used as part of the REST API calls to
- the Gradebook server:
-	"host":String, "port":Number, "database":String, "user":String,
-	 "password":String, "instructorid":Number
+Set the global variables to the values of the cookies.
 */
+var dbInfo = getCookie("dbInfo");
+var instInfo = getCookie("instInfo");
+console.log(dbInfo);
+console.log(instInfo);
 
 /*
 Keep the original assessment data so changing the fields is only permanent when
@@ -50,6 +60,8 @@ var assessOrginInfo = {
 	"basePoints":null, "extraCreditPoints":null, "assignedDate":null,
 	"dueDate":null, "curve":null
 };
+
+popYears(dbInfo);
 
 $(document).ready(function() {
 	$('select').material_select(); //load dropdown boxes
@@ -69,53 +81,6 @@ $(document).ready(function() {
 		},
 		onClose: function() {
 			$('#optionsArrow').html('keyboard_arrow_down');
-		}
-	});
-
-	$('#btnLogin').click(function() {
-		dbInfo = getDBFields();
-		var email = $('#email').val().trim();
-
-
-		/*This outer if/else checks to verify the domain name of the email address to verify that the user is logging
-		in with the correct email address. This will also help to prevent unauthorized users to log into the system
-		if the case would arrive where someone would use an email address like 'something@gmail.com' to spoof the
-		username of 'something@example.edu' for example to gain access into the system.
-
-		The 'example.edu' domain name and the 'connect.example.edu' domain name can be changed to match any domain name
-		that the end uer needs to make  sure will work.
-
-		The connect.example.edu domain name is there to verify that when a student logs into the application that their
-		email address will be verified as correct. A different check is done in the if to make sure that a student
-		can log in as well as instructors. This is here to make sure that institutions that use different email
-		domains for students and faculty is covered.
-		*/
-		if(email.endsWith('@example.edu') || email.endsWith('@connect.example.edu'))
-		{
-		    if (dbInfo != null && email != '')
-		    {
-			serverLogin(dbInfo, email, function() {
-				//clear login fields and close DB Info box
-				$('#email').val('');
-				$('#passwordBox').val('');
-				$('#dbInfoBox').collapsible('close', 0);
-				$('#dbInfoArrow').html('keyboard_arrow_down');
-
-				popYears(dbInfo);
-
-				goToAssessmentTypeMgmt();
-			});
-		    }
-		    else
-		    {
-			showAlert('<h5><u>ERROR</u></h5><p>The username or password field is not filled in.' +
-				  'Please make sure all fields are filled in</p>');
-		    }
-		}
-		else
-		{
-		showAlert('<h5><u>Login Incomplete</u></h5><p>The domain name of the email address provided is not recognized' +
-			  'by the server.<br> Please try again or contact support if you believe this is an error.</p>');
 		}
 	});
 
@@ -139,11 +104,17 @@ $(document).ready(function() {
 
 	$('#sectionSelect').change(function() {
 		var sectionID = $('#sectionSelect').val();
-		$('#rosterTab, #attnTab, #assessTab, #gradesTab, #reportsTab').css('display', 'inline');
-		setAssessmentTypes(null);
-		popAttendance(dbInfo, sectionID);
-		popAssessmentTypes(dbInfo, sectionID);
+		//$('#rosterTab, #attnTab, #assessTab, #gradesTab, #reportsTab').css('display', 'inline');
+    document.cookie = "sectionID=" + sectionID + ";path=/";
+    $('#submit_to_Assessment_Mgmt').prop('disabled', false);
+    //setAssessmentTypes(null);
+		//popAttendance(dbInfo, sectionID);
+		//popAssessmentTypes(dbInfo, sectionID);
 	});
+
+  $('#submit_to_Assessment_Mgmt').click(function() {
+    window.location.href = "../manageAssessments.html";
+  });
 
 	$('#opt-showPresent, #opt-compactTab').change(function() {
 		//reload attendance table since options were modified
@@ -300,99 +271,6 @@ $(document).ready(function() {
 function showAlert(htmlContent) {
 	$('#genericAlertBody').html(htmlContent);
 	$('#msg-genericAlert').modal('open');
-};
-
-function getDBFields() {
-	var host = $('#host').val();
-	var port = $('#port').val();
-	var db = $('#database').val();
-	var uname = $('#user').val();
-	var pw =  $('#passwordBox').val().trim();
-
-	if (host === "" || port === "" || db === "" || uname === "" || pw === "") {
-		return null;
-	}
-	else if (host == null || port == null || db == null || uname == null) {
-		console.log("WARN: Database info not specified, using defaults");
-		host = dbInfo.host;
-		port = dbInfo.port;
-		db = dbInfo.database;
-		uname = dbInfo.user;
-	}
-	else {
-		host = host.trim();
-		port = port.trim();
-		db = db.trim();
-		uname = db.trim();
-	}
-
-	pw = JSON.stringify(sjcl.encrypt('dassl2017', pw));
-
-	var connInfo = { 'host':host, 'port':parseInt(port, 10), 'database':db,
-	 'user':uname, 'password':pw };
-	return connInfo;
-};
-
-function serverLogin(connInfo, email, callback) {
-	//"create a copy" of connInfo with instructoremail and set to urlParams
-	var urlParams = $.extend({}, connInfo, {instructoremail:email});
-	$.ajax('login', {
-		dataType: 'json',
-		data: urlParams ,
-		success: function(result) {
-			//populate dbInfo and instInfo with info from response
-			dbInfo.instructorid = result.instructor.id;
-			instInfo = { fname:result.instructor.fname,
-			mname:result.instructor.mname, lname:result.instructor.lname,
-			dept:result.instructor.department };
-
-			//hide Login tab, show Roster, Attendance, Grades, and Reports tabs
-			$('#loginTab').css('display', 'none');
-			//$('#sectionTab').css('display', 'inline');
-			//$('ul.tabs').tabs('select_tab', 'sections');
-
-
-			//populate instructor name and display profile (including logout menu)
-			//Array.prototype.join is used because in JS: '' + null = 'null'
-			var instName = [instInfo.fname, instInfo.mname, instInfo.lname].join(' ');
-			$('#instName').html(instName);
-			$('#profile').css('display', 'inline');
-
-			callback();
-		},
-		error: function(result) {
-			//currently does not distinguish between credential and connection errors
-			switch (result.responseText) {
-				case '500 - Authentiaction failed'://Authentiaction failed
-					showAlert('<h5>Could not login</h5><p>Login failed - credentials ' +
-					'incorrect</p><p>Please re-enter credentials</p>');
-					break;
-				case '500 - Database does not exist'://Database does not exist
-					showAlert('<h5>Could not connect</h5><p> Connnection failed - unknown ' +
-					'database, ensure the database name is correct');
-					break;
-				case '500 - Connnection Refused'://Refused Connnection (likely an incorrect port)
-					showAlert('<h5>Could not connect</h5><p> Connnection refused - ' +
-					'ensure that the correct port is being used');
-					break;
-				case '500 - Host not found'://Invalid host
-					showAlert('<h5>Could not connect</h5><p> Connnection failed - ' +
-					'ensure the hostname is correct');
-					break;
-				default:
-					showAlert('<h5>Could not login</h5><p>Unknown error - Please contact ' +
-				  'your administrator');
-			}
-			console.log(result);
-		}
-	});
-};
-
-function goToAssessmentTypeMgmt() {
-	document.cookie = "dbInfo=" + JSON.stringify(dbInfo) + ";path=/";
-	document.cookie = "instInfo=" + JSON.stringify(instInfo) + ";path=/";
-	console.log(document.cookie);
-	window.location.href = "../manageAssessmentTypesForm.html";
 };
 
 function popYears(connInfo) {
@@ -741,3 +619,5 @@ function deleteAssessItem(connInfo, assessid, sequenceincomponent) {
 		}
 	});
 };
+
+popYears(dbInfo);
