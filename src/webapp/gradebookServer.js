@@ -509,7 +509,7 @@ app.get('/assessmentItems', function(request, response){
      "assessItemTable": null
   };
 
-  var queryText = "SELECT ID, ComponentType, Weight, Description " +
+  var queryText = "SELECT ComponentType, Weight, Description " +
   "FROM getAssessmentComponent($1);";
 
   var queryParams = [componentID];
@@ -525,11 +525,12 @@ app.get('/assessmentItems', function(request, response){
 
     queryText = "SELECT SequenceInComponent, BasePoints, ExtraCreditPoints, " +
     "AssignedDate, DueDate, Curve FROM getAssessmentItemsFromComponent($1);";
+    console.log(queryParams);
 
     executeQuery(response, config, queryText, queryParams, function(result) {
       var table = '<tr><th>Number</th><th>BasePoints</th><th>ExtraCreditPoints</th>' +
         '<th>AssignedDate</th><th>DueDate</th><th>Curve</th></tr>';
-      if(result.rows[0].sequenceincomponent != null)
+      if(result.rows[0] != null && result.rows[0].sequenceincomponent != null)
       {
         for (row in result.rows)
         {
@@ -652,7 +653,7 @@ app.get('/assessmentTypesUpdate', function(request, response) {
   var description = request.query.description;
 
   var queryText = "SELECT updateAssessmentComponent($1, $2, $3, $4, $5);";
-  var queryParams = [assessID, componentType, weight, description];
+  var queryParams = [assessID, componentType, weight, description, null];
 
   executeQuery(response, config, queryText, queryParams, function(result) {
     console.log(result);
