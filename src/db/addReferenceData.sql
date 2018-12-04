@@ -24,7 +24,7 @@
 -- in the calendar year; not in the school's academic year. For example, the
 -- rows inserted here say that Spring is the first season classes are held in a
 -- calendar year, followed by "Spring_Break" and so on
-INSERT INTO Season("Order", Name, Code)
+INSERT INTO Season(Season_Order, Name, Code)
 VALUES
    ('0','Spring','S'),  ('1','Spring_Break','B'),  ('2','Summer','M'),
    ('3','Fall','F'),    ('4','Intersession','I');
@@ -38,7 +38,7 @@ INSERT INTO Grade(Letter, GPA)
 VALUES
    ('A+', 4.333), ('A', 4),      ('A-', 3.667), ('B+', 3.333), ('B', 3),
    ('B-', 2.667), ('C+', 2.333), ('C', 2),      ('C-', 1.667), ('D+', 1.333),
-   ('D', 1),      ('D-', 0.667), ('F', 0),      ('W', 0),      ('SA', 0);
+   ('D', 1),      ('D-', 0.667), ('F', 0),      ('W', NULL),      ('SA', NULL);
 
 
 

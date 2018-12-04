@@ -27,17 +27,17 @@ DROP FUNCTION IF EXISTS getSeason(VARCHAR(20));
 CREATE FUNCTION getSeason(seasonIdentification VARCHAR(20))
 RETURNS TABLE
 (
-   "Order" NUMERIC(1,0),
+   Season_Order NUMERIC(1,0),
    Name VARCHAR(20),
    Code CHAR(1)
 )
 AS
 $$
 
-   SELECT "Order", Name, Code
+   SELECT Season_Order, Name, Code
    FROM Season
    WHERE CASE
-            WHEN $1 ~ '^[0-9]$' THEN "Order" = to_number($1,'9')
+            WHEN $1 ~ '^[0-9]$' THEN Season_Order = to_number($1,'9')
             WHEN LENGTH($1) = 1 THEN Code = UPPER($1)
             ELSE LOWER(TRIM(Name)) = LOWER(TRIM($1))
          END;
@@ -55,16 +55,16 @@ DROP FUNCTION IF EXISTS getSeason(NUMERIC(1,0));
 CREATE FUNCTION getSeason(seasonOrder NUMERIC(1,0))
 RETURNS TABLE
 (
-   "Order" NUMERIC(1,0),
+   Season_Order NUMERIC(1,0),
    Name VARCHAR(20),
    Code CHAR(1)
 )
 AS
 $$
 
-   SELECT "Order", Name, Code
+   SELECT Season_Order, Name, Code
    FROM Season
-   WHERE "Order" = $1;
+   WHERE Season_Order = $1;
 
 $$ LANGUAGE sql
    STABLE
@@ -81,7 +81,7 @@ RETURNS NUMERIC(1,0)
 AS
 $$
 
-   SELECT "Order"
+   SELECT Season_Order
    FROM getSeason($1);
 
 $$ LANGUAGE sql
