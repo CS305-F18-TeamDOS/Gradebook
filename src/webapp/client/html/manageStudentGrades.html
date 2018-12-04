@@ -5,9 +5,9 @@ manageStudentGrades.html - Gradebook (DOS Implementation)
 *Summary of the page being built here*
 
 The page will have 3 tabs at the top of the page:
-	1. Manage Grades
-  2. Manage Assessments
-  3. Logout
+1. Manage Grades
+2. Manage Assessments
+3. Logout
 
 NOTES:
 * The institution name can be changed as needed for the institution that will be using this product
@@ -18,43 +18,110 @@ TEAM DOS
 
 Author: Kenneth Kozlowski
 Last Modified by: Kenneth Kozlowski
-Date of Last Revision: December 3, 2018
+Date of Last Revision: December 4, 2018
 -->
 <html>
 	<head>
 		<title>[Manage Grades | Gradebook</title>
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-	  <!--Import Materialize framework - Learn more: http://materializecss.com/-->
-	  <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
+	  	<!--Import Materialize framework - Learn more: http://materializecss.com/-->
+	 	<link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
 	</head>
 	
 	
 	<body>
 		 <nav>
-    		<div class="nav-wrapper">
-      			<a href="#" class="brand-logo"> Gradebook - Sample Institution</a>
+    			<div class="nav-wrapper">
+      				<a href="#" class="brand-logo"> Gradebook - Sample Institution</a>
       			
-      			<!--
-      			This list will be the post-login navigation bar.
-      			-->
-     			<ul id="nav-mobile" class="right hide-on-med-and-down">
-     				<li><a href="manageStudentGradesForm.html">Manage Assessments</a></li>
-        		<li><a href="manageAssessmentTypesForm.html">Manage Assessments</a></li>
-        		<li><a href="Login.html">Logout</a></li>
-      		</ul>
-    	  </div>
-    	</nav><!--End of the Header Navigation -->
+      				<!--
+      				This list will be the post-login navigation bar.
+      				-->
+     				<ul id="nav-mobile" class="right hide-on-med-and-down">
+     					<li><a href="manageStudentGradesForm.html">Manage Assessments</a></li>
+        				<li><a href="manageAssessmentTypesForm.html">Manage Assessments</a></li>
+        				<li><a href="Login.html">Logout</a></li>
+      				</ul>
+    	  		</div>
+    		</nav><!--End of the Header Navigation -->
     	
     	
-    	<div class="container"> 
-		    <div class="section"> 
+    		<div class="container"> 
+		    	<div class="section"> 
+				
+				<h2 class="center-align"><u>Manage Student Grades</u></h2>
+				<br><br>
 		    
-		    <!--Content goes here-->
-		    
-		    </div><!--End section div-->
+		    		<div class="row">
+                    			<div class="input-field col s12">
+                        			<select id="assessmentItemSelect" disabled="true">
+                          				<option value="" disabled="true" selected="true">Assessment Item</option>
+                        			</select>
+                        			<label>Assessment Item</label>
+                    			</div>
+					</div>
+					
+					<div class="row">
+                   		<div class="input-field col s12 m6 l3">
+                       		<select id="studentSelect" disabled="true">
+                       			<option value="" disabled="true" selected="true">Student Name</option>
+                       		</select>
+                       		<label>Student Name</label>
+                    	</div>
+						<div class="input-field col s12 m6 l3">
+							<i class="material-icons prefix">mode_edit</i>
+								<input id="basePointsEarnedInput" type="text"/>
+								<label for="typeInput">Base Points Earned</label>
+							</div>
+							<div class="input-field col s12 m6 l3">
+								<i class="material-icons prefix">mode_edit</i>
+								<input id="extraCreditPointsEarned" type="text"/>
+								<label for="weightInput">Extra Credit Points Earned</label>
+							</div>
+							<div class="input-field col s12 m6 l3">
+								<i class="material-icons prefix">mode_edit</i>
+								<textarea id="submissionDateInput" class="materialize-textarea"></textarea>
+								<label for="descriptionInput">Submission Date</label>
+							</div>
+							<div class="input-field col s12 m6 l3">
+								<i class="material-icons prefix">mode_edit</i>
+								<textarea id="penaltyInput" class="materialize-textarea"></textarea>
+								<label for="descriptionInput">Penalty</label>
+							</div>
+							<div class="input-field col s12 m6 l3">
+								<i class="material-icons prefix">mode_edit</i>
+								<textarea id="instructorNotesInput" class="materialize-textarea"></textarea>
+								<label for="descriptionInput">Notes</label>
+							</div>
+					</div>
+					<br>
+		  			<a id="btnAddSubmission" class="waves-effect waves-light btn">Add Submission</a>
+		        	<a id="btnEditSubmission" class="waves-effect waves-light btn" style="display : none">Update Submission</a>
+		        	<a id="btnDeleteSubmission" class="waves-effect waves-light btn" style="display : none">Delete Submission</a>
+					
+					 <div class="divider"></div>
+
+
+		   			<div>
+						<table id="submissionTable">
+						<!--Populated dynamically-->
+						</table>
+					</div>
+					
+		    		<!--Generic confirm used by showConfirm() in index.js-->
+					<div id="msg-genericConfirm" class="modal">
+						<div id="genericConfirmBody" class="modal-content"></div>
+						<div class="modal-footer">
+							<a id="btnConfirm" href="#!" class="modal-action modal-close waves-effect waves-gray btn-flat" onclick=>Confirm</a>
+							<a href="#!" class="modal-action modal-close waves-effect waves-gray btn-flat">Cancel</a>
+						</div>
+					</div>
+		    	</div><!--End section div-->
 		</div><!--End container div-->
 	</body>
 	
-	<!--Script links go here-->
+	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="../js/materialize.min.js"></script>
+	<!--TODO: Add in the script for the individual file's Javascript needs here-->
 	
 </html><!--End of document-->
