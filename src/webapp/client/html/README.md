@@ -5,8 +5,9 @@ CS305-71
 Team DOS
 ***  
 
-Date of Last Revision: *November 27, 2018*  
-Modified by: *Kenneth Kozlowski*
+Author: *Kenneth Kozlowski*  
+Modified by: *Kenneth Kozlowski*  
+Date of Last Revision: *December 3, 2018*  
 
 <!--This document was created using MacDown, a free program for writing markdown files on MAC OSX-->
 
@@ -50,7 +51,7 @@ As of now, the list is just maintained as one large numbered list.
 
 ***
 ### ManageAssessmentTypesForm.html<!--Added for M6, M7-->
-This is another form data collection page where the end user will be prompted to select information from dynamically populated drop down menus selecting the *year, season, course, and section* they want to manage the assessment types and items for.  
+This is a form data collection page where the end user will be prompted to select information from dynamically populated drop down menus selecting the *year, season, course, and section* they want to manage the assessment types and items for.  
 
 Once the user makes the selections from the drop down menus and clicks on submit, a new page loads where the user can pick the assessment type that they want to make modifcations to. 
 
@@ -70,3 +71,11 @@ Clicking on `update` will load the same small form which will allow the user to 
 Clicking on the `delete` button will delete an assessment item.  
 
 Clickin on the `close` button will collapse the buttons and just show the row number again.
+
+***
+### ManageStudentGradesForm.html<!--Added for M9-->
+This page is another form data collection page that will allow the instructor to search for a Class and Assessment Type that they want to manage the student Grade Submissions for.  
+
+This page will have drop down menu's that are populated dynamically that will allow the instructor to be able to pick the `year`, `season`,  `course`, `section` and `Assessment Type` that they want to manage the submissions for. Once the instructor has filled in all of the drop down menus then they can press the submit button which will generate a query to the DBMS to return on the next page the `Assessment Items` for the specific `Assessment Component` that was chosen.  
+
+At the top of the page there is a small set of instuctions for using this page that informs the user that all of the drop down menus are **required**to be filled in otherwise there will be an error on the page. There is also infomration that if there are no `Assessment Items` shown on the drop down menu, the instructor should navigate to the `Manage Assessments` Tab at the top of the page to create an `Assessment Type`.
