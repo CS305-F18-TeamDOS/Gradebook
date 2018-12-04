@@ -7,8 +7,8 @@ Data Science & Systems Lab (DASSL), Western Connecticut State University
 
 Modified by team DOS (Kyle Bella, Kenneth Kozlowski and Joseph Tether)
 CS 305-71 @ WCSU
-Last To Make Modification: Kyle Bella
-Date of Last Revision: 12/2/2018
+Last To Make Modification: Kenneth Kozlowski
+Date of Last Revision: 12/3/2018
 
 
 Copyright (c) 2017- DASSL. ALL RIGHTS RESERVED.
@@ -94,6 +94,9 @@ $(document).ready(function() {
 		{
 		    if (dbInfo != null && email != '')
 		    {
+		        var tmpEmail = $('#email').val();
+			var username = tmpEmail.substring(0,tmpEmail.indexOf('@'));
+			dbInfo.user = username;
 			serverLogin(dbInfo, email, function() {
 				//clear login fields and close DB Info box
 				$('#email').val('');
