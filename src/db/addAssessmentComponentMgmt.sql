@@ -127,17 +127,17 @@ DECLARE
 BEGIN
 
   UPDATE AssessmentComponent
-  SET    AssessmentComponent.Type = COALESCE($2, AssessmentComponent.Type),
-         AssessmentComponent.Weight = COALESCE($3, AssessmentComponent.Weight),
-         AssessmentComponent.Description = $4,
-         AssessmentComponent.NumItems = COALESCE($5, AssessmentComponent.NumItems)
-  WHERE AssessmentComponent.ComponentID = $1;
+  SET    ComponentType = COALESCE($2, AssessmentComponent.ComponentType),
+         Weight = COALESCE($3, AssessmentComponent.Weight),
+         Description = $4,
+         NumItems = COALESCE($5, AssessmentComponent.NumItems)
+  WHERE ID = $1;
   GET DIAGNOSTICS affectedRowCount = ROW_COUNT;
 
   RETURN affectedRowCount;
 
 END;
 $$ LANGUAGE plpgsql
-    STABLE
+    VOLATILE
     CALLED ON NULL INPUT
     SECURITY INVOKER;

@@ -1,8 +1,3 @@
-<!--Remove this later. This is just a comment for TEAM DOS temp.-->
-***NOTE***: Please reinstall all node modules 
-
-***
-
 README.md - Gradebook Web Application
 
 Steven Rollo   
