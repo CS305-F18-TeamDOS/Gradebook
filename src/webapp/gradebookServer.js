@@ -457,7 +457,7 @@ app.get('/assessmentTypes', function(request, response) {
    var sectionID = request.query.sectionid;
 
    // the query will call a function in the future
-   var queryText = 'SELECT ID, ComponentType FROM AssessmentComponent WHERE Section = $1;';
+   var queryText = 'SELECT ID, ComponentType FROM getAssessmentComponentsFromSection($1);';
    var queryParams = [sectionID];
 
    executeQuery(response, config, queryText, queryParams, function(result) {
@@ -493,21 +493,40 @@ app.get('/assessmentItems', function(request, response){
   var componentID = request.query.assessid;
 
   // the query will call a function in the future
+  /*
   var queryText = "SELECT AC.ID, AC.ComponentType, AC.Weight, AC.Description, " +
   "AI.SequenceInComponent, AI.BasePoints, AI.ExtraCreditPoints, " +
   "AI.AssignedDate, AI.DueDate, AI.Curve " +
   "FROM AssessmentComponent AC LEFT OUTER JOIN " +
   "AssessmentItem AI ON AC.ID = AI.Component " +
   "WHERE AC.Section = $1 AND AC.ID = $2 ORDER BY AC.ID, AI.SequenceInComponent;";
+  */
 
-  var queryParams = [sectionID, componentID];
+  var jsonReturn = {
+     "assessType": null,
+     "assessWeight": null,
+     "assessDescription": null,
+     "assessItemTable": null
+  };
+
+  var queryText = "SELECT ID, ComponentType, Weight, Description " +
+  "FROM getAssessmentComponent($1);";
+
+  var queryParams = [componentID];
 
   executeQuery(response, config, queryText, queryParams, function(result) {
 
-      var assessType = result.rows[0].componenttype;
-      var assessWeight = result.rows[0].weight;
-      var assessDescription = result.rows[0].description;
+    var assessType = result.rows[0].componenttype;
+    var assessWeight = result.rows[0].weight;
+    var assessDescription = result.rows[0].description;
+    jsonReturn.assessType = assessType;
+    jsonReturn.assessWeight = assessWeight;
+    jsonReturn.assessDescription = assessDescription;
 
+    queryText = "SELECT SequenceInComponent, BasePoints, ExtraCreditPoints, " +
+    "AssignedDate, DueDate, Curve FROM getAssessmentItemsFromComponent($1);";
+
+    executeQuery(response, config, queryText, queryParams, function(result) {
       var table = '<tr><th>Number</th><th>BasePoints</th><th>ExtraCreditPoints</th>' +
         '<th>AssignedDate</th><th>DueDate</th><th>Curve</th></tr>';
       if(result.rows[0].sequenceincomponent != null)
@@ -536,13 +555,9 @@ app.get('/assessmentItems', function(request, response){
           table += '</tr>';
         }
       }
-      var jsonReturn = {
-         "assessType": assessType,
-         "assessWeight": assessWeight,
-         "assessDescription": assessDescription,
-         "assessItemTable": table
-      };
+      jsonReturn.assessItemTable = table;
       response.send(JSON.stringify(jsonReturn));
+    });
   });
 });
 
@@ -556,11 +571,11 @@ app.get('/assessmentTypesInsert', function(request, response) {
    var weight = request.query.weight;
    var description = request.query.description;
    // the query will call a function in the future
-   var queryText = 'INSERT INTO AssessmentComponent (section, componenttype, weight, description)' +
-                   'VALUES ($1, $2, $3, $4);';
-   var queryParams = [sectionID, componenttype, weight, description];
+   var queryText = 'SELECT createAssessmentComponent($1, $2, $3, $4, $5);';
+   var queryParams = [sectionID, componenttype, weight, description, 0];
 
    executeQuery(response, config, queryText, queryParams, function(result) {
+      console.log(result);
       if (result.rowCount == 0)
       {
         response.status(500).send('500 - Insert Failed');
@@ -593,7 +608,7 @@ app.get('/assessmentItemsInsert', function(request, response) {
     extraPoints = null;
   }
 
-  var queryCountRowsText = "SELECT SequenceInComponent FROM AssessmentItem WHERE Component = $1 ORDER BY SequenceInComponent;";
+  var queryCountRowsText = "SELECT SequenceInComponent FROM getAssessmentItemsFromComponent($1) ORDER BY SequenceInComponent;";
   var queryParams = [assessID];
 
   executeQuery(response, config, queryCountRowsText, queryParams, function(result) {
@@ -603,10 +618,8 @@ app.get('/assessmentItemsInsert', function(request, response) {
       nextInComponent = parseInt(result.rows[parseInt(result.rows.length) - 1].sequenceincomponent) + 1;
     }
 
-    var queryText = "INSERT INTO AssessmentItem (Component, SequenceInComponent, BasePoints," +
-    "ExtraCreditPoints, AssignedDate, DueDate)" +
-    "VALUES ($1, $2, $3, $4, $5, $6);";
-    queryParams.push(nextInComponent, basePoints, extraPoints, assignedDate, dueDate);
+    var queryText = "SELECT createAssessmentItem($1, $2, $3, $4, $5, $6, $7);";
+    queryParams.push(nextInComponent, basePoints, extraPoints, assignedDate, dueDate, null);
 
 
     executeQuery(response, config, queryText, queryParams, function(result) {
@@ -638,9 +651,7 @@ app.get('/assessmentTypesUpdate', function(request, response) {
   console.log(request.query.description);
   var description = request.query.description;
 
-  var queryText = "UPDATE AssessmentComponent " +
-  "SET ComponentType = $2, Weight = $3, Description = $4 " +
-  "WHERE ID = $1;";
+  var queryText = "SELECT updateAssessmentComponent($1, $2, $3, $4, $5);";
   var queryParams = [assessID, componentType, weight, description];
 
   executeQuery(response, config, queryText, queryParams, function(result) {
@@ -688,10 +699,7 @@ app.get('/assessmentItemsUpdate', function(request, response) {
   }
   console.log(curve);
 
-  var queryText = "UPDATE AssessmentItem " +
-  "SET BasePoints = $3, ExtraCreditPoints = $4, AssignedDate = $5,  " +
-  "DueDate = $6, Curve = $7 " +
-  "WHERE Component = $1 AND SequenceInComponent = $2;";
+  var queryText = "SELECT updateAssessmentItem($1, $2, $3, $4, $5, $6, $7);";
   var queryParams = [assessID, sequenceInComponent, basePoints, extraPoints,
   assignedDate, dueDate, curve];
 
@@ -718,27 +726,20 @@ app.get('/assessmentTypesDelete', function(request, response) {
   var assessID = parseInt(request.query.assessid);
   console.log(assessID);
 
-  var queryText = "DELETE FROM AssessmentItem " +
-  "WHERE Component = $1;";
+  var queryText = "SELECT removeAssessmentComponent($1);";
   var queryParams = [assessID];
 
   executeQuery(response, config, queryText, queryParams, function(result) {
-    console.log(result);
-
-    queryText = "DELETE FROM AssessmentComponent " +
-    "WHERE ID = $1;"
-    executeQuery(response, config, queryText, queryParams, function(result) {
-      if (result.rowCount == 0)
-      {
-        response.status(500).send('500 - Delete Failed');
-      }
-      else {
-        var jsonReturn = {
-           "rowCount": result.rowCount
-        };
-        response.send(JSON.stringify(jsonReturn));
-      }
-    });
+    if (result.rowCount == 0)
+    {
+      response.status(500).send('500 - Delete Failed');
+    }
+    else {
+      var jsonReturn = {
+         "rowCount": result.rowCount
+      };
+      response.send(JSON.stringify(jsonReturn));
+    }
   });
 });
 
@@ -752,8 +753,7 @@ app.get('/assessmentItemsDelete', function(request, response) {
   var sequenceInComponent = parseInt(request.query.sequenceincomponent);
   console.log(sequenceInComponent);
 
-  var queryText = "DELETE FROM AssessmentItem " +
-  "WHERE Component = $1 AND SequenceInComponent = $2;";
+  var queryText = "SELECT removeAssessmentItem($1, $2);";
   var queryParams = [assessID, sequenceInComponent];
 
   executeQuery(response, config, queryText, queryParams, function(result) {

@@ -37,18 +37,18 @@ LANGUAGE plpgsql
 --this function is used to fully remove an AssessmentItem and it's dependents
 --begins by deleting all sumbissions that refference the AssessmentItem to delete
 --then deleting the AssessmentItem indicated by the input parameter
-CREATE OR REPLACE FUNCTION removeAssessmentItem(ItemID INT)
+CREATE OR REPLACE FUNCTION removeAssessmentItem(Component INT, ItemID INT)
 RETURNS BOOLEAN AS
 $$
 BEGIN
 
   --delete submissions first
   --submission have a foreign key to AssessmentComponent and AssessmentItem
-  DELETE FROM Submission WHERE Component = $1;
+  DELETE FROM Submission WHERE Submission.Component = $1 AND SequenceInComponent = $2;
 
   --now we can delete from AssessmentItem
   --AssessmentItem has a foreign key to AssessmentComponent
-  DELETE FROM AssessmentItem WHERE Component = $1;
+  DELETE FROM AssessmentItem WHERE AssessmentItem.Component = $1 AND SequenceInComponent = $2;
 
   --returns true if successful
   RETURN TRUE;
@@ -124,6 +124,7 @@ $$ LANGUAGE sql
 CREATE OR REPLACE FUNCTION updateAssessmentItem(ComponentID INT,
                                                 SequenceInComponent INT,
                                                 BasePoints NUMERIC(6,2),
+                                                ExtraCreditPoints NUMERIC(6,2),
                                                 AssignedDate DATE,
                                                 DueDate DATE,
                                                 Curve NUMERIC(5,2))
@@ -134,17 +135,18 @@ DECLARE
 BEGIN
 
   UPDATE AssessmentItem
-  SET    AssessmentItem.BasePoints = COALESCE($3, AssessmentItem.BasePoints),
-         AssessmentItem.AssignedDate = $4,
-         AssessmentItem.DueDate = $5,
-         AssessmentItem.Curve = $6
-  WHERE (AssessmentItem.ComponentID = $1 AND AssessmentItem.SequenceInItem = $2);
+  SET    BasePoints = COALESCE($3, AssessmentItem.BasePoints),
+         ExtraCreditPoints = COALESCE($4, AssessmentItem.ExtraCreditPoints),
+         AssignedDate = $5,
+         DueDate = $6,
+         Curve = COALESCE($7, AssessmentItem.Curve)
+  WHERE (Component = $1 AND AssessmentItem.SequenceInComponent = $2);
   GET DIAGNOSTICS affectedRowCount = ROW_COUNT;
 
   RETURN affectedRowCount;
 
 END;
 $$ LANGUAGE plpgsql
-    STABLE
+    VOLATILE
     CALLED ON NULL INPUT
     SECURITY INVOKER;
