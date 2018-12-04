@@ -82,10 +82,6 @@ BEGIN
    EXECUTE format('REVOKE ALL PRIVILEGES ON DATABASE %I FROM Student', currentDB);
    EXECUTE format('REVOKE ALL PRIVILEGES ON DATABASE %I FROM Instructor', currentDB);
 
-   --grant student and instructor permission to access the current schema
-   EXECUTE format('GRANT ALL PRIVILEGES ON SCHEMA %I TO Student', currentSchema);
-   EXECUTE format('GRANT ALL PRIVILEGES ON SCHEMA %I TO Instructor', currentSchema);
-
    --give Gradebook role all privileges on the current database
    EXECUTE format('GRANT ALL PRIVILEGES ON DATABASE %I TO Gradebook', currentDB);
 
@@ -99,7 +95,7 @@ $$;
 
 
 --Remove all privileges from public on objects created in the future in this DB
--- this alteration applies to all schemas in this DB
+--This alteration applies to all schemas in this DB
 ALTER DEFAULT PRIVILEGES REVOKE ALL PRIVILEGES ON TABLES FROM PUBLIC;
 ALTER DEFAULT PRIVILEGES REVOKE ALL PRIVILEGES ON SEQUENCES FROM PUBLIC;
 ALTER DEFAULT PRIVILEGES REVOKE ALL PRIVILEGES ON FUNCTIONS FROM PUBLIC;
