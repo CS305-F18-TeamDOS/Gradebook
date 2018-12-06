@@ -70,6 +70,7 @@ var assessOrginInfo = {
 };
 
 $(document).ready(function() {
+
 	$('select').material_select(); //load dropdown boxes
 
 	$('#dbInfoBox').collapsible({
@@ -94,9 +95,15 @@ $(document).ready(function() {
 		var assessType = $('#typeInput').val();
 		var assessWeight = $('#weightInput').val();
 		var assessDescription = $('#descriptionInput').val();
-		insertNewAssessType(dbInfo, sectionID, assessType, assessWeight, assessDescription);
-		// repopulate Assessment Types
-		popAssessmentTypes(dbInfo, sectionID);
+
+          if(assessType == "" || assessWeight == "" || assessDescription == ""){
+               showAlert('<p>One or more fields are empty</p>');
+          }
+          else{
+               insertNewAssessType(dbInfo, sectionID, assessType, assessWeight, assessDescription);
+		     // repopulate Assessment Types
+		     popAssessmentTypes(dbInfo, sectionID);
+          }
 	});
 
 	$('#assessmentTypeSelect').change(function() {
@@ -315,7 +322,6 @@ function insertNewAssessType(connInfo, sectionid, componenttype, weight, descrip
 			console.log(result.rowCount + " rows added");
 		},
 		error: function(result) {
-			showAlert('<p>Error while inserting assessment type</p>');
 			console.log(result);
 		}
 	});
