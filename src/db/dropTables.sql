@@ -16,7 +16,16 @@
 
 --This script drops all tables created by createTables.sql, if they exist, with CASCADE
 
-START TRANSACTION;
+--Spool results to a file in the current directory
+\o spoolDropTables.txt
+
+--Echo time, date and user/server/DB info
+\qecho -n 'Script run on '
+\qecho -n `date /t`
+\qecho -n 'at '
+\qecho `time /t`
+\qecho -n 'Script run by ' :USER ' on server ' :HOST ' with db ' :DBNAME
+\qecho ' '
 
 DROP TABLE IF EXISTS Course CASCADE;
 
@@ -46,4 +55,4 @@ DROP TABLE IF EXISTS AssessmentItem CASCADE;
 
 DROP TABLE IF EXISTS Submission CASCADE;
 
-COMMIT;
+\o

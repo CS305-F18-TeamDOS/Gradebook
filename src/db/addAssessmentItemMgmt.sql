@@ -8,7 +8,19 @@
 --implements management features for AssessmentItems
 --This includes: reading, deleting, updating
 
+--Spool results to a file in the current directory
+\o spoolAddAssessmentItemMgmt.txt
+
+--Echo time, date and user/server/DB info
+\qecho -n 'Script run on '
+\qecho -n `date /t`
+\qecho -n 'at '
+\qecho `time /t`
+\qecho -n 'Script run by ' :USER ' on server ' :HOST ' with db ' :DBNAME
+\qecho ' '
+
 --------------------------------------------------------------------------------
+DROP FUNCTION IF EXISTS createAssessmentItem(INT, INT, NUMERIC(6, 2), NUMERIC(6, 2), DATE, DATE, NUMERIC(5, 2));
 --This function inserts a new AssessmentComponent with the given parameters
 --as values to insert
 CREATE OR REPLACE FUNCTION createAssessmentItem(
@@ -34,6 +46,7 @@ LANGUAGE plpgsql
   SECURITY INVOKER;
 
 --------------------------------------------------------------------------------
+DROP FUNCTION IF EXISTS removeAssessmentItem(INT, INT);
 --this function is used to fully remove an AssessmentItem and it's dependents
 --begins by deleting all sumbissions that refference the AssessmentItem to delete
 --then deleting the AssessmentItem indicated by the input parameter
@@ -60,6 +73,7 @@ $$ LANGUAGE plpgsql
    SECURITY INVOKER;
 
 --------------------------------------------------------------------------------
+DROP FUNCTION IF EXISTS getAssessmentItem(INT, INT);
 --This functions returns 1 rows of AssessmentItem,
 --where the item has the given ComponentID and SequenceInComponent
 CREATE OR REPLACE FUNCTION getAssessmentItem(ComponentID INT,
@@ -88,6 +102,7 @@ $$ LANGUAGE sql
     SECURITY INVOKER;
 
 --------------------------------------------------------------------------------
+DROP FUNCTION IF EXISTS getAssessmentItemsFromComponent(INT);
 --This functions returns a table containing 0 or more rows of AssessmentItems
 --where each row shares a Component
 CREATE OR REPLACE FUNCTION getAssessmentItemsFromComponent(ComponentID INTEGER)
@@ -114,6 +129,7 @@ $$ LANGUAGE sql
     SECURITY INVOKER;
 
 --------------------------------------------------------------------------------
+DROP FUNCTION IF EXISTS updateAssessItem(INT, INT, NUMERIC(6, 2), NUMERIC(6, 2), DATE, DATE, NUMERIC(5, 2));
 --Takes 6 parameters, one for each attribute of AssessmentItem
 --The first two paramters, ComponentID and SequenceInComponent, form the PK
 -- of the Item to update
@@ -150,3 +166,5 @@ $$ LANGUAGE plpgsql
     VOLATILE
     CALLED ON NULL INPUT
     SECURITY INVOKER;
+
+\o

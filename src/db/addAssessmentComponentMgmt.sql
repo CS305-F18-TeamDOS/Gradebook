@@ -8,6 +8,17 @@
 --implements management features for AssessmentComponents
 --This includes: reading, deleting, updating
 
+--Spool results to a file in the current directory
+\o spoolAddAssessmentComponentMgmt.txt
+
+--Echo time, date and user/server/DB info
+\qecho -n 'Script run on '
+\qecho -n `date /t`
+\qecho -n 'at '
+\qecho `time /t`
+\qecho -n 'Script run by ' :USER ' on server ' :HOST ' with db ' :DBNAME
+\qecho ' '
+
 --------------------------------------------------------------------------------
 DROP FUNCTION IF EXISTS createAssessmentComponent(INT, VARCHAR, NUMERIC(5,2), VARCHAR, INT);
 --This function inserts a new AssessmentComponent with the given parameters
@@ -146,3 +157,5 @@ $$ LANGUAGE plpgsql
     VOLATILE
     CALLED ON NULL INPUT
     SECURITY INVOKER;
+
+\o

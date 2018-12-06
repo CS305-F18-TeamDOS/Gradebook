@@ -27,15 +27,15 @@
 --This script assumes a schema named "Gradebook" already exists and is empty
 
 --Spool results to a file in the current directory
---\o spoolCreateTables.txt
+\o spoolCreateTables.txt
 
 --Echo time, date and user/server/DB info
---\qecho -n 'Script run on '
---\qecho -n `date /t`
---\qecho -n 'at '
---\qecho `time /t`
---\qecho -n 'Script run by ' :USER ' on server ' :HOST ' with db ' :DBNAME
---\qecho ' '
+\qecho -n 'Script run on '
+\qecho -n `date /t`
+\qecho -n 'at '
+\qecho `time /t`
+\qecho -n 'Script run by ' :USER ' on server ' :HOST ' with db ' :DBNAME
+\qecho ' '
 
 
 CREATE TABLE Course
@@ -358,4 +358,4 @@ GRANT SELECT, UPDATE, INSERT, DELETE ON Submission TO Instructor;
 
 
 --turn spooling off
---\o
+\o

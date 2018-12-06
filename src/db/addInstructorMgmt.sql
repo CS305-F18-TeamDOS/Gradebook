@@ -16,6 +16,17 @@
 -- STABLE: result remains the same for a given input within the same statement
 -- RETURNS NULL ON NULL INPUT: returns NULL or no result if any input is NULL
 
+--Spool results to a file in the current directory
+\o spoolAddInstructorMgmt.txt
+
+--Echo time, date and user/server/DB info
+\qecho -n 'Script run on '
+\qecho -n `date /t`
+\qecho -n 'at '
+\qecho `time /t`
+\qecho -n 'Script run by ' :USER ' on server ' :HOST ' with db ' :DBNAME
+\qecho ' '
+
 
 --Function to get details of all known instructors
 DROP FUNCTION IF EXISTS getInstructors();
@@ -224,3 +235,5 @@ $$
 $$ LANGUAGE sql
    STABLE
    RETURNS NULL ON NULL INPUT;
+
+\o

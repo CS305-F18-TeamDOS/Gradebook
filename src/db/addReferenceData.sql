@@ -16,6 +16,17 @@
 -- the script should be run before adding rows into any other tables because
 -- the rows added here influence all other data, either directly or indirectly
 
+--Spool results to a file in the current directory
+\o spoolAddRefferenceData.txt
+
+--Echo time, date and user/server/DB info
+\qecho -n 'Script run on '
+\qecho -n `date /t`
+\qecho -n 'at '
+\qecho `time /t`
+\qecho -n 'Script run by ' :USER ' on server ' :HOST ' with db ' :DBNAME
+\qecho ' '
+
 
 --populate the Season table with values found in the OpenClose system at WCSU
 -- the value of the "Order" column should start with zero and be incremented by
@@ -50,3 +61,5 @@ VALUES
    ('P', 'Present'),           ('A', 'Absent'),   ('E', 'Explained'),
    ('S', 'Stopped Attending'), ('X', 'Excused'),  ('N', 'Not Registered'),
    ('C', 'Cancelled'),         ('W', 'Withdrawn');
+
+\o

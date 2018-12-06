@@ -23,9 +23,16 @@
 
 --This script should be run by a superuser
 
+--Spool results to a file in the current directory
+\o spoolInitializeDB.txt
 
-START TRANSACTION;
-
+--Echo time, date and user/server/DB info
+\qecho -n 'Script run on '
+\qecho -n `date /t`
+\qecho -n 'at '
+\qecho `time /t`
+\qecho -n 'Script run by ' :USER ' on server ' :HOST ' with db ' :DBNAME
+\qecho ' '
 
 --Suppress messages below WARNING level for the duration of this script
 SET LOCAL client_min_messages TO WARNING;
@@ -117,4 +124,4 @@ ALTER DEFAULT PRIVILEGES GRANT ALL PRIVILEGES ON TYPES TO Gradebook;
 -- this code might have to be moved to a function if schemas are used to support
 -- multi-tenancy (schema name will be a parameter)
 
-COMMIT;
+\o

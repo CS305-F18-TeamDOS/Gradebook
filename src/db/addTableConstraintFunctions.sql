@@ -7,6 +7,18 @@
 --this script creates the functions used by Team DOS's
 --Gradebook tables that require functions in their CHECK constraint
 
+--Spool results to a file in the current directory
+\o spoolAddTableConstraintFunctions.txt
+
+--Echo time, date and user/server/DB info
+\qecho -n 'Script run on '
+\qecho -n `date /t`
+\qecho -n 'at '
+\qecho `time /t`
+\qecho -n 'Script run by ' :USER ' on server ' :HOST ' with db ' :DBNAME
+\qecho ' '
+
+
 --check that DueDate of AssessmentItem is not
 --before the StartDate or EndDate of the related Section
 --
@@ -50,3 +62,5 @@ $$ LANGUAGE plpgsql
     VOLATILE
     RETURNS NULL ON NULL INPUT
     SECURITY INVOKER;
+
+\o
