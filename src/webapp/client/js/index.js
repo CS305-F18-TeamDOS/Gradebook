@@ -106,7 +106,17 @@ $(document).ready(function() {
 
 				popYears(dbInfo);
 
-				goToAssessmentTypeMgmt();
+				var assess = $('#goToAssessmentTypeMgmt').prop('checked');
+				console.log(assess);
+				if (assess === true)
+				{
+					console.log(assess);
+					goToAssessmentTypeMgmt();
+				}
+				else {
+					console.log(assess);
+					goToStudentGradesMgmt();
+				}
 			});
 		    }
 		    else
@@ -391,6 +401,13 @@ function goToAssessmentTypeMgmt() {
 	document.cookie = "instInfo=" + JSON.stringify(instInfo) + ";path=/";
 	console.log(document.cookie);
 	window.location.href = "../manageAssessmentTypesForm.html";
+};
+
+function goToStudentGradesMgmt() {
+	document.cookie = "dbInfo=" + JSON.stringify(dbInfo) + ";path=/";
+	document.cookie = "instInfo=" + JSON.stringify(instInfo) + ";path=/";
+	console.log(document.cookie);
+	window.location.href = "../manageStudentGradesForm.html";
 };
 
 function popYears(connInfo) {
