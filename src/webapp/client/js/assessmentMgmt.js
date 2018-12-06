@@ -125,10 +125,17 @@ $(document).ready(function() {
 		var extraPoints = $('#extraCreditPointsInput').val();
 		var assignedDate = $('#assignedDateInput').val();
 		var dueDate = $('#dueDateInput').val();
-		insertNewAssessItem(dbInfo, assessID, basePoints, extraPoints, assignedDate,
-		dueDate);
-		// repopulate Assessment Items
-		popAssessmentItems(dbInfo, sectionID, assessID);
+
+          if(assessID == "" || basePoints == "" || extraPoints == ""
+                         || assignedDate == "" || dueDate == ""){
+               showAlert("<p>One or more fields are empty</p>");
+          }
+          else{
+
+		      insertNewAssessItem(dbInfo, assessID, basePoints, extraPoints, assignedDate, dueDate);
+		      // repopulate Assessment Items
+		      popAssessmentItems(dbInfo, sectionID, assessID);
+           }
 	});
 
 	$('#btnCloseItemFields').click(function() {
@@ -158,11 +165,11 @@ $(document).ready(function() {
 	$('#btnConfirm').click(function(event) {
 		var assessID = $('#assessmentTypeSelect').val();
 		deleteAssessType(dbInfo, assessID);
-
 		popAssessmentTypes(dbInfo, sectionID);
 		$('#typeInput').val(null);
 		$('#weightInput').val(null);
 		$('#description').val(null);
+          window.location.reload();
 	});
 
 	$("#assessmentItemTable").on('click', "a[id^='getForUpdate']", function() {
@@ -319,11 +326,14 @@ function insertNewAssessType(connInfo, sectionid, componenttype, weight, descrip
 		dataType: 'json',
 		data: urlParams,
 		success: function(result) {
+               showAlert("<p>Sucessfully added the assessment type</p>");
 			console.log(result.rowCount + " rows added");
 		},
 		error: function(result) {
+               showAlert("<p>Error adding the assessment type</p>");
 			console.log(result);
 		}
+
 	});
 };
 
