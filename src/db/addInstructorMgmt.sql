@@ -16,6 +16,17 @@
 -- STABLE: result remains the same for a given input within the same statement
 -- RETURNS NULL ON NULL INPUT: returns NULL or no result if any input is NULL
 
+--Spool results to a file in the current directory
+\o spoolAddInstructorMgmt.txt
+
+--Echo time, date and user/server/DB info
+\qecho -n 'Script run on '
+\qecho -n `date /t`
+\qecho -n 'at '
+\qecho `time /t`
+\qecho -n 'Script run by ' :USER ' on server ' :HOST ' with db ' :DBNAME
+\qecho ' '
+
 
 --Function to get details of all known instructors
 DROP FUNCTION IF EXISTS getInstructors();
@@ -130,12 +141,12 @@ RETURNS TABLE(SeasonOrder NUMERIC(1,0), SeasonName VARCHAR(20))
 AS
 $$
 
-   SELECT DISTINCT S."Order", S.Name
-   FROM Season S JOIN Term T ON S."Order" = T.Season
+   SELECT DISTINCT S.Season_Order, S.Name
+   FROM Season S JOIN Term T ON S.Season_Order = T.Season
         JOIN Section N ON N.Term  = T.ID
    WHERE $1 IN (N.Instructor1, N.Instructor2, N.Instructor3)
          AND T.Year = $2
-   ORDER BY S."Order";
+   ORDER BY S.Season_Order;
 
 $$ LANGUAGE sql
    STABLE
@@ -224,3 +235,5 @@ $$
 $$ LANGUAGE sql
    STABLE
    RETURNS NULL ON NULL INPUT;
+
+\o

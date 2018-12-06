@@ -3,6 +3,9 @@
 --Sean Murthy
 --Data Science & Systems Lab (DASSL), Western Connecticut State University (WCSU)
 
+--Edited By Team DOS - Fall 2018 CS305-71
+-- Kyle Bella, Kenneth Kozlowski, Joe Tether
+
 --(C) 2017- DASSL. ALL RIGHTS RESERVED.
 --Licensed to others under CC 4.0 BY-SA-NC
 --https://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -11,6 +14,17 @@
 
 --This script creates functions related to seasons
 -- the script should be run as part of application installation
+
+--Spool results to a file in the current directory
+\o spoolSeasonMgmt.txt
+
+--Echo time, date and user/server/DB info
+\qecho -n 'Script run on '
+\qecho -n `date /t`
+\qecho -n 'at '
+\qecho `time /t`
+\qecho -n 'Script run by ' :USER ' on server ' :HOST ' with db ' :DBNAME
+\qecho ' '
 
 
 --Suppress messages below WARNING level for the duration of this script
@@ -27,17 +41,17 @@ DROP FUNCTION IF EXISTS getSeason(VARCHAR(20));
 CREATE FUNCTION getSeason(seasonIdentification VARCHAR(20))
 RETURNS TABLE
 (
-   "Order" NUMERIC(1,0),
+   Season_Order NUMERIC(1,0),
    Name VARCHAR(20),
    Code CHAR(1)
 )
 AS
 $$
 
-   SELECT "Order", Name, Code
+   SELECT Season_Order, Name, Code
    FROM Season
    WHERE CASE
-            WHEN $1 ~ '^[0-9]$' THEN "Order" = to_number($1,'9')
+            WHEN $1 ~ '^[0-9]$' THEN Season_Order = to_number($1,'9')
             WHEN LENGTH($1) = 1 THEN Code = UPPER($1)
             ELSE LOWER(TRIM(Name)) = LOWER(TRIM($1))
          END;
@@ -55,16 +69,16 @@ DROP FUNCTION IF EXISTS getSeason(NUMERIC(1,0));
 CREATE FUNCTION getSeason(seasonOrder NUMERIC(1,0))
 RETURNS TABLE
 (
-   "Order" NUMERIC(1,0),
+   Season_Order NUMERIC(1,0),
    Name VARCHAR(20),
    Code CHAR(1)
 )
 AS
 $$
 
-   SELECT "Order", Name, Code
+   SELECT Season_Order, Name, Code
    FROM Season
-   WHERE "Order" = $1;
+   WHERE Season_Order = $1;
 
 $$ LANGUAGE sql
    STABLE
@@ -81,9 +95,11 @@ RETURNS NUMERIC(1,0)
 AS
 $$
 
-   SELECT "Order"
+   SELECT Season_Order
    FROM getSeason($1);
 
 $$ LANGUAGE sql
    STABLE
    RETURNS NULL ON NULL INPUT;
+
+\o

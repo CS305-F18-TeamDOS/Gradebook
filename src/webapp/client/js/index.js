@@ -7,8 +7,8 @@ Data Science & Systems Lab (DASSL), Western Connecticut State University
 
 Modified by team DOS (Kyle Bella, Kenneth Kozlowski and Joseph Tether)
 CS 305-71 @ WCSU
-Last To Make Modification: Kyle Bella
-Date of Last Revision: 12/2/2018
+Last To Make Modification: Kenneth Kozlowski
+Date of Last Revision: 12/3/2018
 
 
 Copyright (c) 2017- DASSL. ALL RIGHTS RESERVED.
@@ -94,6 +94,9 @@ $(document).ready(function() {
 		{
 		    if (dbInfo != null && email != '')
 		    {
+		        var tmpEmail = $('#email').val();
+			var username = tmpEmail.substring(0,tmpEmail.indexOf('@'));
+			dbInfo.user = username;
 			serverLogin(dbInfo, email, function() {
 				//clear login fields and close DB Info box
 				$('#email').val('');
@@ -235,24 +238,19 @@ $(document).ready(function() {
 
 	$("#assessmentItemTable").on('click', "a[id^='getForUpdate']", function() {
 		var tr = $(this).parent().parent();
-		tr.find('#sequence').html('<a id="submitUpdate" class="waves-effect waves-light btn">Update</a>' +
-															'<a id="submitDelete" class="waves-effect waves-light btn">Delete</a>' +
+		tr.find('#sequence').html('<a id="submitUpdate" class="waves-effect waves-light btn">Update</a><br><br>' +
+															'<a id="submitDelete" class="waves-effect waves-light btn">Delete</a><br><br>' +
 														  '<a id="closeFields" class="waves-effect waves-light btn">Close</a>');
 		assessOrginInfo.basePoints = tr.find('#basepoint').html();
-		tr.find('#basepoint').html('<input id="basePointsInput" value="' + assessOrginInfo.basePoints + '" type="text"/>' +
-															 '<label for="basePointsInput">Base Points</label>');
+		tr.find('#basepoint').html('<input id="basePointsInput" value="' + assessOrginInfo.basePoints + '" type="text"/>');
 		assessOrginInfo.extraCreditPoints = tr.find('#extrapoint').html();
-		tr.find('#extrapoint').html('<input id="extraCreditPointsInput" value="' + assessOrginInfo.extraCreditPoints + '" type="text"/>' +
-													 		 '<label for="extraCreditPointsInput">Extra Credit Points</label>');
+		tr.find('#extrapoint').html('<input id="extraCreditPointsInput" value="' + assessOrginInfo.extraCreditPoints + '" type="text"/>');
 		assessOrginInfo.assignedDate = tr.find('#assigned').html();
-		tr.find('#assigned').html('<input id="assignedDateInput" value="' + assessOrginInfo.assignedDate + '" type="text"/>' +
-													 		 '<label for="assignedDateInput">Date Assigned</label>');
+		tr.find('#assigned').html('<input id="assignedDateInput" value="' + assessOrginInfo.assignedDate + '" type="text"/>');
 		assessOrginInfo.dueDate = tr.find('#due').html();
-		tr.find('#due').html('<input id="dueDateInput" value="' + assessOrginInfo.dueDate + '" type="text"/>' +
-												 '<label for="dueDateInput">Date Due</label>');
+		tr.find('#due').html('<input id="dueDateInput" value="' + assessOrginInfo.dueDate + '" type="text"/>');
 		assessOrginInfo.curve = tr.find('#curve').html();
-		tr.find('#curve').html('<input id="curveInput" value="' + assessOrginInfo.curve + '" type="text"/>' +
-													 '<label for="curveInput">Curve</label>');
+		tr.find('#curve').html('<input id="curveInput" value="' + assessOrginInfo.curve + '" type="text"/>');
 	});
 
 	$('#assessmentItemTable').on('click', "a[id^='submitUpdate']", function() {

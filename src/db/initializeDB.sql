@@ -3,6 +3,9 @@
 --Andrew Figueroa, Steven Rollo, Sean Murthy
 --Data Science & Systems Lab (DASSL), Western Connecticut State University (WCSU)
 
+--Edited By Team DOS - Fall 2018 CS305-71
+-- Kyle Bella, Kenneth Kozlowski, Joe Tether
+
 --(C) 2017- DASSL. ALL RIGHTS RESERVED.
 --Licensed to others under CC 4.0 BY-SA-NC
 --https://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -23,9 +26,16 @@
 
 --This script should be run by a superuser
 
+--Spool results to a file in the current directory
+\o spoolInitializeDB.txt
 
-START TRANSACTION;
-
+--Echo time, date and user/server/DB info
+\qecho -n 'Script run on '
+\qecho -n `date /t`
+\qecho -n 'at '
+\qecho `time /t`
+\qecho -n 'Script run by ' :USER ' on server ' :HOST ' with db ' :DBNAME
+\qecho ' '
 
 --Suppress messages below WARNING level for the duration of this script
 SET LOCAL client_min_messages TO WARNING;
@@ -82,10 +92,6 @@ BEGIN
    EXECUTE format('REVOKE ALL PRIVILEGES ON DATABASE %I FROM Student', currentDB);
    EXECUTE format('REVOKE ALL PRIVILEGES ON DATABASE %I FROM Instructor', currentDB);
 
-   --grant student and instructor permission to access the current schema
-   EXECUTE format('GRANT ALL PRIVILEGES ON SCHEMA %I TO Student', currentSchema);
-   EXECUTE format('GRANT ALL PRIVILEGES ON SCHEMA %I TO Instructor', currentSchema);
-
    --give Gradebook role all privileges on the current database
    EXECUTE format('GRANT ALL PRIVILEGES ON DATABASE %I TO Gradebook', currentDB);
 
@@ -99,12 +105,16 @@ $$;
 
 
 --Remove all privileges from public on objects created in the future in this DB
--- this alteration applies to all schemas in this DB
+--This alteration applies to all schemas in this DB
 ALTER DEFAULT PRIVILEGES REVOKE ALL PRIVILEGES ON TABLES FROM PUBLIC;
 ALTER DEFAULT PRIVILEGES REVOKE ALL PRIVILEGES ON SEQUENCES FROM PUBLIC;
 ALTER DEFAULT PRIVILEGES REVOKE ALL PRIVILEGES ON FUNCTIONS FROM PUBLIC;
 ALTER DEFAULT PRIVILEGES REVOKE ALL PRIVILEGES ON TYPES FROM PUBLIC;
 
+
+ALTER DEFAULT PRIVILEGES GRANT EXECUTE ON FUNCTIONS TO Student;
+ALTER DEFAULT PRIVILEGES GRANT EXECUTE ON FUNCTIONS TO Instructor;
+ALTER DEFAULT PRIVILEGES GRANT USAGE ON SEQUENCES TO Instructor;
 --Give Gradebook role all privileges on objects created in the future in this DB
 -- this alteration applies to all schemas in this DB
 ALTER DEFAULT PRIVILEGES GRANT ALL PRIVILEGES ON TABLES TO Gradebook;
@@ -117,4 +127,4 @@ ALTER DEFAULT PRIVILEGES GRANT ALL PRIVILEGES ON TYPES TO Gradebook;
 -- this code might have to be moved to a function if schemas are used to support
 -- multi-tenancy (schema name will be a parameter)
 
-COMMIT;
+\o
