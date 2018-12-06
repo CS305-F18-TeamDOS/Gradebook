@@ -1,7 +1,7 @@
 --addAssessmentItemMgmt.sql - GradeBook
 
 --Created by Team DOS - Fall 2018 CS305-71
--- Kyle Bella, Kenneth Kowlozski, Joe Tether
+-- Kyle Bella, Kenneth Kozlowski, Joe Tether
 
 --this script creates the functions used by Team DOS's Gradebook
 --implements management features for AssessmentItems

@@ -1,7 +1,7 @@
 --addTableConstraintFunctions.sql - GradeBook
 
 --Created By Team DOS - Fall 2018 CS305-71
--- Kyle Bella, Kenneth Kowlozski, Joe Tether
+-- Kyle Bella, Kenneth Kozlowski, Joe Tether
 
 
 --this script creates the functions used by Gradebook table constraints
