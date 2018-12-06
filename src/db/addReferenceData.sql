@@ -3,6 +3,9 @@
 --Zaid Bhujwala, Zach Boylan, Steven Rollo, Sean Murthy
 --Data Science & Systems Lab (DASSL), Western Connecticut State University (WCSU)
 
+--Edited By Team DOS - Fall 2018 CS305-71
+-- Kyle Bella, Kenneth Kozlowski, Joe Tether
+
 --(C) 2017- DASSL. ALL RIGHTS RESERVED.
 --Licensed to others under CC 4.0 BY-SA-NC
 --https://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -15,6 +18,17 @@
 --This script should be run after the script createTables.sql is run
 -- the script should be run before adding rows into any other tables because
 -- the rows added here influence all other data, either directly or indirectly
+
+--Spool results to a file in the current directory
+\o spoolAddRefferenceData.txt
+
+--Echo time, date and user/server/DB info
+\qecho -n 'Script run on '
+\qecho -n `date /t`
+\qecho -n 'at '
+\qecho `time /t`
+\qecho -n 'Script run by ' :USER ' on server ' :HOST ' with db ' :DBNAME
+\qecho ' '
 
 
 --populate the Season table with values found in the OpenClose system at WCSU
@@ -50,3 +64,5 @@ VALUES
    ('P', 'Present'),           ('A', 'Absent'),   ('E', 'Explained'),
    ('S', 'Stopped Attending'), ('X', 'Excused'),  ('N', 'Not Registered'),
    ('C', 'Cancelled'),         ('W', 'Withdrawn');
+
+\o

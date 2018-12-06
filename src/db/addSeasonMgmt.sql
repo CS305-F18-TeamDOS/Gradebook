@@ -3,6 +3,9 @@
 --Sean Murthy
 --Data Science & Systems Lab (DASSL), Western Connecticut State University (WCSU)
 
+--Edited By Team DOS - Fall 2018 CS305-71
+-- Kyle Bella, Kenneth Kozlowski, Joe Tether
+
 --(C) 2017- DASSL. ALL RIGHTS RESERVED.
 --Licensed to others under CC 4.0 BY-SA-NC
 --https://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -11,6 +14,17 @@
 
 --This script creates functions related to seasons
 -- the script should be run as part of application installation
+
+--Spool results to a file in the current directory
+\o spoolSeasonMgmt.txt
+
+--Echo time, date and user/server/DB info
+\qecho -n 'Script run on '
+\qecho -n `date /t`
+\qecho -n 'at '
+\qecho `time /t`
+\qecho -n 'Script run by ' :USER ' on server ' :HOST ' with db ' :DBNAME
+\qecho ' '
 
 
 --Suppress messages below WARNING level for the duration of this script
@@ -87,3 +101,5 @@ $$
 $$ LANGUAGE sql
    STABLE
    RETURNS NULL ON NULL INPUT;
+
+\o

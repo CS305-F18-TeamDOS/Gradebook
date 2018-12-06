@@ -15,6 +15,17 @@ PROVIDED AS IS. NO WARRANTIES EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
 --This file has some issues related to formatting, clarity, and efficiency
 -- fix after milestone M1: delete this comment block after fixing the issues
 
+--Spool results to a file in the current directory
+\o spoolAddAttendanceMgmt.txt
+
+--Echo time, date and user/server/DB info
+\qecho -n 'Script run on '
+\qecho -n `date /t`
+\qecho -n 'at '
+\qecho `time /t`
+\qecho -n 'Script run by ' :USER ' on server ' :HOST ' with db ' :DBNAME
+\qecho ' '
+
 --Suppress messages below WARNING level for the duration of this script
 SET LOCAL client_min_messages TO WARNING;
 
@@ -146,3 +157,5 @@ RETURNS TABLE(AttendanceCsvWithHeader TEXT) AS
 $$
    SELECT getAttendance(getSectionID($1, $2, $3, $4));
 $$ LANGUAGE sql;
+
+\o

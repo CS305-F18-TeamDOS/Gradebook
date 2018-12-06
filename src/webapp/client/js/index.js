@@ -228,24 +228,19 @@ $(document).ready(function() {
 
 	$("#assessmentItemTable").on('click', "a[id^='getForUpdate']", function() {
 		var tr = $(this).parent().parent();
-		tr.find('#sequence').html('<a id="submitUpdate" class="waves-effect waves-light btn">Update</a>' +
-															'<a id="submitDelete" class="waves-effect waves-light btn">Delete</a>' +
+		tr.find('#sequence').html('<a id="submitUpdate" class="waves-effect waves-light btn">Update</a><br><br>' +
+															'<a id="submitDelete" class="waves-effect waves-light btn">Delete</a><br><br>' +
 														  '<a id="closeFields" class="waves-effect waves-light btn">Close</a>');
 		assessOrginInfo.basePoints = tr.find('#basepoint').html();
-		tr.find('#basepoint').html('<input id="basePointsInput" value="' + assessOrginInfo.basePoints + '" type="text"/>' +
-															 '<label for="basePointsInput">Base Points</label>');
+		tr.find('#basepoint').html('<input id="basePointsInput" value="' + assessOrginInfo.basePoints + '" type="text"/>');
 		assessOrginInfo.extraCreditPoints = tr.find('#extrapoint').html();
-		tr.find('#extrapoint').html('<input id="extraCreditPointsInput" value="' + assessOrginInfo.extraCreditPoints + '" type="text"/>' +
-													 		 '<label for="extraCreditPointsInput">Extra Credit Points</label>');
+		tr.find('#extrapoint').html('<input id="extraCreditPointsInput" value="' + assessOrginInfo.extraCreditPoints + '" type="text"/>');
 		assessOrginInfo.assignedDate = tr.find('#assigned').html();
-		tr.find('#assigned').html('<input id="assignedDateInput" value="' + assessOrginInfo.assignedDate + '" type="text"/>' +
-													 		 '<label for="assignedDateInput">Date Assigned</label>');
+		tr.find('#assigned').html('<input id="assignedDateInput" value="' + assessOrginInfo.assignedDate + '" type="text"/>');
 		assessOrginInfo.dueDate = tr.find('#due').html();
-		tr.find('#due').html('<input id="dueDateInput" value="' + assessOrginInfo.dueDate + '" type="text"/>' +
-												 '<label for="dueDateInput">Date Due</label>');
+		tr.find('#due').html('<input id="dueDateInput" value="' + assessOrginInfo.dueDate + '" type="text"/>');
 		assessOrginInfo.curve = tr.find('#curve').html();
-		tr.find('#curve').html('<input id="curveInput" value="' + assessOrginInfo.curve + '" type="text"/>' +
-													 '<label for="curveInput">Curve</label>');
+		tr.find('#curve').html('<input id="curveInput" value="' + assessOrginInfo.curve + '" type="text"/>');
 	});
 
 	$('#assessmentItemTable').on('click', "a[id^='submitUpdate']", function() {

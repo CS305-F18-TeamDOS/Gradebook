@@ -3,10 +3,8 @@
 --Zaid Bhujwala, Zach Boylan, Steven Rollo, Sean Murthy
 --Data Science & Systems Lab (DASSL), Western Connecticut State University (WCSU)
 
---Edited by Team DOS: Kyle Bella, Kenneth Kozlowski, Joe Tether
---Edited for CS305-71
---Date of Revision: 10/31/2018
-
+--Edited By Team DOS - Fall 2018 CS305-71
+-- Kyle Bella, Kenneth Kozlowski, Joe Tether
 
 --(C) 2017- DASSL. ALL RIGHTS RESERVED.
 --Licensed to others under CC 4.0 BY-SA-NC
@@ -16,7 +14,16 @@
 
 --This script drops all tables created by createTables.sql, if they exist, with CASCADE
 
-START TRANSACTION;
+--Spool results to a file in the current directory
+\o spoolDropTables.txt
+
+--Echo time, date and user/server/DB info
+\qecho -n 'Script run on '
+\qecho -n `date /t`
+\qecho -n 'at '
+\qecho `time /t`
+\qecho -n 'Script run by ' :USER ' on server ' :HOST ' with db ' :DBNAME
+\qecho ' '
 
 DROP TABLE IF EXISTS Course CASCADE;
 
@@ -46,4 +53,4 @@ DROP TABLE IF EXISTS AssessmentItem CASCADE;
 
 DROP TABLE IF EXISTS Submission CASCADE;
 
-COMMIT;
+\o

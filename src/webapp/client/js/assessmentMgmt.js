@@ -70,6 +70,7 @@ var assessOrginInfo = {
 };
 
 $(document).ready(function() {
+
 	$('select').material_select(); //load dropdown boxes
 
 	$('#dbInfoBox').collapsible({
@@ -94,9 +95,15 @@ $(document).ready(function() {
 		var assessType = $('#typeInput').val();
 		var assessWeight = $('#weightInput').val();
 		var assessDescription = $('#descriptionInput').val();
-		insertNewAssessType(dbInfo, sectionID, assessType, assessWeight, assessDescription);
-		// repopulate Assessment Types
-		popAssessmentTypes(dbInfo, sectionID);
+
+          if(assessType == "" || assessWeight == "" || assessDescription == ""){
+               showAlert('<p>One or more fields are empty</p>');
+          }
+          else{
+               insertNewAssessType(dbInfo, sectionID, assessType, assessWeight, assessDescription);
+		     // repopulate Assessment Types
+		     popAssessmentTypes(dbInfo, sectionID);
+          }
 	});
 
 	$('#assessmentTypeSelect').change(function() {
@@ -118,10 +125,17 @@ $(document).ready(function() {
 		var extraPoints = $('#extraCreditPointsInput').val();
 		var assignedDate = $('#assignedDateInput').val();
 		var dueDate = $('#dueDateInput').val();
-		insertNewAssessItem(dbInfo, assessID, basePoints, extraPoints, assignedDate,
-		dueDate);
-		// repopulate Assessment Items
-		popAssessmentItems(dbInfo, sectionID, assessID);
+
+          if(assessID == "" || basePoints == "" || extraPoints == ""
+                         || assignedDate == "" || dueDate == ""){
+               showAlert("<p>One or more fields are empty</p>");
+          }
+          else{
+
+		      insertNewAssessItem(dbInfo, assessID, basePoints, extraPoints, assignedDate, dueDate);
+		      // repopulate Assessment Items
+		      popAssessmentItems(dbInfo, sectionID, assessID);
+           }
 	});
 
 	$('#btnCloseItemFields').click(function() {
@@ -134,9 +148,14 @@ $(document).ready(function() {
 		var assessType = $('#typeInput').val();
 		var assessWeight = $('#weightInput').val();
 		var assessDescription = $('#descriptionInput').val();
-		updateAssessType(dbInfo, assessID, assessType, assessWeight, assessDescription);
-		// repopulate Assessment Types
-		popAssessmentTypes(dbInfo, sectionID);
+          if(assessID == "" || assessType == "" || assessWeight == "" || assessDescription == ""){
+               showAlert("<p>One or more fields are empty</p>");
+          }
+          else{
+		     updateAssessType(dbInfo, assessID, assessType, assessWeight, assessDescription);
+		     // repopulate Assessment Types
+	          popAssessmentTypes(dbInfo, sectionID);
+          }
 	});
 
 	$('#btnDeleteAssessType').click(function() {
@@ -151,11 +170,11 @@ $(document).ready(function() {
 	$('#btnConfirm').click(function(event) {
 		var assessID = $('#assessmentTypeSelect').val();
 		deleteAssessType(dbInfo, assessID);
-
 		popAssessmentTypes(dbInfo, sectionID);
 		$('#typeInput').val(null);
 		$('#weightInput').val(null);
 		$('#description').val(null);
+          window.location.reload();
 	});
 
 	$("#assessmentItemTable").on('click', "a[id^='getForUpdate']", function() {
@@ -214,7 +233,7 @@ $(document).ready(function() {
 		tr.find('#curve').html(assessOrginInfo.curve);
 	});
 
-	$('#logout').click(function() {
+	$('#btnLogout').click(function() {
 		dbInfo = null;
 		instInfo = null;
 		setYears(null); //reset Attendance dropdowns
@@ -312,12 +331,14 @@ function insertNewAssessType(connInfo, sectionid, componenttype, weight, descrip
 		dataType: 'json',
 		data: urlParams,
 		success: function(result) {
+               showAlert("<p>Sucessfully added the assessment type</p>");
 			console.log(result.rowCount + " rows added");
 		},
 		error: function(result) {
-			showAlert('<p>Error while inserting assessment type</p>');
+               showAlert("<p>Error adding the assessment type</p>");
 			console.log(result);
 		}
+
 	});
 };
 
@@ -345,6 +366,7 @@ function updateAssessType(connInfo, assessid, componenttype, weight, description
 		dataType: 'json',
 		data: urlParams,
 		success: function(result) {
+               showAlert('<p>Sucessfully updated assessment type</p>');
 			console.log(result.rowCount + " rows updated");
 		},
 		error: function(result) {

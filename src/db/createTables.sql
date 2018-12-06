@@ -4,9 +4,8 @@
 --Data Science & Systems Lab (DASSL)
 --Western Connecticut State University (WCSU)
 
---Edited by Team DOS: Kyle Bella, Kenneth Kozlowski, Joe Tether
---Edited for CS305-71
---Date of Revision: 10/31/2018
+--Edited By Team DOS - Fall 2018 CS305-71
+-- Kyle Bella, Kenneth Kozlowski, Joe Tether
 
 --(C) 2017- DASSL. ALL RIGHTS RESERVED.
 --Licensed to others under CC 4.0 BY-SA-NC
@@ -27,15 +26,15 @@
 --This script assumes a schema named "Gradebook" already exists and is empty
 
 --Spool results to a file in the current directory
---\o spoolCreateTables.txt
+\o spoolCreateTables.txt
 
 --Echo time, date and user/server/DB info
---\qecho -n 'Script run on '
---\qecho -n `date /t`
---\qecho -n 'at '
---\qecho `time /t`
---\qecho -n 'Script run by ' :USER ' on server ' :HOST ' with db ' :DBNAME
---\qecho ' '
+\qecho -n 'Script run on '
+\qecho -n `date /t`
+\qecho -n 'at '
+\qecho `time /t`
+\qecho -n 'Script run by ' :USER ' on server ' :HOST ' with db ' :DBNAME
+\qecho ' '
 
 
 CREATE TABLE Course
@@ -292,7 +291,7 @@ CREATE TABLE AssessmentComponent
 (
    ID SERIAL NOT NULL PRIMARY KEY,
    Section INT NOT NULL REFERENCES Section(ID),
-   Type VARCHAR NOT NULL, --"Assignment", "Quiz", "Exam",...
+   ComponentType VARCHAR NOT NULL, --"Assignment", "Quiz", "Exam",...
    Weight NUMERIC(5,2) NOT NULL
         --allowing weight 0 allows graded assignments with no weight
         --e.g. graded feedback on practice
@@ -358,4 +357,4 @@ GRANT SELECT, UPDATE, INSERT, DELETE ON Submission TO Instructor;
 
 
 --turn spooling off
---\o
+\o

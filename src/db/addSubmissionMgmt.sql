@@ -1,14 +1,26 @@
 --addSubmissionMgmt.sql - GradeBook
 
---Team DOS: Kyle Bella, Kenneth Kozlowski, Joe Tether
---Created for CS305-71
---Date of Revision: 11/8/2018
+--Created By Team DOS - Fall 2018 CS305-71
+-- Kyle Bella, Kenneth Kozlowski, Joe Tether
+
 
 --this script creates the functions used by Team DOS's Gradebook
 --implements management features for Submissions
 --This includes: reading, deleting, updating
 
+--Spool results to a file in the current directory
+\o spoolAddSubmissionMgmt.txt
+
+--Echo time, date and user/server/DB info
+\qecho -n 'Script run on '
+\qecho -n `date /t`
+\qecho -n 'at '
+\qecho `time /t`
+\qecho -n 'Script run by ' :USER ' on server ' :HOST ' with db ' :DBNAME
+\qecho ' '
+
 --------------------------------------------------------------------------------
+DROP FUNCTION IF EXISTS CreateSubmission(INT, INT, INT, INT, NUMERIC, NUMERIC, DATE, NUMERIC, VARCHAR);
 --Insert a submission into the database
 CREATE OR REPLACE FUNCTION CreateSubmission(Student INT, Section INT,
                                             Component INT, SequenceInComponent INT,
@@ -34,6 +46,7 @@ $$ LANGUAGE plpgsql
    SECURITY INVOKER;
 
 --------------------------------------------------------------------------------
+DROP FUNCTION IF EXISTS removeSubmission(INT, INT, INT, INT);
 --remove a submission where the Student, Section, Component, and SequenceInComponent
 --are all a match for the given parameters
 CREATE OR REPLACE FUNCTION removeSubmission(StudentID INT, SectionID INT, ComponentID INT,
@@ -55,6 +68,7 @@ $$ LANGUAGE plpgsql
     SECURITY INVOKER;
 
 --------------------------------------------------------------------------------
+DROP FUNCTION IF EXISTS getSubmission(INT, INT, INT, INT);
 --This function returns one instance of submission, where the given StudentID, SectionID
 --AssessmentComponentID, and SequenceInComponent match the values of that instance
 CREATE OR REPLACE FUNCTION getSubmission(StudentID INT, SectionID INT, ComponentID INT,
@@ -81,6 +95,7 @@ $$ LANGUAGE plpgsql
     SECURITY INVOKER;
 
 --------------------------------------------------------------------------------
+DROP FUNCTION IF EXISTS updateSubmission(INT, INT, INT, INT, NUMERIC, NUMERIC, DATE, NUMERIC, VARCHAR);
 --Takes 6 parameters, one for each attribute of Submission
 --The first four paramters, Student, Section, Component and SequenceInComponent, form the PK
 -- of the Submission to update
@@ -116,3 +131,5 @@ $$ LANGUAGE plpgsql
     STABLE
     CALLED ON NULL INPUT
     SECURITY INVOKER;
+
+\o

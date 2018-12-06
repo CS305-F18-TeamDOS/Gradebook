@@ -3,6 +3,9 @@
 --Andrew Figueroa, Steven Rollo, Sean Murthy
 --Data Science & Systems Lab (DASSL), Western Connecticut State University (WCSU)
 
+--Edited By Team DOS - Fall 2018 CS305-71
+-- Kyle Bella, Kenneth Kozlowski, Joe Tether
+
 --(C) 2017- DASSL. ALL RIGHTS RESERVED.
 --Licensed to others under CC 4.0 BY-SA-NC
 --https://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -10,7 +13,7 @@
 --PROVIDED AS IS. NO WARRANTIES EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
 
 --This script creates app-specific roles and users
--- roles created: Gradebook; users created: GB_WebApp;
+-- roles created: Gradebook, Instructor, Student; users created: GB_WebApp;
 -- makes GB_WebApp a member of the Gradebook role as a temporary measure until
 -- roles and policies are finalized
 
@@ -21,6 +24,17 @@
 -- stored
 
 --This script should be run by a superuser
+
+--Spool results to a file in the current directory
+\o spoolPrepareServer.txt
+
+--Echo time, date and user/server/DB info
+\qecho -n 'Script run on '
+\qecho -n `date /t`
+\qecho -n 'at '
+\qecho `time /t`
+\qecho -n 'Script run by ' :USER ' on server ' :HOST ' with db ' :DBNAME
+\qecho ' '
 
 
 START TRANSACTION;
@@ -93,3 +107,4 @@ END
 $$;
 
 COMMIT;
+\o

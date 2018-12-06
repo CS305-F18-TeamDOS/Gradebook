@@ -45,14 +45,12 @@ Date of Last Revision: December 3, 2018
       				This list will be the post-login navigation bar.
       				-->
      				<ul id="nav-mobile" class="right hide-on-med-and-down">
-     					<li><a href="viewStudentGradesForm.html">View/Assign Grades</a></li>
+     				<li><a href="viewStudentGradesForm.html">View/Assign Grades</a></li>
         				<li><a href="ManageAssessmentTypesForm.html">Manage Assessments</a></li>
-        				<li><a href="changeLog.html">Manage Grade Tiers</a></li>
-        				<li><a hfref="login.html">Logout</a></li>
+        				<li><a href = "login.html" id="btnLogout">Logout</a></li>
       				</ul>
     	    		</div>
     		</nav><!--End of the Header Navigation -->
-
 
     		<div class="container">
 		    <div class="section">
@@ -70,27 +68,25 @@ Date of Last Revision: December 3, 2018
 			<div class="row">
 				<div class="input-field col s12 m6 l3">
 					<i class="material-icons prefix">mode_edit</i>
-					<input id="typeInput" type="text"/>
-					<label for="typeInput">Type</label>
+					<input id="typeInput"/>
+					<label for="typeInput" class = "active">Type</label>
 					</div>
 					<div class="input-field col s12 m6 l3">
-						<i class="material-icons prefix">mode_edit</i>
-						<input id="weightInput" type="text"/>
-						<label for="weightInput">Weight</label>
+						<input id="weightInput"/>
+						<label for="weightInput" class = "active">Weight</label>
 					</div>
 					<div class="input-field col s12 m6 l3">
-						<!--<i class="material-icons prefix">mode_edit</i>-->
-						<textarea id="descriptionInput" class="materialize-textarea"></textarea>
-						<label for="descriptionInput">Description</label>
+						<input id="descriptionInput"></input>
+						<label for="descriptionInput" class = "active">&nbsp;&nbsp;Description</label>
 					</div>
 				</div>
 			</div>
-		    	<br>
+
 		  	<a id="btnAddAssessType" class="waves-effect waves-light btn">Add Type</a>
 	     		<a id="btnChangeAssessType" class="waves-effect waves-light btn" style="display : none">Update Type</a>
 	        	<a id="btnDeleteAssessType" class="waves-effect waves-light btn" style="display : none">Delete Type</a>
- 	            	<div class="divider"></div>
 
+			<hr>
 
 		   		<div>
 					<table id="assessmentItemTable">
@@ -98,39 +94,47 @@ Date of Last Revision: December 3, 2018
 					</table>
 					<table>
 						<tr>
-							<td id="newItem" colspan="6">
+							<td id="newItem" colspan="6" style = "display : none">
 								<a id="getFields" class="waves-effect waves-light btn">Add Item</a>
 							</td>
 							<td id="newItemSubmit" style="display : none">
 								<a id="btnAddAssessItem" class="waves-effect waves-light btn">Submit</a>
 								<a id="btnCloseItemFields" class="waves-effect waves-light btn">Close</a>
+								<br><br>
 							</td>
 							<td id="newItemBasePoints" style="display : none" class="input-field col s12 m6 l3">
-								<input id="basePointsInput" value="" />
-								<label for="basePointsInput">Base Points</label>
+								<input id="basePointsInput" value=""/>
+								<label for="basePointsInput" class="active">Base&nbsp;Points</label>
 							</td>
 							<td id="newItemExtraPoints" style="display : none" class="input-field col s12 m6 l3">
-								<input id="extraCreditPointsInput" value="" />
-								<label for="extraCreditPointsInput">Extra Credit Points</label>
+								<input id="extraCreditPointsInput" value=""/>
+								<label for="extraCreditPointsInput" class="active">Extra&nbsp;Credit&nbsp;Points</label>
 							</td>
 							<td id="newItemAssignedDate" style="display : none" class="input-field col s12 m6 l3">
-								<input id="assignedDateInput" value="" />
-								<label for="assignedDateInput">Date Assigned</label>
+								<input id="assignedDateInput" type = "date"/>
+								<label for="assignedDateInput" class = "active">Date&nbsp;Assigned</label>
 							</td>
 							<td id="newItemDueDate" style="display : none" class="input-field col s12 m6 l3">
-								<input id="dueDateInput" value="" />
-								<label for="dueDateInput">Date Due</label>
+								<input id="dueDateInput" value="" type = "date" />
+								<label for="dueDateInput" class="active">Date&nbsp;Due</label>
 							</td>
 						</tr>
 					</table>
 				</div>
 
 
-				<!--Generic confirm used by showConfirm() in index.js-->
+				<!--Generic alert used by showConfirm() in index.js-->
+				<div id="msg-genericAlert" class="modal">
+					<div id="genericAlertBody" class="modal-content"></div>
+						<div class="modal-footer">
+							<a href="#!" class="modal-action modal-close waves-effect waves-gray btn-flat">OK</a>
+						</div>
+					</div>
+				</div>
 				<div id="msg-genericConfirm" class="modal">
 					<div id="genericConfirmBody" class="modal-content"></div>
 						<div class="modal-footer">
-							<a id="btnConfirm" href="#!" class="modal-action modal-close waves-effect waves-gray btn-flat" onclick=>Confirm</a>
+							<a href="#!" id="btnConfirm" class="modal-action modal-close waves-effect waves-gray btn-flat">Confirm</a>
 							<a href="#!" class="modal-action modal-close waves-effect waves-gray btn-flat">Cancel</a>
 						</div>
 					</div>
