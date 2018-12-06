@@ -27,13 +27,13 @@ Date of Last Revision: December 4, 2018
 	  	<!--Import Materialize framework - Learn more: http://materializecss.com/-->
 	 	<link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
 	</head>
-	
-	
+
+
 	<body>
 		 <nav>
     			<div class="nav-wrapper">
       				<a href="#" class="brand-logo"> Gradebook - Sample Institution</a>
-      			
+
       				<!--
       				This list will be the post-login navigation bar.
       				-->
@@ -44,14 +44,14 @@ Date of Last Revision: December 4, 2018
       				</ul>
     	  		</div>
     		</nav><!--End of the Header Navigation -->
-    	
-    	
-    		<div class="container"> 
-		    	<div class="section"> 
-				
+
+
+    		<div class="container">
+		    	<div class="section">
+
 				<h2 class="center-align"><u>Manage Student Grades</u></h2>
 				<br><br>
-		    
+
 		    		<div class="row">
                     			<div class="input-field col s12">
                         			<select id="assessmentItemSelect" disabled="true">
@@ -60,7 +60,7 @@ Date of Last Revision: December 4, 2018
                         			<label>Assessment Item</label>
                     			</div>
 					</div>
-					
+
 					<div class="row">
                    		<div class="input-field col s12 m6 l3">
                        		<select id="studentSelect" disabled="true">
@@ -70,35 +70,35 @@ Date of Last Revision: December 4, 2018
                     	</div>
 						<div class="input-field col s12 m6 l3">
 							<i class="material-icons prefix">mode_edit</i>
-								<input id="basePointsEarnedInput" type="text"/>
-								<label for="typeInput">Base Points Earned</label>
+								<input id="basePointsEarnedInput" type="text" disabled="true"/>
+								<label for="basePointsEarnedInput">Base Points Earned</label>
 							</div>
 							<div class="input-field col s12 m6 l3">
 								<i class="material-icons prefix">mode_edit</i>
-								<input id="extraCreditPointsEarned" type="text"/>
-								<label for="weightInput">Extra Credit Points Earned</label>
+								<input id="extraCreditPointsEarnedInput" type="text" disabled="true"/>
+								<label for="extraCreditPointsEarnedInput">Extra Credit Points Earned</label>
 							</div>
 							<div class="input-field col s12 m6 l3">
 								<i class="material-icons prefix">mode_edit</i>
-								<textarea id="submissionDateInput" class="materialize-textarea"></textarea>
-								<label for="descriptionInput">Submission Date</label>
+								<input id="submissionDateInput" class="text" disabled="true"/>
+								<label for="submissionDateInput">Submission Date</label>
 							</div>
 							<div class="input-field col s12 m6 l3">
 								<i class="material-icons prefix">mode_edit</i>
-								<textarea id="penaltyInput" class="materialize-textarea"></textarea>
-								<label for="descriptionInput">Penalty</label>
+								<input id="penaltyInput" class="text" disabled="true"/>
+								<label for="penaltyInput">Penalty</label>
 							</div>
 							<div class="input-field col s12 m6 l3">
 								<i class="material-icons prefix">mode_edit</i>
-								<textarea id="instructorNotesInput" class="materialize-textarea"></textarea>
-								<label for="descriptionInput">Notes</label>
+								<textarea id="instructorNotesInput" class="materialize-textarea" disabled="true"></textarea>
+								<label for="instructorNotesInput">Notes</label>
 							</div>
 					</div>
 					<br>
 		  			<a id="btnAddSubmission" class="waves-effect waves-light btn">Add Submission</a>
 		        	<a id="btnEditSubmission" class="waves-effect waves-light btn" style="display : none">Update Submission</a>
 		        	<a id="btnDeleteSubmission" class="waves-effect waves-light btn" style="display : none">Delete Submission</a>
-					
+
 					 <div class="divider"></div>
 
 
@@ -107,7 +107,7 @@ Date of Last Revision: December 4, 2018
 						<!--Populated dynamically-->
 						</table>
 					</div>
-					
+
 		    		<!--Generic confirm used by showConfirm() in index.js-->
 					<div id="msg-genericConfirm" class="modal">
 						<div id="genericConfirmBody" class="modal-content"></div>
@@ -119,9 +119,9 @@ Date of Last Revision: December 4, 2018
 		    	</div><!--End section div-->
 		</div><!--End container div-->
 	</body>
-	
+
 	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 	<script type="text/javascript" src="../js/materialize.min.js"></script>
-	<!--TODO: Add in the script for the individual file's Javascript needs here-->
-	
+	<script type="text/javascript" src="../js/manageStudentGrades.js"></script>
+
 </html><!--End of document-->

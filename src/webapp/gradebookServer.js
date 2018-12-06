@@ -159,12 +159,12 @@ app.get('/manageAssessments.html', function(request, response) {
 });
 
 //Loads the Manage Student Grades Form Page
-app.get('/manageAssessments.html', function(request, response) {
+app.get('/manageStudentGradesForm.html', function(request, response) {
    response.sendFile('client/html/manageStudentGradesForm.html', {root: __dirname});
 });
 
 //Loads the Manage Student Grades Page
-app.get('/manageAssessments.html', function(request, response) {
+app.get('/manageStudentGrades.html', function(request, response) {
    response.sendFile('client/html/manageStudentGrades.html', {root: __dirname});
 });
 
@@ -187,6 +187,14 @@ app.get('/js/assessmentTypeMgmt.js', function(request, response) {
 
 app.get('/js/assessmentMgmt.js', function(request, response) {
   response.sendFile('client/js/assessmentMgmt.js', {root: __dirname});
+});
+
+app.get('/js/viewStudentGrades.js', function(request, response) {
+  response.sendFile('client/js/viewStudentGrades.js', {root: __dirname});
+});
+
+app.get('/js/manageStudentGrades.js', function(request, response) {
+  response.sendFile('client/js/manageStudentGrades.js', {root: __dirname});
 });
 
 //Returns instructor id and name from a provided email.
@@ -493,7 +501,6 @@ app.get('/assessmentTypes', function(request, response) {
    });
 });
 
-//need to be restructured
 app.get('/assessmentItems', function(request, response){
   //Connnection parameters for the Postgres client recieved in the request
   var config = createConnectionParams(request.query.user, request.query.database,
@@ -572,6 +579,116 @@ app.get('/assessmentItems', function(request, response){
   });
 });
 
+app.get('/assessmentItemsForSubmission', function(request, response){
+  //Connnection parameters for the Postgres client recieved in the request
+  var config = createConnectionParams(request.query.user, request.query.database,
+     request.query.password, request.query.host, request.query.port);
+
+  var sectionID = request.query.sectionid;
+  var componentID = request.query.assessid;
+
+  queryText = "SELECT SequenceInComponent FROM getAssessmentItemsFromComponent($1);";
+  console.log(queryParams);
+
+  var queryParams = [componentID];
+
+  executeQuery(response, config, queryText, queryParams, function(result) {
+    var assessItems = [];
+    if (result.rows.length == 0)
+    {
+      response.status(500).send('500 - No Assessment Items');
+    }
+    else {
+      for(row in result.rows) {
+         assessItems.push(
+            {
+               "sequenceincomponent": result.rows[row].sequenceincomponent
+            }
+         );
+      }
+      var jsonReturn = {
+         "assessItems": assessItems
+      };
+      response.send(JSON.stringify(jsonReturn));
+    }
+  });
+});
+
+app.get('/enrollees', function(request, response){
+  //Connnection parameters for the Postgres client recieved in the request
+  var config = createConnectionParams(request.query.user, request.query.database,
+     request.query.password, request.query.host, request.query.port);
+
+  var sectionID = request.query.sectionid;
+
+  queryText = "SELECT Student FROM Enrollee WHERE Section = $1;";
+  console.log(queryParams);
+
+  var queryParams = [sectionID];
+
+  executeQuery(response, config, queryText, queryParams, function(result) {
+    console.log(result);
+    var enrollees = [];
+    if (result.rows.length == 0)
+    {
+      response.status(500).send('500 - No Enrollees');
+    }
+    else {
+      for(row in result.rows) {
+         enrollees.push(
+            {
+               "student": result.rows[row].student
+            }
+         );
+      }
+      var jsonReturn = {
+         "enrollees": enrollees
+      };
+      response.send(JSON.stringify(jsonReturn));
+    }
+  });
+});
+
+app.get('/submission', function(request, response){
+  //Connnection parameters for the Postgres client recieved in the request
+  var config = createConnectionParams(request.query.user, request.query.database,
+     request.query.password, request.query.host, request.query.port);
+
+  var sectionID = request.query.sectionid;
+  console.log(sectionID);
+  var enrollee = request.query.enrollee;
+  console.log(enrollee);
+  var assessID = request.query.assessid;
+  console.log(assessID);
+  var sequenceInComponent = request.query.sequenceincomponent;
+  console.log(sequenceInComponent);
+
+  queryText = "SELECT BasePointsEarned, ExtraCreditPointsEarned, SubmissionDate, " +
+  "Penalty, InstructorNote FROM getSubmission($1, $2, $3, $4);";
+  console.log(queryParams);
+
+  var queryParams = [enrollee, sectionID, assessID, sequenceInComponent];
+
+  executeQuery(response, config, queryText, queryParams, function(result) {
+      var jsonReturn = {
+         "basepointsearned": null,
+         "extracreditpointsearned": null,
+         "submissiondate": null,
+         "penalty": null,
+         "instructornote": null
+      };
+      if (result.rows.length != 0)
+      {
+        jsonReturn.basepointsearned = result.rows[0].basepointsearned,
+        jsonReturn.extracreditpointsearned = result.rows[0].extracreditpointsearned,
+        jsonReturn.submissiondate = result.rows[0].submissiondate,
+        jsonReturn.penalty = result.rows[0].penalty,
+        jsonReturn.instructornote = result.rows[0].instructornote
+      }
+      response.send(JSON.stringify(jsonReturn));
+  });
+});
+
 app.get('/assessmentTypesInsert', function(request, response) {
    //Connnection parameters for the Postgres client recieved in the request
    var config = createConnectionParams(request.query.user, request.query.database,
@@ -646,6 +763,41 @@ app.get('/assessmentItemsInsert', function(request, response) {
       }
     });
   });
+});
+
+app.get('/submissionInsert', function(request, response) {
+   //Connnection parameters for the Postgres client recieved in the request
+   var config = createConnectionParams(request.query.user, request.query.database,
+      request.query.password, request.query.host, request.query.port);
+
+   var sectionID = request.query.sectionid;
+   var assessID = request.query.assessid;
+   var enrollee = request.query.enrollee;
+   var sequenceInComponent = request.query.sequenceincomponent;
+   var basePointsEarned = parseFloat(request.query.basepointsearned);
+   var extraCreditPointsEarned = parseFloat(request.query.extracreditpointsearned);
+   var submissionDate = new Date(request.query.submissiondate);
+   var penalty = parseFloat(request.query.penalty);
+   var instructorNote = request.query.instructornote;
+
+   var queryText = 'SELECT CreateSubmission($1, $2, $3, $4, $5, $6, $7, $8, $9);';
+   var queryParams = [enrollee, sectionID, assessID, sequenceInComponent,
+                      basePointsEarned, extraCreditPointsEarned, submissionDate,
+                      penalty, instructorNote];
+
+   executeQuery(response, config, queryText, queryParams, function(result) {
+      console.log(result);
+      if (result.rowCount == 0)
+      {
+        response.status(500).send('500 - Insert Failed');
+      }
+      else {
+        var jsonReturn = {
+           "rowCount": result.rowCount
+        };
+        response.send(JSON.stringify(jsonReturn));
+      }
+   });
 });
 
 app.get('/assessmentTypesUpdate', function(request, response) {
@@ -729,6 +881,41 @@ app.get('/assessmentItemsUpdate', function(request, response) {
   });
 });
 
+app.get('/submissionUpdate', function(request, response) {
+   //Connnection parameters for the Postgres client recieved in the request
+   var config = createConnectionParams(request.query.user, request.query.database,
+      request.query.password, request.query.host, request.query.port);
+
+   var sectionID = request.query.sectionid;
+   var assessID = request.query.assessid;
+   var enrollee = request.query.enrollee;
+   var sequenceInComponent = request.query.sequenceincomponent;
+   var basePointsEarned = parseFloat(request.query.basepointsearned);
+   var extraCreditPointsEarned = parseFloat(request.query.extracreditpointsearned);
+   var submissionDate = new Date(request.query.submissiondate);
+   var penalty = parseFloat(request.query.penalty);
+   var instructorNote = request.query.instructornote;
+
+   var queryText = 'SELECT updateSubmission($1, $2, $3, $4, $5, $6, $7, $8, $9);';
+   var queryParams = [enrollee, sectionID, assessID, sequenceInComponent,
+                      basePointsEarned, extraCreditPointsEarned, submissionDate,
+                      penalty, instructorNote];
+
+   executeQuery(response, config, queryText, queryParams, function(result) {
+      console.log(result);
+      if (result.rowCount == 0)
+      {
+        response.status(500).send('500 - Update Failed');
+      }
+      else {
+        var jsonReturn = {
+           "rowCount": result.rowCount
+        };
+        response.send(JSON.stringify(jsonReturn));
+      }
+   });
+});
+
 app.get('/assessmentTypesDelete', function(request, response) {
   //Connnection parameters for the Postgres client recieved in the request
   var config = createConnectionParams(request.query.user, request.query.database,
@@ -779,6 +966,34 @@ app.get('/assessmentItemsDelete', function(request, response) {
       response.send(JSON.stringify(jsonReturn));
     }
   });
+});
+
+app.get('/submissionDelete', function(request, response) {
+   //Connnection parameters for the Postgres client recieved in the request
+   var config = createConnectionParams(request.query.user, request.query.database,
+      request.query.password, request.query.host, request.query.port);
+
+   var sectionID = request.query.sectionid;
+   var assessID = request.query.assessid;
+   var enrollee = request.query.enrollee;
+   var sequenceInComponent = request.query.sequenceincomponent;
+
+   var queryText = 'SELECT removeSubmission($1, $2, $3, $4);';
+   var queryParams = [enrollee, sectionID, assessID, sequenceInComponent];
+
+   executeQuery(response, config, queryText, queryParams, function(result) {
+      console.log(result);
+      if (result.rowCount == 0)
+      {
+        response.status(500).send('500 - Delete Failed');
+      }
+      else {
+        var jsonReturn = {
+           "rowCount": result.rowCount
+        };
+        response.send(JSON.stringify(jsonReturn));
+      }
+   });
 });
 
 app.use(function(err, req, res, next){

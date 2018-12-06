@@ -69,13 +69,11 @@ RETURNS TABLE
 )
 AS
 $$
-BEGIN
 
   SELECT BasePointsEarned, ExtraCreditPointsEarned, SubmissionDate, Penalty, InstructorNote
-  FROM Submission WHERE Submission.Student = $1 AND Submission.SectionID = $2 AND
+  FROM Submission WHERE Submission.Student = $1 AND Submission.Section = $2 AND
                         Submission.Component = $3 AND Submission.SequenceInComponent = $4;
-END
-$$ LANGUAGE plpgsql
+$$ LANGUAGE sql
     STABLE
     RETURNS NULL ON NULL INPUT
     SECURITY INVOKER;
@@ -100,12 +98,12 @@ DECLARE
 BEGIN
 
   UPDATE Submission
-  SET    Submission.BasePointsEarned = $5,
-         Submission.ExtraCreditPointsEarned = $6,
-         Submission.SubmissionDate = $7,
-         Submission.Penatly = $8,
-         Submission.InstructorNote = $9
-  WHERE Submission.Student = $1 AND Submission.SectionID = $2 AND
+  SET    BasePointsEarned = $5,
+         ExtraCreditPointsEarned = $6,
+         SubmissionDate = $7,
+         Penalty = $8,
+         InstructorNote = $9
+  WHERE Submission.Student = $1 AND Submission.Section = $2 AND
         Submission.Component = $3 AND Submission.SequenceInComponent = $4;
   GET DIAGNOSTICS affectedRowCount = ROW_COUNT;
 
@@ -113,6 +111,6 @@ BEGIN
 
 END;
 $$ LANGUAGE plpgsql
-    STABLE
+    VOLATILE
     CALLED ON NULL INPUT
     SECURITY INVOKER;
