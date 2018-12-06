@@ -1,8 +1,8 @@
 --addSubmissionMgmt.sql - GradeBook
 
---Team DOS: Kyle Bella, Kenneth Kozlowski, Joe Tether
---Created for CS305-71
---Date of Revision: 11/8/2018
+--Created By Team DOS - Fall 2018 CS305-71
+-- Kyle Bella, Kenneth Kowlozski, Joe Tether
+
 
 --this script creates the functions used by Team DOS's Gradebook
 --implements management features for Submissions

@@ -1,11 +1,14 @@
 --addTableConstraintFunctions.sql - GradeBook
 
---Team DOS: Kyle Bella, Kenneth Kozlowski, Joe Tether
---Created for CS305-71
---Date of Revision: 11/14/2018
+--Created By Team DOS - Fall 2018 CS305-71
+-- Kyle Bella, Kenneth Kowlozski, Joe Tether
 
---this script creates the functions used by Team DOS's
---Gradebook tables that require functions in their CHECK constraint
+
+--this script creates the functions used by Gradebook table constraints
+--currently the only table with a constraint function is AssessmentItem
+
+--This script should be run before createTables.sql, so that the
+--constraint functions will be available for function creation
 
 --Spool results to a file in the current directory
 \o spoolAddTableConstraintFunctions.txt

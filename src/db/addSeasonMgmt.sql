@@ -3,6 +3,9 @@
 --Sean Murthy
 --Data Science & Systems Lab (DASSL), Western Connecticut State University (WCSU)
 
+--Edited By Team DOS - Fall 2018 CS305-71
+-- Kyle Bella, Kenneth Kowlozski, Joe Tether
+
 --(C) 2017- DASSL. ALL RIGHTS RESERVED.
 --Licensed to others under CC 4.0 BY-SA-NC
 --https://creativecommons.org/licenses/by-nc-sa/4.0/

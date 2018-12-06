@@ -4,9 +4,8 @@
 --Data Science & Systems Lab (DASSL)
 --Western Connecticut State University (WCSU)
 
---Edited by Team DOS: Kyle Bella, Kenneth Kozlowski, Joe Tether
---Edited for CS305-71
---Date of Revision: 10/31/2018
+--Edited By Team DOS - Fall 2018 CS305-71
+-- Kyle Bella, Kenneth Kowlozski, Joe Tether
 
 --(C) 2017- DASSL. ALL RIGHTS RESERVED.
 --Licensed to others under CC 4.0 BY-SA-NC
