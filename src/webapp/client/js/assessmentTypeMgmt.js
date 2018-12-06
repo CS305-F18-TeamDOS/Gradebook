@@ -247,7 +247,7 @@ $(document).ready(function() {
 		tr.find('#curve').html(assessOrginInfo.curve);
 	});
 
-	$('#logout').click(function() {
+	$('#btnLogout').click(function() {
 		dbInfo = null;
 		instInfo = null;
 		setYears(null); //reset Attendance dropdowns
