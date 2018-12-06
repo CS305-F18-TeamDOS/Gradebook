@@ -9,17 +9,18 @@
 --This includes: reading, deleting, updating
 
 --------------------------------------------------------------------------------
+DROP FUNCTION IF EXISTS createAssessmentComponent(INT, VARCHAR, NUMERIC(5,2), VARCHAR, INT);
 --This function inserts a new AssessmentComponent with the given parameters
 --as values to insert
 CREATE OR REPLACE FUNCTION createAssessmentComponent(
-                            Section INT, Type VARCHAR, Weight NUMERIC(5,2),
+                            Section INT, ComponentType VARCHAR, Weight NUMERIC(5,2),
                             Description VARCHAR, NumItems INT)
 RETURNS BOOLEAN AS
 $$
 BEGIN
 
   --insert given parameters into AssessmentComponent
-  INSERT INTO AssessmentComponent(Section, Type, Weight, Description, NumItems)
+  INSERT INTO AssessmentComponent(Section, ComponentType, Weight, Description, NumItems)
   VALUES ($1, $2, $3, $4, $5);
 
   RETURN TRUE;
@@ -32,6 +33,7 @@ LANGUAGE plpgsql
   SECURITY INVOKER;
 
 --------------------------------------------------------------------------------
+DROP FUNCTION IF EXISTS removeAssessmentComponent(INT);
 --Deletes the AssessmentComponent with an ID == the input value
 --First, must delete all tables with the ComponentToDelete as a foreign key
 --begins by deleting all Sumbissions with a foreign key to the ComponentToDelete
@@ -63,13 +65,14 @@ $$ LANGUAGE plpgsql
    SECURITY INVOKER;
 
 --------------------------------------------------------------------------------
+DROP FUNCTION IF EXISTS getAssessmentComponent(INT);
 --This functions returns a 1 row table containing an AssessmentComponent
 --When given a single parameter, which is a ComponentID
 CREATE OR REPLACE FUNCTION getAssessmentComponent(ComponentID INT)
 RETURNS TABLE
 (
   Section INT,
-  Type VARCHAR,
+  ComponentType VARCHAR,
   Weight NUMERIC(5,2),
   Description VARCHAR,
   NumItems INT
@@ -77,7 +80,7 @@ RETURNS TABLE
 AS
 $$
 
-      SELECT  Section, Type, Weight, Description, NumItems
+      SELECT  Section, ComponentType, Weight, Description, NumItems
       FROM AssessmentComponent
       WHERE AssessmentComponent.ID = $1;
 
@@ -88,13 +91,14 @@ $$ LANGUAGE sql
     SECURITY INVOKER;
 
 --------------------------------------------------------------------------------
+DROP FUNCTION IF EXISTS getAssessmentComponentsFromSection(INT);
 --This functions returns a table containing each AssessmentComponent
 --with a Section == the given parameter
 CREATE OR REPLACE FUNCTION getAssessmentComponentsFromSection(SectionID INT)
 RETURNS TABLE
 (
   ID INT,
-  Type VARCHAR,
+  ComponentType VARCHAR,
   Weight NUMERIC(5,2),
   Description VARCHAR,
   NumItems INT
@@ -102,7 +106,7 @@ RETURNS TABLE
 AS
 $$
 
-      SELECT  ID, Type, Weight, Description, NumItems
+      SELECT  ID, ComponentType, Weight, Description, NumItems
       FROM AssessmentComponent
       WHERE AssessmentComponent.Section = $1;
 
@@ -112,12 +116,13 @@ $$ LANGUAGE sql
     SECURITY INVOKER;
 
 --------------------------------------------------------------------------------
+DROP FUNCTION IF EXISTS updateAssessmentComponent(INT, VARCHAR, NUMERIC(5, 2), VARCHAR, INT);
 --Takes 5 parameters, one for each attribute of AssessmentComponent
 --The first paramter, ID, is the ID of the Component to update
 --The other parameters are updated attrbiute values
---Any NULL input for Type, Weight, or NumItems will be ignored as they do no allow NULL
+--Any NULL input for ComponentType, Weight, or NumItems will be ignored as they do no allow NULL
 --Decription allows a change to a NULL input, as per the table's definition
-CREATE OR REPLACE FUNCTION updateAssessmentComponent(ComponentID INT, Type VARCHAR,
+CREATE OR REPLACE FUNCTION updateAssessmentComponent(ComponentID INT, Component VARCHAR,
                                                      Weight NUMERIC(5, 2),
                                                     Description VARCHAR, NumItems INT)
 RETURNS INTEGER AS

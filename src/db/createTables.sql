@@ -292,7 +292,7 @@ CREATE TABLE AssessmentComponent
 (
    ID SERIAL NOT NULL PRIMARY KEY,
    Section INT NOT NULL REFERENCES Section(ID),
-   Type VARCHAR NOT NULL, --"Assignment", "Quiz", "Exam",...
+   ComponentType VARCHAR NOT NULL, --"Assignment", "Quiz", "Exam",...
    Weight NUMERIC(5,2) NOT NULL
         --allowing weight 0 allows graded assignments with no weight
         --e.g. graded feedback on practice
