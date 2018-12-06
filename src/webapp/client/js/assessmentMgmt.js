@@ -148,9 +148,14 @@ $(document).ready(function() {
 		var assessType = $('#typeInput').val();
 		var assessWeight = $('#weightInput').val();
 		var assessDescription = $('#descriptionInput').val();
-		updateAssessType(dbInfo, assessID, assessType, assessWeight, assessDescription);
-		// repopulate Assessment Types
-		popAssessmentTypes(dbInfo, sectionID);
+          if(assessID == "" || assessType == "" || assessWeight == "" || assessDescription == ""){
+               showAlert("<p>One or more fields are empty</p>");
+          }
+          else{
+		     updateAssessType(dbInfo, assessID, assessType, assessWeight, assessDescription);
+		     // repopulate Assessment Types
+	          popAssessmentTypes(dbInfo, sectionID);
+          }
 	});
 
 	$('#btnDeleteAssessType').click(function() {
@@ -361,6 +366,7 @@ function updateAssessType(connInfo, assessid, componenttype, weight, description
 		dataType: 'json',
 		data: urlParams,
 		success: function(result) {
+               showAlert('<p>Sucessfully updated assessment type</p>');
 			console.log(result.rowCount + " rows updated");
 		},
 		error: function(result) {
